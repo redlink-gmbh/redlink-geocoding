@@ -1,0 +1,25 @@
+image: maven:3.3-jdk-8
+
+pipelines:
+  default:
+    - step:
+        script:
+          - git remote rename origin upstream
+          - mvn -q -V -B -s .ci/settings.xml clean install
+          - git remote rename upstream origin
+  branches:
+    master:
+      - step:
+          script:
+            - git remote rename origin upstream
+            - mvn -q -V -B -s .ci/settings.xml clean install
+            - mvn -V -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+            - git remote rename upstream origin
+  tags:
+    geocoding-*:
+      - step:
+          script:
+            - git remote rename origin upstream
+            - mvn -q -V -B -s .ci/settings.xml clean install
+            - mvn -V -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+            - git remote rename upstream origin
