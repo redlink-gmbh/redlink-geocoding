@@ -10,7 +10,18 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>google</artifactId>
+    <artifactId>geocoding-google</artifactId>
     <name>Geocoding :: Google Maps</name>
-    
+
+    <dependencies>
+        <dependency>
+            <groupId>io.redlink.geocoding</groupId>
+            <artifactId>geocoding-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.maps</groupId>
+            <artifactId>google-maps-services</artifactId>
+        </dependency>
+    </dependencies>
 </project>

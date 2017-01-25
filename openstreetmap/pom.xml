@@ -10,7 +10,14 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openstreetmap</artifactId>
-    <name>Geocoding :: OpenStreetMap</name>
+    <artifactId>geocoding-osm</artifactId>
+    <name>Geocoding :: OpenStreetMap (Nominatim)</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.redlink.geocoding</groupId>
+            <artifactId>geocoding-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
