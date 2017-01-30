@@ -21,4 +21,13 @@ public class LatLon {
     public double lon() {
         return lon;
     }
+
+    public static LatLon valueOf(String lat, String lon) {
+        return new LatLon(Double.parseDouble(lat), Double.parseDouble(lon));
+    }
+
+    public static LatLon valueOf(String latLon) {
+        final String[] s = latLon.split(",", 2);
+        return valueOf(s[0], s[1]);
+    }
 }
