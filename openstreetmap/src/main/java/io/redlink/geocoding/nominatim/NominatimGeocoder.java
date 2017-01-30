@@ -7,6 +7,7 @@ import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -18,10 +19,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -52,19 +54,22 @@ public class NominatimGeocoder implements Geocoder {
     private final URI baseUrl;
     private final Locale language;
     private final String email;
+    private final Proxy proxy;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
     }
 
-    protected NominatimGeocoder(String baseUrl, Locale language, String email) {
+    protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy) {
         this.baseUrl = URI.create(baseUrl);
         this.language = language;
         this.email = email;
+        this.proxy = proxy;
     }
 
     public NominatimGeocoder(String baseUrl) {
-        this(baseUrl, null, null);
+        this(baseUrl, null, null, null);
     }
 
     public static NominatimBuilder configure() {
@@ -115,11 +120,6 @@ public class NominatimGeocoder implements Geocoder {
         }
     }
 
-    private static String createPlaceId(Element element) {
-        final String type = element.attr("osm_type"), osmId = element.attr("osm_id");
-        return String.format(Locale.ENGLISH, "%S%s", type.substring(0, 1), osmId);
-    }
-
     @Override
     public Place lookup(String placeId) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
@@ -146,6 +146,11 @@ public class NominatimGeocoder implements Geocoder {
         return place;
     }
 
+    private static String createPlaceId(Element element) {
+        final String type = element.attr("osm_type"), osmId = element.attr("osm_id");
+        return String.format(Locale.ENGLISH, "%S%s", type.substring(0, 1), osmId);
+    }
+
     private URIBuilder createUriBuilder(String service) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
@@ -159,7 +164,18 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     private CloseableHttpClient createHttpClient() {
-        return HttpClientBuilder.create().build();
+        final HttpClientBuilder builder = HttpClientBuilder.create();
+        if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
+            log.trace("Direct Connection");
+        } else if (proxy.type() == Proxy.Type.HTTP) {
+            final InetSocketAddress proxyAddress = (InetSocketAddress) proxy.address();
+            final HttpHost proxyHost = new HttpHost(proxyAddress.getAddress(), proxyAddress.getPort());
+            builder.setProxy(proxyHost);
+            log.debug("Using Proxy {}", proxyHost);
+        } else {
+            log.warn("Unsupported Proxy-Type {}, fallback to DIRECT connection", proxy.type());
+        }
+        return builder.build();
     }
 
     private static abstract class JsoupResponseHandler<T> implements ResponseHandler<T> {
