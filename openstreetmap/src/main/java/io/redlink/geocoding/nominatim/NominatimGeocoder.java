@@ -140,7 +140,7 @@ public class NominatimGeocoder implements Geocoder {
 
     private static Place readPlace(Element element) {
         final String id = createPlaceId(element);
-        final Place place = new Place(element.attr("place_id"));
+        final Place place = new Place(id);
         place.setAddress(element.attr("display_name"));
         place.setLatLon(LatLon.valueOf(element.attr("lat"), element.attr("lon")));
         return place;
