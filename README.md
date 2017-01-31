@@ -51,6 +51,21 @@ Maven dependency:
 </dependency>
 ```
 ## Google Maps Geocoder
+This module Implemantes of the geocoder artifact wraping Google Maps Services java [client](https://github.com/googlemaps/google-maps-services-java).
+To be able to use the Google Maps Services a valid API key should be provided to the library.
+
+The [GoogleMapsGeocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsGeocoder.java?at=master&fileviewer=file-view-default) object can be instantiate just by the means of the [GoogleMapsBuilder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsBuilder.java?at=master&fileviewer=file-view-default) which allows to define the specific configuration needed to use the Google Maps Services.
+
+
+```java
+final Geocoder googleGeocoder = new GoogleMapsBuilder()
+        .setApiKey("Googel_API_key")
+        .setLocale("de")
+        .create();
+```
+
+Maven dependency:
+
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
@@ -59,6 +74,8 @@ Maven dependency:
 </dependency>
 ```
 ## Open Street Maps Geocoder
+
+Maven dependency:
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
@@ -67,6 +84,8 @@ Maven dependency:
 </dependency>
 ```
 ## Cache Geocoder
+
+Maven dependency:
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
