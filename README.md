@@ -84,6 +84,15 @@ Maven dependency:
 </dependency>
 ```
 ## Cache Geocoder
+The geocoding-cache artifact implements a [CacheGeocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/cache/src/main/java/io/redlink/geocoding/cache/CacheGeocoder.java?at=master&fileviewer=file-view-default) which actually wraps any other Geocoder object and provides a basic cache for the three supported methods to avoid  unnecessary replicated calls to the services and a shorter time response.
+
+```java
+final Geocoder cacheGeocoder = new CacheBuilder(geocoderImplementationObject)
+               .setCacheExpireTime(7)
+               .setTimeUnit(TimeUnit.DAYS)
+               .create();
+
+```
 
 Maven dependency:
 ```xml
