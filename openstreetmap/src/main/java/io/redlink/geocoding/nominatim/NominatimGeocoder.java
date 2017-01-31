@@ -189,7 +189,7 @@ public class NominatimGeocoder implements Geocoder {
         public T handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200 && statusCode < 300) {
-                final Document document = Jsoup.parse(response.getEntity().getContent(), "utf-8", null, Parser.xmlParser());
+                final Document document = Jsoup.parse(response.getEntity().getContent(), "utf-8", requestUri.toString(), Parser.xmlParser());
                 return parseJsoup(document);
             } else
                 throw new IOException("Got HTTP-" + statusCode + " when requesting " + requestUri.toASCIIString());
