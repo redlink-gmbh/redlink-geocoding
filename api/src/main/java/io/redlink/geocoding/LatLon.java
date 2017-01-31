@@ -3,6 +3,8 @@
  */
 package io.redlink.geocoding;
 
+import java.util.DoubleSummaryStatistics;
+
 /**
  * A position on earth, identified by latitude and longitude.
  */
@@ -30,4 +32,20 @@ public class LatLon {
         final String[] s = latLon.split(",", 2);
         return valueOf(s[0], s[1]);
     }
+
+    public boolean equals(Object obj)
+    {
+        if(LatLon.class.isAssignableFrom(obj.getClass())) {
+            LatLon latLonObj = (LatLon) obj;
+            return (this.lat == latLonObj.lat() && this.lon == latLonObj.lon());
+        } else {
+            return false;
+        }
+    }
+
+    public int hashCode()
+    {
+        return (Double.toString(lat) + Double.toString(lon)).hashCode();
+    }
+
 }
