@@ -57,7 +57,7 @@ public class NominatimGeocoder implements Geocoder {
     private final Proxy proxy;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public NominatimGeocoder() {
+    protected NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
     }
 
@@ -68,7 +68,7 @@ public class NominatimGeocoder implements Geocoder {
         this.proxy = proxy;
     }
 
-    public NominatimGeocoder(String baseUrl) {
+    protected NominatimGeocoder(String baseUrl) {
         this(baseUrl, null, null, null);
     }
 
