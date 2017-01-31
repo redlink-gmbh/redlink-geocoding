@@ -22,6 +22,27 @@ The library is divided in 4 separate artifacts:
 
 
 ## API
+This artifact contains the basic interface and classes to use the library or develop implementations for other geographical services. All the other artifacts on the library depend on this one.
+
+The API artifact provides the basic [Geocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/Geocoder.java?at=master&fileviewer=file-view-default) interface which defines usage of the three operations mentioned before.
+```java
+final Geocoder geocoder = new GeocoderImplementation();
+
+final List<Place> geocodedPlaces = geocoder.geocode("Jakob Haringer Strasse 3");
+final List<Place> reverseGeocodedPlaces = geocoder.reverseGeocode(new LatLon(43.735762, 12.3029561));
+final Place lookupPlace = geocoder.lookup("placeID");
+```
+It also provides a basic representation of a geographical [Place](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/Place.java?at=master&fileviewer=file-view-default) used as result of the different allowed operations and a representation of a [LatLon](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/LatLon.java?at=master&fileviewer=file-view-default) coordinate pair.
+
+```java
+final LatLon coordinates = new LatLon(47.8229144,13.0404834);
+final Place geographicalPlace = new Place("placeID");
+geographicalPlace.setAddress("Jakob Haringer Strasse 3");
+geographicalPlace.setLatLon(coordinates);
+```
+
+Maven dependency:
+
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
