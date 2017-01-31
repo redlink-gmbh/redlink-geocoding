@@ -51,7 +51,7 @@ Maven dependency:
 </dependency>
 ```
 ## Google Maps Geocoder
-This module Implemantes of the geocoder artifact wraping Google Maps Services java [client](https://github.com/googlemaps/google-maps-services-java).
+This module implements of the geocoder artifact wrapping Google Maps Services java [client](https://github.com/googlemaps/google-maps-services-java).
 To be able to use the Google Maps Services a valid API key should be provided to the library.
 
 The [GoogleMapsGeocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsGeocoder.java?at=master&fileviewer=file-view-default) object can be instantiate just by the means of the [GoogleMapsBuilder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsBuilder.java?at=master&fileviewer=file-view-default) which allows to define the specific configuration needed to use the Google Maps Services.
@@ -74,6 +74,14 @@ Maven dependency:
 </dependency>
 ```
 ## Open Street Maps Geocoder
+[Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim) services Geocoder implementation, which provides the means to perform the three described operations using the aforementioned service.
+
+```java
+final Geocoder nominatimGeocoder = new NominatimBuilder()
+               .setLocale("en")
+               .setEmail("example@email.org")
+               .create();
+```
 
 Maven dependency:
 ```xml
