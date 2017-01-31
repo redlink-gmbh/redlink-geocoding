@@ -28,16 +28,18 @@ public class Place {
         return this;
     }
 
-    public void setAddress(String address) {
+    public Place setAddress(String address) {
         this.address = address;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setLatLon(LatLon latLon) {
+    public Place setLatLon(LatLon latLon) {
         this.latLon = latLon;
+        return this;
     }
 
     public LatLon getLatLon() {
