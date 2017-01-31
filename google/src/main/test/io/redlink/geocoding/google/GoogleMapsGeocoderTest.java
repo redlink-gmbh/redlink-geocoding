@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class GoogleMapsGeocoderTest {
 
     private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
-    public  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
+    private  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
     private final String testAddress = "jakob haringer strasse 3";
     private final Double testLat = 47.8227343;
     private final Double testLon = 13.0408988;
