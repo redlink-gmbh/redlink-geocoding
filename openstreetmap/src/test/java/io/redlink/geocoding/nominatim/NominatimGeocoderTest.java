@@ -2,10 +2,14 @@ package io.redlink.geocoding.nominatim;
 
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
@@ -17,16 +21,15 @@ import java.util.Locale;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by fonso on 31.01.17.
  */
 public class NominatimGeocoderTest {
 
     private final String testPlaceId = "W30514164";
-    private  final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
+    private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
     private final String coworkingFormattedAddress = "Coworkingspace Salzburg, 3, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
     private final String testAddress = "jakob haringer strasse 3";
-    private final Double testLat = 47.8227343;
-    private final Double testLon = 13.0408988;
+    private final double testLat = 47.8227343;
+    private final double testLon = 13.0408988;
 
     @Mock
     private LatLon latLon;
@@ -67,7 +70,6 @@ public class NominatimGeocoderTest {
 
     @Test
     public void testLookup() throws IOException {
-
         final Place place = osmGeocoder.lookup(testPlaceId);
 
         Assert.assertEquals(testPlaceId, place.getPlaceId());

@@ -151,7 +151,7 @@ public class NominatimGeocoder implements Geocoder {
         return String.format(Locale.ENGLISH, "%S%s", type.substring(0, 1), osmId);
     }
 
-    private URIBuilder createUriBuilder(String service) throws URISyntaxException {
+    protected URIBuilder createUriBuilder(String service) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
         if (StringUtils.isNotBlank(email)) {
@@ -163,7 +163,7 @@ public class NominatimGeocoder implements Geocoder {
         return uriBuilder;
     }
 
-    private CloseableHttpClient createHttpClient() {
+    protected CloseableHttpClient createHttpClient() {
         final HttpClientBuilder builder = HttpClientBuilder.create();
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             log.trace("Direct Connection");
