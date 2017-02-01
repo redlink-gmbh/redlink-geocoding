@@ -25,13 +25,15 @@ The library is divided in 4 separate artifacts:
 This artifact contains the basic interface and classes to use the library or develop implementations for other geographical services. All the other artifacts on the library depend on this one.
 
 The API artifact provides the basic [Geocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/Geocoder.java?at=master&fileviewer=file-view-default) interface which defines usage of the three operations mentioned before.
+
 ```java
-final Geocoder geocoder = new GeocoderImplementation();
+final Geocoder geocoder = ...
 
 final List<Place> geocodedPlaces = geocoder.geocode("Jakob Haringer Strasse 3");
 final List<Place> reverseGeocodedPlaces = geocoder.reverseGeocode(new LatLon(43.735762, 12.3029561));
 final Place lookupPlace = geocoder.lookup("placeID");
 ```
+
 It also provides a basic representation of a geographical [Place](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/Place.java?at=master&fileviewer=file-view-default) used as result of the different allowed operations and a representation of a [LatLon](https://bitbucket.org/redlinkgmbh/geocoding/src/5d38badc7e578acce6dbd05950c20b95f9358f19/api/src/main/java/io/redlink/geocoding/LatLon.java?at=master&fileviewer=file-view-default) coordinate pair.
 
 ```java
@@ -50,7 +52,23 @@ Maven dependency:
     <version>${project.version}</version>
 </dependency>
 ```
+
 ## Google Maps Geocoder
+This module implements of the geocoder artifact wrapping Google Maps Services java [client](https://github.com/googlemaps/google-maps-services-java).
+To be able to use the Google Maps Services a valid API key should be provided to the library.
+
+The [GoogleMapsGeocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsGeocoder.java?at=master&fileviewer=file-view-default) object can be instantiate just by the means of the [GoogleMapsBuilder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/google/src/main/java/io/redlink/geocoding/google/GoogleMapsBuilder.java?at=master&fileviewer=file-view-default) which allows to define the specific configuration needed to use the Google Maps Services.
+
+
+```java
+final Geocoder googleGeocoder = GoogleMapsGeocoder.configure()
+        .setApiKey("Googel_API_key")
+        .setLocale("de")
+        .create();
+```
+
+Maven dependency:
+
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
@@ -59,6 +77,16 @@ Maven dependency:
 </dependency>
 ```
 ## Open Street Maps Geocoder
+[Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim) services Geocoder implementation, which provides the means to perform the three described operations using the aforementioned service.
+
+```java
+final Geocoder nominatimGeocoder = NominatimGeocoder.configure()
+               .setEmail("example@email.org")
+               .setLocale("en")
+               .create();
+```
+
+Maven dependency:
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
@@ -67,6 +95,17 @@ Maven dependency:
 </dependency>
 ```
 ## Cache Geocoder
+The geocoding-cache artifact implements a [CacheGeocoder](https://bitbucket.org/redlinkgmbh/geocoding/src/b5eb5b5eb30d2be8a447d8a9dff0a979cf760de7/cache/src/main/java/io/redlink/geocoding/cache/CacheGeocoder.java?at=master&fileviewer=file-view-default) which actually wraps any other Geocoder object and provides a basic cache for the three supported methods to avoid  unnecessary replicated calls to the services and a shorter time response.
+
+```java
+final Geocoder cachingGeocoder = CacheGeocoder.configure()
+               .setGeocoder(geocoder)
+               .setCacheExpiry(24, TimeUnit.DAYS)
+               .create();
+
+```
+
+Maven dependency:
 ```xml
 <dependency>
     <groupId>io.redlink.geocoding</groupId>

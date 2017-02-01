@@ -33,9 +33,8 @@ public class LatLon {
         return valueOf(s[0], s[1]);
     }
 
-    public boolean equals(Object obj)
-    {
-        if(LatLon.class.isAssignableFrom(obj.getClass())) {
+    public boolean equals(Object obj) {
+        if (LatLon.class.isAssignableFrom(obj.getClass())) {
             LatLon latLonObj = (LatLon) obj;
             return (this.lat == latLonObj.lat() && this.lon == latLonObj.lon());
         } else {
@@ -43,9 +42,15 @@ public class LatLon {
         }
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         return (Double.toString(lat) + Double.toString(lon)).hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "LatLon{" +
+                "lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

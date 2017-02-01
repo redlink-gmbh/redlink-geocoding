@@ -1,7 +1,7 @@
 package io.redlink.geocoding.cache;
 
+import com.google.common.base.Preconditions;
 import io.redlink.geocoding.Geocoder;
-import org.apache.commons.lang3.Validate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,21 +11,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class CacheBuilder {
 
-    private long cacheExpireTime;
-    private TimeUnit timeUnit;
-    private Geocoder geocoder;
+    private long cacheExpireTime = CacheGeocoder.DEFAULT_CACHE_EXPIRE_TIME;
+    private TimeUnit timeUnit = CacheGeocoder.DEFAULT_TIME_UNIT;
+    private Geocoder geocoder = null;
+
+    public CacheBuilder() {
+    }
 
     public CacheBuilder(Geocoder geocoder) {
-        Validate.notNull(geocoder, "A non-null Geocoder should be provided.");
-        this.geocoder = geocoder;
+        setGeocoder(geocoder);
     }
 
-    public CacheBuilder setCacheExpireTime(long cacheExpireTime) {
-        this.cacheExpireTime = cacheExpireTime;
-        return this;
-    }
-
-    public CacheBuilder setTimeUnit(TimeUnit timeUnit) {
+    public CacheBuilder setCacheExpiry(long timeout, TimeUnit timeUnit) {
+        this.cacheExpireTime = timeout;
         this.timeUnit = timeUnit;
         return this;
     }
@@ -36,6 +34,7 @@ public class CacheBuilder {
     }
 
     public CacheGeocoder create() {
+        Preconditions.checkState(geocoder != null, "gecoder must be set!");
         return new CacheGeocoder(geocoder, cacheExpireTime,timeUnit);
     }
 }
