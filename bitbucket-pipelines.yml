@@ -5,14 +5,14 @@ pipelines:
     - step:
         script:
           - git remote rename origin upstream
-          - mvn -V -B -s .ci/settings.xml clean install
+          - mvn -V -B -s .ci/settings.xml clean install -DskipITs
           - git remote rename upstream origin
   branches:
     master:
       - step:
           script:
             - git remote rename origin upstream
-            - mvn -V -B -s .ci/settings.xml clean install
+            - mvn -V -B -s .ci/settings.xml clean install -DskipITs
             - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
             - git remote rename upstream origin
   tags:
@@ -20,6 +20,6 @@ pipelines:
       - step:
           script:
             - git remote rename origin upstream
-            - mvn -V -B -s .ci/settings.xml clean install
-            - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+            - mvn -V -B -s .ci/settings.xml clean install -DskipITs
+            - mvn -B -s .ci/settings.xml deploy -DskipTests
             - git remote rename upstream origin
