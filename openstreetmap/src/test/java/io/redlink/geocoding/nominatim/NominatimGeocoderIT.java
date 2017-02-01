@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 /**
  */
-public class NominatimGeocoderTest {
+public class NominatimGeocoderIT {
 
     private final String testPlaceId = "W30514164";
     private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
@@ -36,7 +36,7 @@ public class NominatimGeocoderTest {
 
     private final NominatimGeocoder osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER, Locale.forLanguageTag("en"),null,null);
 
-    public NominatimGeocoderTest() {
+    public NominatimGeocoderIT() {
         MockitoAnnotations.initMocks(this);
     }
 

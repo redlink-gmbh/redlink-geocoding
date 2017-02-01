@@ -1,25 +1,20 @@
 package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
-import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Assume;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static org.mockito.Mockito.when;
-
 /**
- * Created by fonso on 31.01.17.
  */
-public class GoogleMapsGeocoderTest {
+public class GoogleMapsGeocoderIT {
 
     private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
     private  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
@@ -30,18 +25,15 @@ public class GoogleMapsGeocoderTest {
     private final GeoApiContext context = new GeoApiContext();
     private final GoogleMapsGeocoder gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"));
 
-    @Mock
-    private LatLon latLon;
+    private LatLon latLon = new LatLon(testLat, testLon);
 
-    public GoogleMapsGeocoderTest() {
-        MockitoAnnotations.initMocks(this);
-        context.setApiKey("AIzaSyD3PRRjN1TXyhtE3M8nTf66NNWjGNrtIGA&");
-    }
+    public GoogleMapsGeocoderIT() {
+        final String apiKey = System.getProperty("google.apiKey");
+        Assume.assumeThat("Google API-Key missing, provide it with -Dgoogle.apiKey", apiKey, Matchers.not(Matchers.isEmptyOrNullString()));
+        Assume.assumeThat("Invalid Google API-Key (expected to start with ''", apiKey, Matchers.startsWith("AIza"));
 
-    @Before
-    public void init() {
-        when(latLon.lat()).thenReturn(testLat);
-        when(latLon.lon()).thenReturn(testLon);
+        context.setApiKey(apiKey);
+        context.setChannel(getClass().getSimpleName());
     }
 
     @Test
@@ -68,7 +60,6 @@ public class GoogleMapsGeocoderTest {
 
     @Test
     public void testLookup() throws IOException {
-
         final Place place = gmGeocoder.lookup(testPlaceId);
 
         Assert.assertEquals(testPlaceId, place.getPlaceId());
