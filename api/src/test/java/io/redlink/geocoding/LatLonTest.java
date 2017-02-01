@@ -3,8 +3,10 @@ package io.redlink.geocoding;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Locale;
+import java.util.Random;
+
 /**
- * Created by fonso on 31.01.17.
  */
 public class LatLonTest {
     private final LatLon latLon1 = new LatLon(45.000, 12.000);
@@ -31,5 +33,16 @@ public class LatLonTest {
         Assert.assertNotEquals(latLon2.hashCode(), latLon3.hashCode());
         Assert.assertNotEquals(latLon2.hashCode(), latLon4.hashCode());
         Assert.assertNotEquals(latLon3.hashCode(), latLon4.hashCode());
+    }
+
+    @Test
+    public void testValueOf() {
+        final Random rnd = new Random();
+        final double lat = -90d + 180d * rnd.nextDouble(),
+                lon = -180d + 360d * rnd.nextDouble();
+        final LatLon expected = new LatLon(lat, lon);
+
+        Assert.assertEquals(expected, LatLon.valueOf(String.valueOf(lat) + "," + String.valueOf(lon)));
+        Assert.assertEquals(expected, LatLon.valueOf(String.valueOf(lat), String.valueOf(lon)));
     }
 }
