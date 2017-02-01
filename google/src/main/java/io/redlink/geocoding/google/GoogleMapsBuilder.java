@@ -4,9 +4,11 @@
 package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
 
 import java.net.Proxy;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * A Builder for the GoogleMapsGeocoder
@@ -14,6 +16,7 @@ import java.util.Locale;
 public class GoogleMapsBuilder {
 
     private final GeoApiContext context;
+    private boolean apiKeySet, cryptoSecretSet;
     private Locale lang;
 
     public GoogleMapsBuilder() {
@@ -38,6 +41,7 @@ public class GoogleMapsBuilder {
 
     public GoogleMapsBuilder setApiKey(String apiKey) {
         context.setApiKey(apiKey);
+        apiKeySet = Objects.nonNull(apiKey);
         return this;
     }
 
@@ -48,11 +52,17 @@ public class GoogleMapsBuilder {
 
     public GoogleMapsBuilder setCredentials(String clientId, String cryptoSecret) {
         context.setEnterpriseCredentials(clientId, cryptoSecret);
+        cryptoSecretSet = Objects.nonNull(cryptoSecret);
         return this;
     }
 
     public GoogleMapsGeocoder create() {
-        return new GoogleMapsGeocoder(context, lang);
+        // Check state
+        if (cryptoSecretSet || apiKeySet) {
+            return new GoogleMapsGeocoder(context, lang);
+        } else {
+            throw new IllegalStateException("Must provide either API key or Maps for Work credentials.");
+        }
     }
 
 }

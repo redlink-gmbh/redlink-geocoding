@@ -21,6 +21,7 @@
 
     <modules>
         <module>api</module>
+        <module>cache</module>
 
         <module>google</module>
         <module>openstreetmap</module>
