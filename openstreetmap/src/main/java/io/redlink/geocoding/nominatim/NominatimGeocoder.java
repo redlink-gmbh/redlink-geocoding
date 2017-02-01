@@ -178,7 +178,7 @@ public class NominatimGeocoder implements Geocoder {
         return builder.build();
     }
 
-    private static abstract class JsoupResponseHandler<T> implements ResponseHandler<T> {
+    protected static abstract class JsoupResponseHandler<T> implements ResponseHandler<T> {
         private final URI requestUri;
 
         public JsoupResponseHandler(URI requestUri) {
@@ -186,7 +186,7 @@ public class NominatimGeocoder implements Geocoder {
         }
 
         @Override
-        public T handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+        public T handleResponse(HttpResponse response) throws IOException {
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200 && statusCode < 300) {
                 final Document document = Jsoup.parse(response.getEntity().getContent(), "utf-8", requestUri.toString(), Parser.xmlParser());

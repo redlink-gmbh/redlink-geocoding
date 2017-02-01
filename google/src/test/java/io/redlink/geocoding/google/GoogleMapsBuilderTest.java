@@ -1,5 +1,6 @@
 package io.redlink.geocoding.google;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,14 +12,11 @@ import java.net.Proxy;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by fonso on 30.01.17.
  */
 public class GoogleMapsBuilderTest {
 
     @Mock
     private Proxy proxy;
-
-    private GoogleMapsBuilder gmBuilder;
 
     public GoogleMapsBuilderTest() {
         MockitoAnnotations.initMocks(this);
@@ -26,22 +24,24 @@ public class GoogleMapsBuilderTest {
 
     @Before
     public void init() {
-
         when(proxy.type()).thenReturn(Proxy.Type.DIRECT);
-
-        gmBuilder = new GoogleMapsBuilder()
-                .setApiKey("API key")
-                .setChannel("channel")
-                .setCredentials("client","cryptoSecret")
-                .setLocale("de")
-                .setProxy(proxy);
     }
 
     @Test
     public void testCreate() throws IOException {
-        GoogleMapsGeocoder gmGeocoder = gmBuilder.create();
+        Assert.assertNotNull(new GoogleMapsBuilder()
+                .setApiKey("API key")
+                .setChannel("channel")
+                .setCredentials("client", "cryptoSecret")
+                .setLocale("de")
+                .setProxy(proxy)
+                .create());
+    }
 
-
-
+    @Test(expected = IllegalStateException.class)
+    public void testWithoutCredentials() {
+        new GoogleMapsBuilder()
+                .create();
+        Assert.fail("Expected an IllegalStateException");
     }
 }
