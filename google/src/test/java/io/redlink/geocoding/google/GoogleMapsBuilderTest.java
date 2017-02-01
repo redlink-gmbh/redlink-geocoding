@@ -3,6 +3,7 @@ package io.redlink.geocoding.google;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -18,6 +19,10 @@ public class GoogleMapsBuilderTest {
     private Proxy proxy;
 
     private GoogleMapsBuilder gmBuilder;
+
+    public GoogleMapsBuilderTest() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Before
     public void init() {
