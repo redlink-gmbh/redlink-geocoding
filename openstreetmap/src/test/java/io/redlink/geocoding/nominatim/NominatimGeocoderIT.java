@@ -40,12 +40,16 @@ public class NominatimGeocoderIT {
         when(latLon.lat()).thenReturn(testLat);
         when(latLon.lon()).thenReturn(testLon);
 
-        osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER, Locale.forLanguageTag("en"),null,null);
+        osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER,
+                Locale.forLanguageTag("en"),
+                System.getProperty("nominatim.email"),
+                null);
     }
 
     @Before
     public void pingRemote() {
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+
             final StatusLine statusLine = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), HttpResponse::getStatusLine);
             Assume.assumeThat("Remote Service Status", statusLine.getStatusCode(), Matchers.allOf(Matchers.greaterThanOrEqualTo(200), Matchers.lessThan(300)));
         } catch (IOException e) {
@@ -71,8 +75,8 @@ public class NominatimGeocoderIT {
         Assert.assertEquals(1, places.size());
         Assert.assertEquals(testPlaceId, places.get(0).getPlaceId());
         Assert.assertEquals(testFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(),0);
-        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(),0);
+        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(), 0);
+        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(), 0);
     }
 
     @Test
@@ -81,8 +85,8 @@ public class NominatimGeocoderIT {
 
         Assert.assertEquals(testPlaceId, place.getPlaceId());
         Assert.assertEquals(testFormattedAddress, place.getAddress());
-        Assert.assertEquals(testLat, place.getLatLon().lat(),0.01);
-        Assert.assertEquals(testLon, place.getLatLon().lon(),0.01);
+        Assert.assertEquals(testLat, place.getLatLon().lat(), 0.01);
+        Assert.assertEquals(testLon, place.getLatLon().lon(), 0.01);
 
     }
 }
