@@ -46,7 +46,7 @@ Maven dependency:
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-api</artifactId>
-    <version>${project.version}</version>
+    <version>${geocoding.version}</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ Maven dependency:
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-google</artifactId>
-    <version>${project.version}</version>
+    <version>${geocoding.version}</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ Maven dependency:
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-osm</artifactId>
-    <version>${project.version}</version>
+    <version>${geocoding.version}</version>
 </dependency>
 ```
 
@@ -102,7 +102,6 @@ final Geocoder cachingGeocoder = CacheGeocoder.configure()
                .setGeocoder(geocoder)
                .setCacheExpiry(24, TimeUnit.DAYS)
                .create();
-
 ```
 
 Maven dependency:
@@ -110,6 +109,53 @@ Maven dependency:
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-cache</artifactId>
-    <version>${project.version}</version>
+    <version>${geocoding.version}</version>
 </dependency>
 ```
+
+## Spring-Boot Autoconfiguration
+
+For quick and easy use of the `Geocoder` in [spring-boot] projects use the `geocoding-spring-boot-autoconfigure` module,
+and configure the geocoders with the following `application.properties`:
+
+```
+# GoogleMaps Geocoder, provide either api-key or client-id and crypto-secret
+geocoding.google.api-key=
+geocoding.google.client-id=
+geocoding.google.crypto-secret=
+geocoding.google.channel=
+# Nominatim Geocoder
+geocoding.nominatim.base-url=
+geocoding.nominatim.email=
+# General Options
+geocoding.cache-timeout=
+geocoding.lang=
+geocoding.proxy=
+```
+
+Maven dependency:
+```xml
+<dependency>
+    <groupId>io.redlink.geocoding</groupId>
+    <artifactId>geocoding-spring-boot-autoconfigure</artifactId>
+    <version>${geocoding.version}</version>
+</dependency>
+<!-- Add an implementation provider, at least one: -->
+<dependency>
+    <groupId>io.redlink.geocoding</groupId>
+    <artifactId>geocoding-google</artifactId>
+    <version>${geocoding.version}</version>
+</dependency>
+<dependency>
+    <groupId>io.redlink.geocoding</groupId>
+    <artifactId>geocoding-osm</artifactId>
+    <version>${geocoding.version}</version>
+</dependency>
+<!-- optionally the chache -->
+<dependency>
+    <groupId>io.redlink.geocoding</groupId>
+    <artifactId>geocoding-cache</artifactId>
+    <version>${geocoding.version}</version>
+</dependency>
+```
+

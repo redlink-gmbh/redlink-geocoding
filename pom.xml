@@ -25,6 +25,8 @@
 
         <module>google</module>
         <module>openstreetmap</module>
+
+        <module>spring-boot</module>
     </modules>
 
     <scm>

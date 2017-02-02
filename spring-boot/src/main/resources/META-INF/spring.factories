@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.redlink.geocoding.spring.boot.autoconfigure.GeocodingAutoConfiguration,\
+io.redlink.geocoding.spring.boot.autoconfigure.CachedGeocodingAutoconfiguration
