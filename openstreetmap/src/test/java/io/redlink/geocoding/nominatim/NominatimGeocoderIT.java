@@ -2,22 +2,22 @@ package io.redlink.geocoding.nominatim;
 
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.List;
 import java.util.Locale;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -31,19 +31,26 @@ public class NominatimGeocoderIT {
     private final double testLat = 47.8227343;
     private final double testLon = 13.0408988;
 
-    @Mock
-    private LatLon latLon;
+    private final LatLon latLon;
 
-    private final NominatimGeocoder osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER, Locale.forLanguageTag("en"),null,null);
+    private final NominatimGeocoder osmGeocoder;
 
     public NominatimGeocoderIT() {
-        MockitoAnnotations.initMocks(this);
+        latLon = mock(LatLon.class);
+        when(latLon.lat()).thenReturn(testLat);
+        when(latLon.lon()).thenReturn(testLon);
+
+        osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER, Locale.forLanguageTag("en"),null,null);
     }
 
     @Before
-    public void init() {
-        when(latLon.lat()).thenReturn(testLat);
-        when(latLon.lon()).thenReturn(testLon);
+    public void pingRemote() {
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            final StatusLine statusLine = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), HttpResponse::getStatusLine);
+            Assume.assumeThat("Remote Service Status", statusLine.getStatusCode(), Matchers.allOf(Matchers.greaterThanOrEqualTo(200), Matchers.lessThan(300)));
+        } catch (IOException e) {
+            Assume.assumeNoException("Ping to remote service failed", e);
+        }
     }
 
     @Test
@@ -53,8 +60,8 @@ public class NominatimGeocoderIT {
         Assert.assertEquals(2, places.size());
         Assert.assertEquals("N3081433444", places.get(0).getPlaceId());
         Assert.assertEquals(coworkingFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(47.8229144, places.get(0).getLatLon().lat(),0);
-        Assert.assertEquals(13.0404834, places.get(0).getLatLon().lon(),0);
+        Assert.assertEquals(47.8229144, places.get(0).getLatLon().lat(), 0);
+        Assert.assertEquals(13.0404834, places.get(0).getLatLon().lon(), 0);
     }
 
     @Test

@@ -1,11 +1,16 @@
 package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
+import com.google.maps.internal.ApiConfig;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -34,6 +39,22 @@ public class GoogleMapsGeocoderIT {
 
         context.setApiKey(apiKey);
         context.setChannel(getClass().getSimpleName());
+    }
+
+    @Before
+    public void pingRemote() {
+        try {
+            final OkHttpClient client = new OkHttpClient();
+            final Request request = new Request.Builder()
+                    .head()
+                    .url(new ApiConfig("/").hostName)
+                    .build();
+
+            final Response response = client.newCall(request).execute();
+            Assume.assumeTrue("Remote Service Status", response.isSuccessful());
+        } catch (IOException e) {
+            Assume.assumeNoException("Ping to remote service failed", e);
+        }
     }
 
     @Test
