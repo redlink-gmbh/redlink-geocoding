@@ -24,10 +24,9 @@ public class GoogleUtils {
     }
 
     private static Place geocodingResult2Place(GeocodingResult google) {
-        final Place place = new Place(google.placeId);
-        place.setAddress(google.formattedAddress);
-        place.setLatLon(latLng2latLon(google.geometry.location));
-        return place;
+        return Place.create(google.placeId,
+                google.formattedAddress,
+                latLng2latLon(google.geometry.location));
     }
 
     public static LatLng latLon2LatLng(LatLon coordinates) {
@@ -35,10 +34,9 @@ public class GoogleUtils {
     }
 
     public static Place placeDetails2Place(PlaceDetails placeDetails) {
-        final Place place = new Place(placeDetails.placeId);
-        place.setAddress(placeDetails.formattedAddress);
-        place.setLatLon(latLng2latLon(placeDetails.geometry.location));
-        return place;
+        return Place.create(placeDetails.placeId,
+                placeDetails.formattedAddress,
+                latLng2latLon(placeDetails.geometry.location));
     }
 
     private static LatLon latLng2latLon(LatLng latLng) {

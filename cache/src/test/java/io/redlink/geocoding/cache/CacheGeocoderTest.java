@@ -98,7 +98,7 @@ public class CacheGeocoderTest {
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.lookup(Mockito.anyString()))
-                .thenAnswer(invocation -> new Place(String.valueOf(invocation.getArguments()[0])))  ;
+                .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null))  ;
 
         final CacheGeocoder cache = new CacheGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
@@ -122,7 +122,8 @@ public class CacheGeocoderTest {
     @Test
     public void testGeocodeCaching() throws Exception {
         final String placeId_1 = UUID.randomUUID().toString(), placeId_2 = UUID.randomUUID().toString();
-        final Place place_1 = new Place(placeId_1), place_2 = new Place(placeId_2);
+        final Place place_1 = Place.create(placeId_1, null, null),
+                place_2 = Place.create(placeId_2, null, null);
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.geocode(placeId_1)).thenReturn(Collections.singletonList(place_1));
@@ -152,8 +153,8 @@ public class CacheGeocoderTest {
         final LatLon loc_1 = new LatLon(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble()),
                 loc_2 = new LatLon(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble());
         final String placeId_1 = UUID.randomUUID().toString(), placeId_2 = UUID.randomUUID().toString();
-        final Place place_1 = new Place(placeId_1).setLatLon(loc_1),
-                place_2 = new Place(placeId_2).setLatLon(loc_2);
+        final Place place_1 = Place.create(placeId_1, null, loc_1),
+                place_2 = Place.create(placeId_2, null, loc_2);
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.reverseGeocode(loc_1)).thenReturn(Collections.singletonList(place_1));

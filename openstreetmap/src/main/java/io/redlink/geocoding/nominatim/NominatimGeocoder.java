@@ -9,7 +9,6 @@ import io.redlink.geocoding.Place;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -23,7 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -108,11 +110,7 @@ public class NominatimGeocoder implements Geocoder {
                 @Override
                 protected Place parseJsoup(Document doc) {
                     final Element result = doc.select("reversegeocode result").first();
-                    final String id = createPlaceId(result);
-                    final Place place = new Place(id);
-                    place.setAddress(result.text());
-                    place.setLatLon(coordinates);
-                    return place;
+                    return Place.create(createPlaceId(result), result.text(), coordinates);
                 }
             }));
         } catch (URISyntaxException e) {
@@ -139,11 +137,9 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     private static Place readPlace(Element element) {
-        final String id = createPlaceId(element);
-        final Place place = new Place(id);
-        place.setAddress(element.attr("display_name"));
-        place.setLatLon(LatLon.valueOf(element.attr("lat"), element.attr("lon")));
-        return place;
+        return Place.create(createPlaceId(element),
+                element.attr("display_name"),
+                LatLon.valueOf(element.attr("lat"), element.attr("lon")));
     }
 
     private static String createPlaceId(Element element) {

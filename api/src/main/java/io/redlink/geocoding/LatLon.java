@@ -3,8 +3,6 @@
  */
 package io.redlink.geocoding;
 
-import java.util.DoubleSummaryStatistics;
-
 /**
  * A position on earth, identified by latitude and longitude.
  */
