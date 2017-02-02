@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<searchresults timestamp="Thu, 02 Feb 17 08:43:01 +0000" attribution="Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright" querystring="135 pilkington avenue, birmingham" polygon="true" exclude_place_ids="83656556" more_url="http://nominatim.openstreetmap.org/search.php?format=xml&amp;exclude_place_ids=83656556&amp;polygon=1&amp;addressdetails=1&amp;q=135+pilkington+avenue%2C+birmingham">
+  <place place_id="83656556" osm_type="way" osm_id="90394480" place_rank="30" boundingbox="52.5487473,52.5488481,-1.8165129,-1.8163463" polygonpoints="[[&quot;-1.8165129&quot;,&quot;52.5487566&quot;],[&quot;-1.8164912&quot;,&quot;52.548824&quot;],[&quot;-1.8164684&quot;,&quot;52.5488213&quot;],[&quot;-1.8164598&quot;,&quot;52.5488481&quot;],[&quot;-1.8163463&quot;,&quot;52.5488346&quot;],[&quot;-1.8163716&quot;,&quot;52.5487561&quot;],[&quot;-1.8164289&quot;,&quot;52.5487629&quot;],[&quot;-1.8164339&quot;,&quot;52.5487473&quot;],[&quot;-1.8165129&quot;,&quot;52.5487566&quot;]]" lat="52.5487921" lon="-1.8164307339635" display_name="135, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK" class="building" type="yes" importance="0.301">
+    <house_number>135</house_number>
+    <road>Pilkington Avenue</road>
+    <suburb>Sutton Coldfield</suburb>
+    <hamlet>Maney</hamlet>
+    <city>Birmingham</city>
+    <state_district>West Midlands</state_district>
+    <state>England</state>
+    <postcode>B72 1LH</postcode>
+    <country>UK</country>
+    <country_code>gb</country_code>
+  </place>
+</searchresults>

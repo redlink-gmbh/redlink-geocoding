@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lookupresults timestamp="Thu, 02 Feb 17 08:43:51 +0000" attribution="Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright" querystring="N240109189" polygon="false">
+  <place place_id="570612" osm_type="node" osm_id="240109189" place_rank="15" lat="52.5170365" lon="13.3888599" display_name="Berlin, Deutschland" class="place" type="city" importance="0.822149797630868">
+    <city>Berlin</city>
+    <state>Berlin</state>
+    <country>Deutschland</country>
+    <country_code>de</country_code>
+  </place>
+</lookupresults>

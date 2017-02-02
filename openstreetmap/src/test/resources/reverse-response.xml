@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reversegeocode timestamp="Thu, 02 Feb 17 08:41:56 +0000" attribution="Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright" querystring="format=xml&amp;lat=52.5487429714954&amp;lon=-1.81602098644987&amp;zoom=18&amp;addressdetails=1">
+  <result place_id="83656538" osm_type="way" osm_id="90394420" lat="52.54877605" lon="-1.81627023283164" boundingbox="52.5487321,52.5488299,-1.8163513,-1.8161884">137, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK</result>
+  <addressparts>
+    <house_number>137</house_number>
+    <road>Pilkington Avenue</road>
+    <suburb>Sutton Coldfield</suburb>
+    <hamlet>Maney</hamlet>
+    <city>Birmingham</city>
+    <state_district>West Midlands</state_district>
+    <state>England</state>
+    <postcode>B72 1LH</postcode>
+    <country>UK</country>
+    <country_code>gb</country_code>
+  </addressparts>
+</reversegeocode>

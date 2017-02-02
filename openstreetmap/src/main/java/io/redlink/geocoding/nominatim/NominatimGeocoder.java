@@ -41,12 +41,12 @@ import static org.apache.commons.lang3.StringUtils.removeEnd;
 public class NominatimGeocoder implements Geocoder {
 
     public static final String PUBLIC_NOMINATIM_SERVER = "http://nominatim.openstreetmap.org/";
-    private static final String SERVICE_GEOCODE = "/search",
-            SERVICE_REVERSE = "/reverse",
-            SERVICE_LOOKUP = "/lookup";
+    protected static final String SERVICE_GEOCODE = "/search";
+    protected static final String SERVICE_REVERSE = "/reverse";
+    protected static final String SERVICE_LOOKUP = "/lookup";
 
-    private static final String PARAM_QUERY = "q",
-            PARAM_PLACEID = "osm_ids",
+    protected static final String PARAM_QUERY = "q",
+            PARAM_PLACE_ID = "osm_ids",
             PARAM_LAT = "lat",
             PARAM_LON = "lon",
             PARAM_LANG = "accept-language",
@@ -122,7 +122,7 @@ public class NominatimGeocoder implements Geocoder {
     public Place lookup(String placeId) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
             final URI uri = createUriBuilder(SERVICE_LOOKUP)
-                    .setParameter(PARAM_PLACEID, placeId)
+                    .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
             final HttpGet request = new HttpGet(uri);
             return client.execute(request, new JsoupResponseHandler<Place>(uri) {
@@ -148,7 +148,7 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     protected URIBuilder createUriBuilder(String service) throws URISyntaxException {
-        final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
+            final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
         if (StringUtils.isNotBlank(email)) {
             uriBuilder.setParameter(PARAM_EMAIL, email);
