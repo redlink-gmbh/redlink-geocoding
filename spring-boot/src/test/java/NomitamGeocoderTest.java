@@ -4,6 +4,7 @@
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.nominatim.NominatimGeocoder;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,6 @@ public class NomitamGeocoderTest {
 
     @Test
     public void testType() throws Exception {
-        Assert.assertTrue(geocoder instanceof NominatimGeocoder);
-
+        Assert.assertThat(geocoder, Matchers.instanceOf(NominatimGeocoder.class));
     }
 }

@@ -5,6 +5,7 @@ package io.redlink.geocoding.spring.boot.autoconfigure;
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.cache.CacheGeocoder;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +34,7 @@ public class CachedGeocodingAutoconfiguration {
 
     @Primary
     @Bean("cachedGeocoder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Conditional(CacheConfigurationCondition.class)
     public CacheGeocoder cacheGeocoder() {
         return CacheGeocoder.configure()

@@ -3,6 +3,7 @@
  */
 package io.redlink.geocoding.nominatim;
 
+import com.google.common.util.concurrent.RateLimiter;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
@@ -57,21 +58,35 @@ public class NominatimGeocoder implements Geocoder {
     private final Locale language;
     private final String email;
     private final Proxy proxy;
+    private final RateLimiter rateLimiter;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
     }
 
+    protected NominatimGeocoder(String baseUrl) {
+        this(baseUrl, null, null, null);
+    }
+
     protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy) {
+        this(baseUrl, language, email, proxy, -1);
+    }
+
+    protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps) {
         this.baseUrl = URI.create(baseUrl);
         this.language = language;
         this.email = email;
         this.proxy = proxy;
-    }
-
-    protected NominatimGeocoder(String baseUrl) {
-        this(baseUrl, null, null, null);
+        if (maxQps < 0 && StringUtils.equals(baseUrl, PUBLIC_NOMINATIM_SERVER)) {
+            // set default qps for public server
+            maxQps = 1;
+        }
+        if (maxQps > 0) {
+            rateLimiter = RateLimiter.create(maxQps);
+        } else {
+            rateLimiter = null;
+        }
     }
 
     public static NominatimBuilder configure() {
@@ -160,6 +175,7 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     protected CloseableHttpClient createHttpClient() {
+        if (rateLimiter != null) rateLimiter.acquire();
         final HttpClientBuilder builder = HttpClientBuilder.create();
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             log.trace("Direct Connection");

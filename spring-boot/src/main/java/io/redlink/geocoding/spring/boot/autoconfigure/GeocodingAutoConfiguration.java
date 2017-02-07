@@ -9,6 +9,7 @@ import io.redlink.geocoding.google.GoogleMapsGeocoder;
 import io.redlink.geocoding.nominatim.NominatimBuilder;
 import io.redlink.geocoding.nominatim.NominatimGeocoder;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,6 +35,7 @@ public class GeocodingAutoConfiguration {
     }
 
     @Bean(name = "googleGeocoder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean(Geocoder.class)
     @ConditionalOnClass(GoogleMapsGeocoder.class)
     @Conditional(GoogleMapsCondition.class)
@@ -60,6 +62,7 @@ public class GeocodingAutoConfiguration {
     }
 
     @Bean(name = "nominatimGeocoder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnClass(NominatimGeocoder.class)
     @ConditionalOnMissingBean(Geocoder.class)
     public Geocoder nominatim() {

@@ -4,6 +4,7 @@
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.cache.CacheGeocoder;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,7 @@ public class CachedGeocoderTest {
 
     @Test
     public void testType() throws Exception {
-        Assert.assertTrue(geocoder instanceof CacheGeocoder);
+        Assert.assertThat(geocoder, Matchers.instanceOf(CacheGeocoder.class));
     }
 
 }

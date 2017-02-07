@@ -3,6 +3,8 @@
  */
 package io.redlink.geocoding.nominatim;
 
+import io.redlink.geocoding.GeocoderBuilder;
+
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
@@ -11,20 +13,22 @@ import java.util.Locale;
 /**
  * A Builder for NominatimGeocoder
  */
-public class NominatimBuilder {
+public class NominatimBuilder implements GeocoderBuilder<NominatimGeocoder> {
 
     private String baseUrl;
     private String email = null;
     private Locale locale;
     private Proxy proxy = null;
+    private int maxQps = -1;
 
     public NominatimBuilder() {
         baseUrl = NominatimGeocoder.PUBLIC_NOMINATIM_SERVER;
         locale = Locale.getDefault(Locale.Category.DISPLAY);
     }
 
+    @Override
     public NominatimGeocoder create() {
-        return new NominatimGeocoder(baseUrl, locale, email, proxy);
+        return new NominatimGeocoder(baseUrl, locale, email, proxy, maxQps);
     }
 
     public NominatimBuilder setBaseUrl(URI baseUrl) {
@@ -42,6 +46,11 @@ public class NominatimBuilder {
 
     public NominatimBuilder setProxy(Proxy proxy) {
         this.proxy = proxy;
+        return this;
+    }
+
+    public NominatimBuilder setQueryRateLimit(int maxQps) {
+        this.maxQps = maxQps;
         return this;
     }
 

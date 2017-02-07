@@ -4,7 +4,7 @@
 package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
+import io.redlink.geocoding.GeocoderBuilder;
 
 import java.net.Proxy;
 import java.util.Locale;
@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * A Builder for the GoogleMapsGeocoder
  */
-public class GoogleMapsBuilder {
+public class GoogleMapsBuilder implements GeocoderBuilder<GoogleMapsGeocoder> {
 
     private final GeoApiContext context;
     private boolean apiKeySet, cryptoSecretSet;
@@ -24,18 +24,27 @@ public class GoogleMapsBuilder {
         lang = Locale.getDefault(Locale.Category.DISPLAY);
     }
 
+    @Override
     public GoogleMapsBuilder setLocale(String language) {
         lang = Locale.forLanguageTag(language);
         return this;
     }
 
+    @Override
     public GoogleMapsBuilder setLocale(Locale locale) {
         lang = locale;
         return this;
     }
 
+    @Override
     public GoogleMapsBuilder setProxy(Proxy proxy) {
         context.setProxy(proxy);
+        return this;
+    }
+
+    @Override
+    public GoogleMapsBuilder setQueryRateLimit(int maxQps) {
+        context.setQueryRateLimit(maxQps);
         return this;
     }
 
@@ -56,6 +65,7 @@ public class GoogleMapsBuilder {
         return this;
     }
 
+    @Override
     public GoogleMapsGeocoder create() {
         // Check state
         if (cryptoSecretSet || apiKeySet) {
