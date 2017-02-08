@@ -4,7 +4,7 @@
 package io.redlink.geocoding.spring.boot.autoconfigure;
 
 import io.redlink.geocoding.Geocoder;
-import io.redlink.geocoding.cache.CacheGeocoder;
+import io.redlink.geocoding.cache.CachingGeocoder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  */
 @Configuration
-@ConditionalOnClass(CacheGeocoder.class)
+@ConditionalOnClass(CachingGeocoder.class)
 @ConditionalOnBean(Geocoder.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
 @AutoConfigureAfter(GeocodingAutoConfiguration.class)
@@ -36,8 +36,8 @@ public class CachedGeocodingAutoconfiguration {
     @Bean("cachedGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Conditional(CacheConfigurationCondition.class)
-    public CacheGeocoder cacheGeocoder() {
-        return CacheGeocoder.configure()
+    public CachingGeocoder cacheGeocoder() {
+        return CachingGeocoder.configure()
                 .setCacheExpiry(properties.getCacheTimeout(), TimeUnit.SECONDS)
                 .setGeocoder(geocoder)
                 .create();

@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Alfonso Noriega
  */
-public class CacheGeocoder implements Geocoder {
+public class CachingGeocoder implements Geocoder {
 
-    private static final Logger log = LoggerFactory.getLogger(CacheGeocoder.class);
+    private static final Logger log = LoggerFactory.getLogger(CachingGeocoder.class);
     public static final int DEFAULT_CACHE_EXPIRE_TIME = 24;
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
 
@@ -30,11 +30,11 @@ public class CacheGeocoder implements Geocoder {
     private final LoadingCache<LatLon, List<Place>> reverseGeocodeCache;
     private final LoadingCache<String, Place> lookupCache;
 
-    protected CacheGeocoder(Geocoder geocoder) {
+    protected CachingGeocoder(Geocoder geocoder) {
       this(geocoder, DEFAULT_CACHE_EXPIRE_TIME, DEFAULT_TIME_UNIT);
     }
 
-    protected CacheGeocoder(Geocoder geocoder, long cacheExpireTime, TimeUnit timeUnit) {
+    protected CachingGeocoder(Geocoder geocoder, long cacheExpireTime, TimeUnit timeUnit) {
         Preconditions.checkArgument(geocoder != null, "Geocoder must not be null");
         Preconditions.checkNotNull(timeUnit);
 
@@ -45,7 +45,7 @@ public class CacheGeocoder implements Geocoder {
                 .build(new CacheLoader<String, List<Place>>() {
                     @Override
                     public List<Place> load(String s) throws Exception {
-                        return CacheGeocoder.this.geocoder.geocode(s);
+                        return CachingGeocoder.this.geocoder.geocode(s);
                     }
                 });
 
@@ -54,7 +54,7 @@ public class CacheGeocoder implements Geocoder {
                 .build(new CacheLoader<LatLon, List<Place>>() {
                     @Override
                     public List<Place> load(LatLon coordinates) throws Exception {
-                        return CacheGeocoder.this.geocoder.reverseGeocode(coordinates);
+                        return CachingGeocoder.this.geocoder.reverseGeocode(coordinates);
                     }
                 });
 
@@ -63,7 +63,7 @@ public class CacheGeocoder implements Geocoder {
                 .build(new CacheLoader<String,Place>() {
                     @Override
                     public Place load(String s) throws Exception {
-                        return CacheGeocoder.this.geocoder.lookup(s);
+                        return CachingGeocoder.this.geocoder.lookup(s);
                     }
                 });
     }
@@ -99,8 +99,8 @@ public class CacheGeocoder implements Geocoder {
         }
     }
 
-    public static io.redlink.geocoding.cache.CacheBuilder configure() {
-        return new io.redlink.geocoding.cache.CacheBuilder();
+    public static CachingGeocoderBuilder configure() {
+        return new CachingGeocoderBuilder();
     }
 
 }

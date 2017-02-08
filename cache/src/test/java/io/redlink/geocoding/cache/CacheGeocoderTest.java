@@ -39,11 +39,11 @@ public class CacheGeocoderTest {
     @Mock
     private LatLon mockLatLon;
 
-    private final CacheGeocoder geocoder;
+    private final CachingGeocoder geocoder;
 
     public CacheGeocoderTest() {
         MockitoAnnotations.initMocks(this);
-        geocoder = new CacheGeocoder(mockGeocoder);
+        geocoder = new CachingGeocoder(mockGeocoder);
     }
 
     @Before
@@ -100,7 +100,7 @@ public class CacheGeocoderTest {
         Mockito.when(delegate.lookup(Mockito.anyString()))
                 .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null))  ;
 
-        final CacheGeocoder cache = new CacheGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
 
@@ -129,7 +129,7 @@ public class CacheGeocoderTest {
         Mockito.when(delegate.geocode(placeId_1)).thenReturn(Collections.singletonList(place_1));
         Mockito.when(delegate.geocode(placeId_2)).thenReturn(Collections.singletonList(place_2));
 
-        final CacheGeocoder cache = new CacheGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
         assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
 
@@ -160,7 +160,7 @@ public class CacheGeocoderTest {
         Mockito.when(delegate.reverseGeocode(loc_1)).thenReturn(Collections.singletonList(place_1));
         Mockito.when(delegate.reverseGeocode(loc_2)).thenReturn(Collections.singletonList(place_2));
 
-        final CacheGeocoder cache = new CacheGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
         Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1);
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
