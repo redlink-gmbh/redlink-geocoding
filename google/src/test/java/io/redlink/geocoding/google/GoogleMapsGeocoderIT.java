@@ -21,7 +21,7 @@ import java.util.Locale;
  */
 public class GoogleMapsGeocoderIT {
 
-    private final String testPlaceId = "ChIJz0qJMpqadkcRZlGpEDe_vus";
+    private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
     private  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
     private final String testAddress = "jakob haringer strasse 3";
     private final Double testLat = 47.822837;
