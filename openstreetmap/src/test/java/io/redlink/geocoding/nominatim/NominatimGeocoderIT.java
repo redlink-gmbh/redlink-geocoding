@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 public class NominatimGeocoderIT {
 
     private final String testPlaceId = "W30514164";
-    private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
-    private final String coworkingFormattedAddress = "Coworkingspace Salzburg, 3, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, Salzburg (state), 5020, Austria";
+    private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
+    private final String coworkingFormattedAddress = "Coworkingspace Salzburg, 3, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
     private final String testAddress = "jakob haringer strasse 3";
     private final double testLat = 47.8227343;
     private final double testLon = 13.0408988;

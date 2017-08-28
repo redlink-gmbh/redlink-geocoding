@@ -24,7 +24,7 @@ public class GoogleMapsGeocoderIT {
     private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
     private  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
     private final String testAddress = "jakob haringer strasse 3";
-    private final Double testLat = 47.822837;
+    private final Double testLat = 47.82273;
     private final Double testLon = 13.040612;
 
     private final GeoApiContext context = new GeoApiContext();
@@ -64,8 +64,8 @@ public class GoogleMapsGeocoderIT {
         Assert.assertEquals(1, places.size());
         Assert.assertEquals(testPlaceId, places.get(0).getPlaceId());
         Assert.assertEquals(testFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(),1e-7);
-        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(),1e-7);
+        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(),1e-3);
+        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(),1e-3);
     }
 
     @Test
@@ -75,8 +75,8 @@ public class GoogleMapsGeocoderIT {
         Assert.assertEquals(8, places.size());
         Assert.assertEquals("ChIJ-eEoNJqadkcR3vHpTn3iM_A", places.get(0).getPlaceId());
         Assert.assertEquals("Techno-Z III, 5020 Salzburg, Austria", places.get(0).getAddress());
-        Assert.assertEquals(47.8226684, places.get(0).getLatLon().lat(),1e-7);
-        Assert.assertEquals(13.0409604, places.get(0).getLatLon().lon(),1e-7);
+        Assert.assertEquals(47.8226684, places.get(0).getLatLon().lat(),1e-3);
+        Assert.assertEquals(13.0409604, places.get(0).getLatLon().lon(),1e-3);
     }
 
     @Test
@@ -85,8 +85,8 @@ public class GoogleMapsGeocoderIT {
 
         Assert.assertEquals(testPlaceId, place.getPlaceId());
         Assert.assertEquals(testFormattedAddress, place.getAddress());
-        Assert.assertEquals(testLat, place.getLatLon().lat(),1e-7);
-        Assert.assertEquals(testLon, place.getLatLon().lon(),1e-7);
+        Assert.assertEquals(testLat, place.getLatLon().lat(),1e-3);
+        Assert.assertEquals(testLon, place.getLatLon().lon(),1e-3);
 
     }
 
