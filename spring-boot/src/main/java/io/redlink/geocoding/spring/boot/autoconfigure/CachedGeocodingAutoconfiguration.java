@@ -21,21 +21,20 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnClass(CachingGeocoder.class)
 @ConditionalOnBean(Geocoder.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
-@AutoConfigureAfter(GeocodingAutoConfiguration.class)
-public class CachedGeocodingAutoconfiguration {
+@Conditional(CachedGeocodingAutoconfiguration.CacheConfigurationCondition.class)
+@AutoConfigureAfter({GoogleGeocodingAutoConfiguration.class, NominatimGeocodingAutoConfiguration.class})
+public class CachedGeocodingAutoconfiguration extends GeocodingAutoConfiguration {
 
-    private final GeocodingProperties properties;
     private final Geocoder geocoder;
 
     public CachedGeocodingAutoconfiguration(GeocodingProperties properties, Geocoder geocoder) {
-        this.properties = properties;
+        super(properties);
         this.geocoder = geocoder;
     }
 
     @Primary
     @Bean("cachedGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Conditional(CacheConfigurationCondition.class)
     public CachingGeocoder cacheGeocoder() {
         return CachingGeocoder.configure()
                 .setCacheExpiry(properties.getCacheTimeout(), TimeUnit.SECONDS)
@@ -43,7 +42,7 @@ public class CachedGeocodingAutoconfiguration {
                 .create();
     }
 
-    private static class CacheConfigurationCondition implements ConfigurationCondition {
+    static class CacheConfigurationCondition implements ConfigurationCondition {
         @Override
         public ConfigurationPhase getConfigurationPhase() {
             return ConfigurationPhase.REGISTER_BEAN;
@@ -51,7 +50,7 @@ public class CachedGeocodingAutoconfiguration {
 
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            return context.getEnvironment().getProperty("geocoding.cache-timeout", Long.class, -1l) > 0;
+            return context.getEnvironment().getProperty("geocoding.cache-timeout", Long.class, -1L) > 0;
         }
     }
 }

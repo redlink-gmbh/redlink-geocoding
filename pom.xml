@@ -27,6 +27,7 @@
         <module>openstreetmap</module>
 
         <module>spring-boot</module>
+        <module>spring-boot-it</module>
     </modules>
 
     <scm>
@@ -42,6 +43,10 @@
             <url>https://repo.redlink.io/mvn/content/groups/private/</url>
         </repository>
     </repositories>
+
+    <properties>
+        <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>

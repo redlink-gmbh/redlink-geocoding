@@ -13,10 +13,6 @@
     <artifactId>geocoding-spring-boot-autoconfigure</artifactId>
     <name>Geocoding :: Spring-Boot Autoconfigure Binding</name>
 
-    <properties>
-        <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

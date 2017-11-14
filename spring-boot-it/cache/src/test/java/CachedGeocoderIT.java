@@ -3,7 +3,7 @@
  */
 
 import io.redlink.geocoding.Geocoder;
-import io.redlink.geocoding.nominatim.NominatimGeocoder;
+import io.redlink.geocoding.cache.CachingGeocoder;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,9 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
-@ActiveProfiles("nominatim")
 @EnableAutoConfiguration
-public class NomitamGeocoderTest {
+public class CachedGeocoderIT {
 
     @Autowired
     private Geocoder geocoder;
@@ -33,6 +31,7 @@ public class NomitamGeocoderTest {
 
     @Test
     public void testType() throws Exception {
-        Assert.assertThat(geocoder, Matchers.instanceOf(NominatimGeocoder.class));
+        Assert.assertThat(geocoder, Matchers.instanceOf(CachingGeocoder.class));
     }
+
 }
