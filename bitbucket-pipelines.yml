@@ -6,18 +6,18 @@ pipelines:
         caches:
           - maven
         script:
-          - mvn -V -B -s .ci/settings.xml clean install -DskipITs
+          - mvn -V -B -s .ci/settings.xml clean install
   branches:
     master:
       - step:
           caches:
             - maven
           script:
-            - mvn -V -B -s .ci/settings.xml clean install -DskipITs
+            - mvn -V -B -s .ci/settings.xml clean install -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
             - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
   tags:
     geocoding-v*:
       - step:
           script:
-            - mvn -V -B -s .ci/settings.xml clean install -DskipITs
+            - mvn -V -B -s .ci/settings.xml clean install -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
             - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
