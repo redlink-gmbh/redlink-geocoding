@@ -98,6 +98,13 @@ public class CachingGeocoder implements Geocoder {
             throw new IOException("Error loading lookupCache for '" + placeId + "'", e);
         }
     }
+    
+    
+
+    @Override
+    public String toString() {
+        return "CachingGeocoder [geocoder=" + geocoder + "]";
+    }
 
     public static CachingGeocoderBuilder configure() {
         return new CachingGeocoderBuilder();

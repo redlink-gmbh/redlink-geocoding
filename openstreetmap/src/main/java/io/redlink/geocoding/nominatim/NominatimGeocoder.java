@@ -190,6 +190,16 @@ public class NominatimGeocoder implements Geocoder {
         return builder.build();
     }
 
+    
+    
+    @Override
+    public String toString() {
+        return "NominatimGeocoder [baseUrl=" + baseUrl + ", language=" + language + ", email=" + email
+                + ", rateLimiter=" + rateLimiter + "]";
+    }
+
+
+
     protected static abstract class JsoupResponseHandler<T> implements ResponseHandler<T> {
         private final URI requestUri;
 

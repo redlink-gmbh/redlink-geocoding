@@ -25,10 +25,13 @@ public class GoogleMapsGeocoder implements Geocoder {
 
     private final GeoApiContext context;
     private final Locale language;
+    private final boolean apiKeySet, cryptoSecretSet;
 
-    protected GoogleMapsGeocoder(GeoApiContext context, Locale lang) {
+    protected GoogleMapsGeocoder(GeoApiContext context, Locale lang, boolean cryptoSecretSet, boolean apiKeySet) {
         this.context = context;
-        language = lang;
+        this.language = lang;
+        this.cryptoSecretSet = cryptoSecretSet;
+        this.apiKeySet = apiKeySet;
     }
 
     @Override
@@ -62,6 +65,13 @@ public class GoogleMapsGeocoder implements Geocoder {
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    
+    
+    @Override
+    public String toString() {
+        return "GoogleMapsGeocoder [auth:"+ (cryptoSecretSet ? " cryptoSecret" : "") + (apiKeySet ? " apiKey" : "") + ",language=" + language + "]";
     }
 
     public static GoogleMapsBuilder configure() {

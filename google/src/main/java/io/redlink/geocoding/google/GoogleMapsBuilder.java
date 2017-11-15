@@ -63,7 +63,7 @@ public class GoogleMapsBuilder {
     public GoogleMapsGeocoder create() {
         // Check state
         if (cryptoSecretSet || apiKeySet) {
-            return new GoogleMapsGeocoder(context, lang);
+            return new GoogleMapsGeocoder(context, lang, cryptoSecretSet, apiKeySet);
         } else {
             throw new IllegalStateException("Must provide either API key or Maps for Work credentials.");
         }

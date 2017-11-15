@@ -49,7 +49,7 @@ public class GoogleMapsGeocoderIT {
         context = new GeoApiContext();
         context.setApiKey(apiKey);
         context.setChannel(getClass().getSimpleName());
-        gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"));
+        gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"), false, true);
     }
 
     @Before
