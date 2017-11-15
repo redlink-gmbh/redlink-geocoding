@@ -22,13 +22,13 @@ import java.util.Locale;
 public class GoogleMapsGeocoderIT {
 
     private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
-    private  final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
+    private final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
     private final String testAddress = "jakob haringer strasse 3";
     private final Double testLat = 47.82273;
     private final Double testLon = 13.040612;
 
-    private final GeoApiContext context = new GeoApiContext();
-    private final GoogleMapsGeocoder gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"));
+    private final GeoApiContext context;
+    private final GoogleMapsGeocoder gmGeocoder;
 
     private LatLon latLon = new LatLon(testLat, testLon);
 
@@ -37,8 +37,10 @@ public class GoogleMapsGeocoderIT {
         Assume.assumeThat("Google API-Key missing, provide it with -Dgoogle.apiKey", apiKey, Matchers.not(Matchers.isEmptyOrNullString()));
         Assume.assumeThat("Invalid Google API-Key (expected to start with ''", apiKey, Matchers.startsWith("AIza"));
 
+        context = new GeoApiContext();
         context.setApiKey(apiKey);
         context.setChannel(getClass().getSimpleName());
+        gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"));
     }
 
     @Before
