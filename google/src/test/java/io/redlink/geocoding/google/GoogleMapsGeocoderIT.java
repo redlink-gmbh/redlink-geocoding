@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +22,13 @@ import java.util.Locale;
 /**
  */
 public class GoogleMapsGeocoderIT {
+
+    static {
+        LoggerFactory.getLogger(GoogleMapsGeocoderIT.class)
+                .debug("Enable jul-to-slf4j bridge");
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
     private final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
