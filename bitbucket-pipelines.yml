@@ -16,7 +16,7 @@ pipelines:
             - mvn -V -B -s .ci/settings.xml clean install -DskipITs
             - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
   tags:
-    geocoding-*:
+    geocoding-v*:
       - step:
           script:
             - mvn -V -B -s .ci/settings.xml clean install -DskipITs
