@@ -35,6 +35,6 @@ public class CachingGeocoderBuilder {
 
     public CachingGeocoder create() {
         Preconditions.checkState(geocoder != null, "geocoder must be set!");
-        return new CachingGeocoder(geocoder, cacheExpireTime,timeUnit);
+        return new CachingGeocoder(geocoder, cacheExpireTime, timeUnit);
     }
 }

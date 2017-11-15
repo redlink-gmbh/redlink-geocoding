@@ -30,6 +30,8 @@ public class CachingGeocoder implements Geocoder {
     private final LoadingCache<LatLon, List<Place>> reverseGeocodeCache;
     private final LoadingCache<String, Place> lookupCache;
 
+    private final String cacheExpiry;
+
     protected CachingGeocoder(Geocoder geocoder) {
       this(geocoder, DEFAULT_CACHE_EXPIRE_TIME, DEFAULT_TIME_UNIT);
     }
@@ -39,6 +41,7 @@ public class CachingGeocoder implements Geocoder {
         Preconditions.checkNotNull(timeUnit);
 
         this.geocoder = geocoder;
+        this.cacheExpiry = String.format("%d %s", cacheExpireTime, timeUnit);
 
         geocodeCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
@@ -103,7 +106,7 @@ public class CachingGeocoder implements Geocoder {
 
     @Override
     public String toString() {
-        return "CachingGeocoder [geocoder=" + geocoder + "]";
+        return "CachingGeocoder [geocoder=" + geocoder + ", expires=" + cacheExpiry + "]";
     }
 
     public static CachingGeocoderBuilder configure() {
