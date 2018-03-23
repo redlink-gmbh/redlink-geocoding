@@ -26,7 +26,7 @@ public class CachingGeocoder implements Geocoder {
 
     private final Geocoder geocoder;
 
-    private final LoadingCache<String, List<Place>> geocodeCache;
+    private final LoadingCache<LangString, List<Place>> geocodeCache;
     private final LoadingCache<LatLon, List<Place>> reverseGeocodeCache;
     private final LoadingCache<String, Place> lookupCache;
 
@@ -45,10 +45,10 @@ public class CachingGeocoder implements Geocoder {
 
         geocodeCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<String, List<Place>>() {
+                .build(new CacheLoader<LangString, List<Place>>() {
                     @Override
-                    public List<Place> load(String s) throws Exception {
-                        return CachingGeocoder.this.geocoder.geocode(s);
+                    public List<Place> load(LangString s) throws Exception {
+                        return CachingGeocoder.this.geocoder.geocode(s.value,s.lang);
                     }
                 });
 
@@ -72,9 +72,9 @@ public class CachingGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> geocode(String address) throws IOException {
+    public List<Place> geocode(String address, String lang) throws IOException {
         try {
-            return geocodeCache.get(address);
+            return geocodeCache.get(new LangString(address, lang));
         } catch (ExecutionException e) {
             log.error("Cache geo-coding service client unable to retrieve data with query '{}': {}", address, e.getMessage(), e);
             throw new IOException("Error loading geocodeCache for '" + address + "'", e);
@@ -113,4 +113,47 @@ public class CachingGeocoder implements Geocoder {
         return new CachingGeocoderBuilder();
     }
 
+    private static class LangString {
+        
+        final String lang;
+        final String value;
+        
+        public LangString(String value, String lang) {
+            this.lang = lang != null && lang.isEmpty() ? null : lang;
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((lang == null) ? 0 : lang.hashCode());
+            result = prime * result + ((value == null) ? 0 : value.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LangString other = (LangString) obj;
+            if (lang == null) {
+                if (other.lang != null)
+                    return false;
+            } else if (!lang.equals(other.lang))
+                return false;
+            if (value == null) {
+                if (other.value != null)
+                    return false;
+            } else if (!value.equals(other.value))
+                return false;
+            return true;
+        }
+    }
+    
+    
 }

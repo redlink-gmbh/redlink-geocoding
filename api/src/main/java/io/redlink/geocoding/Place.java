@@ -3,6 +3,10 @@
  */
 package io.redlink.geocoding;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,6 +15,9 @@ import java.util.Objects;
 public class Place {
     private String placeId;
     private String address;
+    private Collection<AddressComponent> components = new LinkedList<>();
+    private Map<String,Object> metadata = new HashMap<>();
+    
     private LatLon latLon;
 
     protected Place() {
@@ -47,6 +54,15 @@ public class Place {
     public LatLon getLatLon() {
         return latLon;
     }
+    
+    public Collection<AddressComponent> getComponents() {
+        return components;
+    }
+    
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+    
 
     @Override
     public boolean equals(Object o) {

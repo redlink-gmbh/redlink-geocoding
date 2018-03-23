@@ -10,7 +10,10 @@ import java.util.List;
  */
 public interface Geocoder {
 
-    List<Place> geocode(String address) throws IOException;
+    default List<Place> geocode(String address) throws IOException {
+        return geocode(address, null);
+    }
+    List<Place> geocode(String address, String language) throws IOException;
 
     List<Place> reverseGeocode(LatLon coordinates) throws IOException;
 

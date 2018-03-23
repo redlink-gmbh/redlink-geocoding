@@ -6,6 +6,8 @@ package io.redlink.geocoding.google;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.PlacesApi;
+
+import ch.qos.logback.core.util.StringCollectionUtil;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
@@ -35,10 +37,10 @@ public class GoogleMapsGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> geocode(String address) throws IOException {
+    public List<Place> geocode(String address, String lang) throws IOException {
         try {
             return google2Places(GeocodingApi.geocode(context, address)
-                    .language(language.toLanguageTag())
+                    .language(lang == null || lang.isEmpty() ? language.toLanguageTag() : lang)
                     .await());
         } catch (Exception e) {
             throw new IOException(e);

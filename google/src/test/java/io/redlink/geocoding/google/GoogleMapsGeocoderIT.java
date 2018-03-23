@@ -5,8 +5,12 @@ import com.google.maps.internal.ApiConfig;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import io.redlink.geocoding.AddressComponent;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
+import io.redlink.geocoding.AddressComponent.Type;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -16,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -77,6 +83,25 @@ public class GoogleMapsGeocoderIT {
         Assert.assertEquals(testFormattedAddress, places.get(0).getAddress());
         Assert.assertEquals(testLat, places.get(0).getLatLon().lat(),1e-3);
         Assert.assertEquals(testLon, places.get(0).getLatLon().lon(),1e-3);
+        
+        Collection<AddressComponent> addrComps = places.get(0).getComponents();
+
+        EnumMap<Type, String> expected = new EnumMap<>(Type.class);
+        expected.put(Type.streetNumber, "3");
+        expected.put(Type.street, "Jakob-Haringer-Straße");
+        expected.put(Type.city, "Salzburg");
+        expected.put(Type.postalCode, "5020");
+        expected.put(Type.state, "Salzburg");
+        expected.put(Type.countryCode, "at");
+        expected.put(Type.country, "Austria");
+        for(AddressComponent ac : addrComps){
+            String expValue = expected.remove(ac.getType());
+            Assert.assertNotNull("Unexpected " + ac, expValue);
+            Assert.assertEquals(expValue, ac.getValue());
+        }
+        Assert.assertTrue("Missing expected AddressComponents "+ expected,expected.isEmpty());
+        
+
     }
 
     @Test

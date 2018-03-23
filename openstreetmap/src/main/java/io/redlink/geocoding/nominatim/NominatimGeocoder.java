@@ -4,9 +4,13 @@
 package io.redlink.geocoding.nominatim;
 
 import com.google.common.util.concurrent.RateLimiter;
+
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
+import io.redlink.geocoding.AddressComponent;
+import io.redlink.geocoding.AddressComponent.Type;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -28,8 +32,10 @@ import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -52,7 +58,8 @@ public class NominatimGeocoder implements Geocoder {
             PARAM_LON = "lon",
             PARAM_LANG = "accept-language",
             PARAM_EMAIL = "email",
-            PARAM_FORMAT = "format";
+            PARAM_FORMAT = "format",
+            PARAM_PLACEDETAILS = "addressdetails";
 
     private final URI baseUrl;
     private final Locale language;
@@ -94,9 +101,10 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> geocode(String address) throws IOException {
+    public List<Place> geocode(String address, String lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_GEOCODE)
+            final URI uri = createUriBuilder(SERVICE_GEOCODE, lang)
+                    .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_QUERY, address)
                     .build();
             final HttpGet request = new HttpGet(uri);
@@ -137,6 +145,7 @@ public class NominatimGeocoder implements Geocoder {
     public Place lookup(String placeId) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
             final URI uri = createUriBuilder(SERVICE_LOOKUP)
+                    .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
             final HttpGet request = new HttpGet(uri);
@@ -152,9 +161,61 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     private static Place readPlace(Element element) {
-        return Place.create(createPlaceId(element),
+        Place place = Place.create(createPlaceId(element),
                 element.attr("display_name"),
                 LatLon.valueOf(element.attr("lat"), element.attr("lon")));
+        processPlaceDetails(place, element);
+        return place;
+    }
+    /**
+     * The element names of place details are different between different regions.
+     * While some names are very common especially the {@link Type#city} level uses
+     * different names in different regions and is in fact missing for some (e.g. Berlin)
+     * @param place
+     * @param element
+     */
+    private static void processPlaceDetails(Place place, Element element){
+        if(element == null){
+            return;
+        }
+        Map<Type,AddressComponent> components = new EnumMap<>(Type.class);
+        element.children().forEach(c -> {
+            String value = c.text();
+            switch (c.nodeName()) {
+            case "country_code":
+                components.put(Type.countryCode, new AddressComponent(Type.countryCode, value));
+                break;
+            case "country":
+                components.put(Type.country, new AddressComponent(Type.country, value));
+                break;
+            case "postcode":
+                components.put(Type.postalCode, new AddressComponent(Type.postalCode, value));
+                break;
+            case "state":
+                components.put(Type.state, new AddressComponent(Type.state, value));
+                break;
+            case "village":
+            case "city":
+            case "town":
+                components.put(Type.city, new AddressComponent(Type.city, value));
+                break;
+            case "city_district":
+            //case "suburb":
+            //case "neighbourhood":
+                components.put(Type.sublocality,new AddressComponent(Type.sublocality, value));
+                break;
+            case "road":
+                components.put(Type.street, new AddressComponent(Type.street, value));
+                break;
+            case "house_number":
+                components.put(Type.streetNumber, new AddressComponent(Type.streetNumber, value));
+                break;
+            default: //add unmapped fields to the metadata
+                place.getMetadata().put(c.nodeName(), value);
+            }
+        });
+        place.getComponents().addAll(components.values());
+        
     }
 
     private static String createPlaceId(Element element) {
@@ -163,12 +224,18 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     protected URIBuilder createUriBuilder(String service) throws URISyntaxException {
+        return createUriBuilder(service,null);
+    }
+    
+    protected URIBuilder createUriBuilder(String service, String lang) throws URISyntaxException {
             final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
         if (StringUtils.isNotBlank(email)) {
             uriBuilder.setParameter(PARAM_EMAIL, email);
         }
-        if (Objects.nonNull(language)) {
+        if(Objects.nonNull(lang) && !lang.isEmpty()){
+            uriBuilder.setParameter(PARAM_LANG, lang);
+        } else if (Objects.nonNull(language)) {
             uriBuilder.setParameter(PARAM_LANG, language.getLanguage());
         }
         return uriBuilder;

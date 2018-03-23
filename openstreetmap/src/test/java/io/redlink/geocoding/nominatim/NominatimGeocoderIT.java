@@ -1,5 +1,7 @@
 package io.redlink.geocoding.nominatim;
 
+import io.redlink.geocoding.AddressComponent;
+import io.redlink.geocoding.AddressComponent.Type;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import org.apache.http.HttpResponse;
@@ -14,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -66,6 +70,24 @@ public class NominatimGeocoderIT {
         Assert.assertEquals(coworkingFormattedAddress, places.get(0).getAddress());
         Assert.assertEquals(47.8229144, places.get(0).getLatLon().lat(), 0);
         Assert.assertEquals(13.0404834, places.get(0).getLatLon().lon(), 0);
+        Assert.assertNotNull(places.get(0).getComponents());
+        Collection<AddressComponent> addrComps = places.get(0).getComponents();
+
+        EnumMap<Type, String> expected = new EnumMap<>(Type.class);
+        expected.put(Type.streetNumber, "3");
+        expected.put(Type.street, "Jakob-Haringer-Straße");
+        expected.put(Type.city, "Salzburg");
+        expected.put(Type.postalCode, "5020");
+        expected.put(Type.state, "Salzburg");
+        expected.put(Type.countryCode, "at");
+        expected.put(Type.country, "Austria");
+        for(AddressComponent ac : addrComps){
+            String expValue = expected.remove(ac.getType());
+            Assert.assertNotNull("Unexpected " + ac, expValue);
+            Assert.assertEquals(expValue, ac.getValue());
+        }
+        Assert.assertTrue("Missing expected AddressComponents "+ expected,expected.isEmpty());
+        
     }
 
     @Test
