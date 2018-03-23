@@ -58,8 +58,8 @@ public class AddressComponent implements Comparable<AddressComponent>{
     
 
     public static enum Type {
-        street,
         streetNumber,
+        street,
         sublocality,
         city,
         postalCode,
