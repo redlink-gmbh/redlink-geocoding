@@ -145,17 +145,20 @@ Maven dependency:
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-google</artifactId>
     <version>${geocoding.version}</version>
+    <scope>runtime</scope>
 </dependency>
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-osm</artifactId>
     <version>${geocoding.version}</version>
+    <scope>runtime</scope>
 </dependency>
 <!-- optionally the chache -->
 <dependency>
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding-cache</artifactId>
     <version>${geocoding.version}</version>
+    <scope>runtime</scope>
 </dependency>
 ```
 
