@@ -6,7 +6,6 @@ package io.redlink.geocoding.google;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.PlacesApi;
-
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
@@ -15,9 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static io.redlink.geocoding.google.GoogleUtils.google2Places;
-import static io.redlink.geocoding.google.GoogleUtils.latLon2LatLng;
-import static io.redlink.geocoding.google.GoogleUtils.placeDetails2Place;
+import static io.redlink.geocoding.google.GoogleUtils.*;
 
 /**
  * Implementation of Geocoder backed by GoogleMaps.
@@ -36,10 +33,10 @@ public class GoogleMapsGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> geocode(String address, String lang) throws IOException {
+    public List<Place> geocode(String address, Locale lang) throws IOException {
         try {
             return google2Places(GeocodingApi.geocode(context, address)
-                    .language(lang == null || lang.isEmpty() ? language.toLanguageTag() : lang)
+                    .language((lang == null ? language : lang).toLanguageTag())
                     .await());
         } catch (Exception e) {
             throw new IOException(e);
@@ -47,10 +44,10 @@ public class GoogleMapsGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> reverseGeocode(LatLon coordinates) throws IOException {
+    public List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException {
         try {
             return google2Places(GeocodingApi.reverseGeocode(context, latLon2LatLng(coordinates))
-                    .language(language.toLanguageTag())
+                    .language((lang == null ? language : lang).toLanguageTag())
                     .await());
         } catch (Exception e) {
             throw new IOException(e);
@@ -58,10 +55,10 @@ public class GoogleMapsGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId) throws IOException {
+    public Place lookup(String placeId, Locale lang) throws IOException {
         try {
             return placeDetails2Place(PlacesApi.placeDetails(context, placeId)
-                    .language(language.toLanguageTag())
+                    .language((lang == null ? language : lang).toLanguageTag())
                     .await());
         } catch (Exception e) {
             throw new IOException(e);

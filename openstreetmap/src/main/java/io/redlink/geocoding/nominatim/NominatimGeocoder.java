@@ -4,13 +4,11 @@
 package io.redlink.geocoding.nominatim;
 
 import com.google.common.util.concurrent.RateLimiter;
-
+import io.redlink.geocoding.AddressComponent;
+import io.redlink.geocoding.AddressComponent.Type;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import io.redlink.geocoding.AddressComponent;
-import io.redlink.geocoding.AddressComponent.Type;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -31,12 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
@@ -101,7 +94,7 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> geocode(String address, String lang) throws IOException {
+    public List<Place> geocode(String address, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
             final URI uri = createUriBuilder(SERVICE_GEOCODE, lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
@@ -122,9 +115,9 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> reverseGeocode(LatLon coordinates) throws IOException {
+    public List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_REVERSE)
+            final URI uri = createUriBuilder(SERVICE_REVERSE, lang)
                     .setParameter(PARAM_LAT, String.valueOf(coordinates.lat()))
                     .setParameter(PARAM_LON, String.valueOf(coordinates.lon()))
                     .build();
@@ -142,9 +135,9 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId) throws IOException {
+    public Place lookup(String placeId, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_LOOKUP)
+            final URI uri = createUriBuilder(SERVICE_LOOKUP, lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
@@ -227,16 +220,16 @@ public class NominatimGeocoder implements Geocoder {
         return createUriBuilder(service,null);
     }
     
-    protected URIBuilder createUriBuilder(String service, String lang) throws URISyntaxException {
+    protected URIBuilder createUriBuilder(String service, Locale lang) throws URISyntaxException {
             final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
         if (StringUtils.isNotBlank(email)) {
             uriBuilder.setParameter(PARAM_EMAIL, email);
         }
-        if(Objects.nonNull(lang) && !lang.isEmpty()){
-            uriBuilder.setParameter(PARAM_LANG, lang);
+        if(Objects.nonNull(lang)){
+            uriBuilder.setParameter(PARAM_LANG, lang.toLanguageTag());
         } else if (Objects.nonNull(language)) {
-            uriBuilder.setParameter(PARAM_LANG, language.getLanguage());
+            uriBuilder.setParameter(PARAM_LANG, language.toLanguageTag());
         }
         return uriBuilder;
     }

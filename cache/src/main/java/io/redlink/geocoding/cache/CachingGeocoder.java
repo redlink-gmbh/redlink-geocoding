@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -27,8 +29,8 @@ public class CachingGeocoder implements Geocoder {
     private final Geocoder geocoder;
 
     private final LoadingCache<LangString, List<Place>> geocodeCache;
-    private final LoadingCache<LatLon, List<Place>> reverseGeocodeCache;
-    private final LoadingCache<String, Place> lookupCache;
+    private final LoadingCache<LangCoords, List<Place>> reverseGeocodeCache;
+    private final LoadingCache<LangString, Place> lookupCache;
 
     private final String cacheExpiry;
 
@@ -54,25 +56,25 @@ public class CachingGeocoder implements Geocoder {
 
         reverseGeocodeCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<LatLon, List<Place>>() {
+                .build(new CacheLoader<LangCoords, List<Place>>() {
                     @Override
-                    public List<Place> load(LatLon coordinates) throws Exception {
-                        return CachingGeocoder.this.geocoder.reverseGeocode(coordinates);
+                    public List<Place> load(LangCoords coordinates) throws Exception {
+                        return CachingGeocoder.this.geocoder.reverseGeocode(coordinates.coords, coordinates.lang);
                     }
                 });
 
         lookupCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<String,Place>() {
+                .build(new CacheLoader<LangString,Place>() {
                     @Override
-                    public Place load(String s) throws Exception {
-                        return CachingGeocoder.this.geocoder.lookup(s);
+                    public Place load(LangString s) throws Exception {
+                        return CachingGeocoder.this.geocoder.lookup(s.value, s.lang);
                     }
                 });
     }
 
     @Override
-    public List<Place> geocode(String address, String lang) throws IOException {
+    public List<Place> geocode(String address, Locale lang) throws IOException {
         try {
             return geocodeCache.get(new LangString(address, lang));
         } catch (ExecutionException e) {
@@ -82,9 +84,9 @@ public class CachingGeocoder implements Geocoder {
     }
 
     @Override
-    public List<Place> reverseGeocode(LatLon coordinates) throws IOException {
+    public List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException {
         try {
-            return reverseGeocodeCache.get(coordinates);
+            return reverseGeocodeCache.get(new LangCoords(coordinates, lang));
         } catch (ExecutionException e) {
             log.error("Cache reverse geo-coding service client unable to retrieve data with lat,long '{},{}': {}",
                     coordinates.lat(),coordinates.lon(), e.getMessage(), e);
@@ -93,9 +95,9 @@ public class CachingGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId) throws IOException {
+    public Place lookup(String placeId, Locale lang) throws IOException {
         try {
-            return lookupCache.get(placeId);
+            return lookupCache.get(new LangString(placeId, lang));
         } catch (ExecutionException e) {
             log.error("Cache lookup service client unable to retrieve data with palceId '{}': {}", placeId, e.getMessage(), e);
             throw new IOException("Error loading lookupCache for '" + placeId + "'", e);
@@ -115,43 +117,66 @@ public class CachingGeocoder implements Geocoder {
 
     private static class LangString {
         
-        final String lang;
+        final Locale lang;
         final String value;
         
-        public LangString(String value, String lang) {
-            this.lang = lang != null && lang.isEmpty() ? null : lang;
+        LangString(String value, Locale lang) {
+            this.lang = lang;
             this.value = value;
         }
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((lang == null) ? 0 : lang.hashCode());
-            result = prime * result + ((value == null) ? 0 : value.hashCode());
-            return result;
+            return Objects.hash(value, lang);
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            LangString other = (LangString) obj;
-            if (lang == null) {
-                if (other.lang != null)
-                    return false;
-            } else if (!lang.equals(other.lang))
-                return false;
-            if (value == null) {
-                if (other.value != null)
-                    return false;
-            } else if (!value.equals(other.value))
-                return false;
-            return true;
+            if (this == obj) return true;
+            if (!(obj instanceof LangString)) return false;
+            LangString that = (LangString) obj;
+            return Objects.equals(lang, that.lang) &&
+                    Objects.equals(value, that.value);
+        }
+
+        @Override
+        public String toString() {
+            return "LangString{" +
+                    "lang=" + lang +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+
+    private static class LangCoords {
+        final Locale lang;
+        final LatLon coords;
+
+        LangCoords(LatLon coords, Locale lang) {
+            this.lang = lang;
+            this.coords = coords;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof LangCoords)) return false;
+            LangCoords that = (LangCoords) o;
+            return Objects.equals(lang, that.lang) &&
+                    Objects.equals(coords, that.coords);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(lang, coords);
+        }
+
+        @Override
+        public String toString() {
+            return "LangCoords{" +
+                    "lang=" + lang +
+                    ", coords=" + coords +
+                    '}';
         }
     }
     

@@ -12,10 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +29,7 @@ public class CacheGeocoderTest {
     public static final String TEST_ID = "test ID";
     public static final double TEST_LAT = 45.0;
     public static final double TEST_LON = 12.0;
+
     @Mock
     private Geocoder mockGeocoder;
     @Mock
@@ -50,9 +48,14 @@ public class CacheGeocoderTest {
     public void init() throws IOException {
         //Mocking geocoder
         when(mockGeocoder.geocode(anyString())).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.geocode(anyString(),anyString())).thenReturn(Collections.singletonList(mockPlace));
+        when(mockGeocoder.geocode(anyString(), anyString())).thenReturn(Collections.singletonList(mockPlace));
+        when(mockGeocoder.geocode(anyString(), any(Locale.class))).thenReturn(Collections.singletonList(mockPlace));
         when(mockGeocoder.reverseGeocode(any(LatLon.class))).thenReturn(Collections.singletonList(mockPlace));
+        when(mockGeocoder.reverseGeocode(any(LatLon.class), anyString())).thenReturn(Collections.singletonList(mockPlace));
+        when(mockGeocoder.reverseGeocode(any(LatLon.class), any(Locale.class))).thenReturn(Collections.singletonList(mockPlace));
         when(mockGeocoder.lookup(anyString())).thenReturn(mockPlace);
+        when(mockGeocoder.lookup(anyString(), anyString())).thenReturn(mockPlace);
+        when(mockGeocoder.lookup(anyString(), any(Locale.class))).thenReturn(mockPlace);
 
         //Mocking place
         when(mockPlace.getPlaceId()).thenReturn(TEST_ID);
@@ -98,7 +101,7 @@ public class CacheGeocoderTest {
         final String placeId_1 = UUID.randomUUID().toString(), placeId_2 = UUID.randomUUID().toString();
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
-        Mockito.when(delegate.lookup(Mockito.anyString()))
+        Mockito.when(delegate.lookup(Mockito.anyString(), Mockito.any(Locale.class)))
                 .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null))  ;
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
@@ -115,8 +118,8 @@ public class CacheGeocoderTest {
 
         Mockito.verify(delegate, Mockito.never()).geocode(Mockito.anyString());
         Mockito.verify(delegate, Mockito.never()).reverseGeocode(Mockito.any(LatLon.class));
-        Mockito.verify(delegate, Mockito.times(2)).lookup(placeId_1);
-        Mockito.verify(delegate, Mockito.times(1)).lookup(placeId_2);
+        Mockito.verify(delegate, Mockito.times(2)).lookup(placeId_1, (Locale) null);
+        Mockito.verify(delegate, Mockito.times(1)).lookup(placeId_2, (Locale) null);
 
     }
 
@@ -128,25 +131,27 @@ public class CacheGeocoderTest {
                 place_2 = Place.create(placeId_2, "place2", new LatLon(2, 2));
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
-        Mockito.when(delegate.geocode(placeId_1, null)).thenReturn(Collections.singletonList(place_1));
-        Mockito.when(delegate.geocode(placeId_2, null)).thenReturn(Collections.singletonList(place_2));
+        Mockito.when(delegate.geocode(placeId_1, (Locale) null))
+                .thenReturn(Collections.singletonList(place_1));
+        Mockito.when(delegate.geocode(placeId_2, (Locale) null))
+                .thenReturn(Collections.singletonList(place_2));
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
-        assertThat(cache.geocode(placeId_1, null), Matchers.contains(place_1));
-        assertThat(cache.geocode(placeId_1, null), Matchers.contains(place_1));
+        assertThat(cache.geocode(placeId_1, (Locale) null), Matchers.contains(place_1));
+        assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-        assertThat(cache.geocode(placeId_1, null), Matchers.contains(place_1));
-        assertThat(cache.geocode(placeId_2, null), Matchers.contains(place_2));
+        assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
+        assertThat(cache.geocode(placeId_2), Matchers.contains(place_2));
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-        assertThat(cache.geocode(placeId_2, null), Matchers.contains(place_2));
-        assertThat(cache.geocode(placeId_1, null), Matchers.contains(place_1));
+        assertThat(cache.geocode(placeId_2), Matchers.contains(place_2));
+        assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
 
-        Mockito.verify(delegate, Mockito.times(2)).geocode(placeId_1, null);
-        Mockito.verify(delegate, Mockito.times(1)).geocode(placeId_2, null);
-        Mockito.verify(delegate, Mockito.never()).reverseGeocode(Mockito.any(LatLon.class));
-        Mockito.verify(delegate, Mockito.never()).lookup(Mockito.anyString());
+        Mockito.verify(delegate, Mockito.times(2)).geocode(placeId_1, (Locale) null);
+        Mockito.verify(delegate, Mockito.times(1)).geocode(placeId_2, (Locale) null);
+        Mockito.verify(delegate, Mockito.never()).reverseGeocode(Mockito.any(LatLon.class), anyString());
+        Mockito.verify(delegate, Mockito.never()).lookup(Mockito.anyString(), anyString());
     }
 
     @Test
@@ -159,28 +164,28 @@ public class CacheGeocoderTest {
                 place_2 = Place.create(placeId_2, null, loc_2);
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
-        Mockito.when(delegate.reverseGeocode(loc_1)).thenReturn(Collections.singletonList(place_1));
-        Mockito.when(delegate.reverseGeocode(loc_2)).thenReturn(Collections.singletonList(place_2));
+        Mockito.when(delegate.reverseGeocode(loc_1, (Locale) null)).thenReturn(Collections.singletonList(place_1));
+        Mockito.when(delegate.reverseGeocode(loc_2, (Locale) null)).thenReturn(Collections.singletonList(place_2));
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
-        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1);
+        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1, (Locale) null);
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
-        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1);
+        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1, (Locale) null);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
-        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1);
+        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1, (Locale) null);
         assertThat(cache.reverseGeocode(loc_2), Matchers.contains(place_2));
-        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2);
+        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2, (Locale) null);
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         assertThat(cache.reverseGeocode(loc_2), Matchers.contains(place_2));
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
 
         Mockito.verify(delegate, Mockito.never()).geocode(Mockito.anyString());
-        Mockito.verify(delegate, Mockito.times(2)).reverseGeocode(loc_1);
-        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2);
+        Mockito.verify(delegate, Mockito.times(2)).reverseGeocode(loc_1, (Locale) null);
+        Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2, (Locale) null);
         Mockito.verify(delegate, Mockito.never()).lookup(Mockito.anyString());
     }
 
