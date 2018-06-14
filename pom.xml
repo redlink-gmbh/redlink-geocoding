@@ -2,13 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.redlink</groupId>
-        <artifactId>private-parent</artifactId>
-        <version>3</version>
-        <relativePath />
-    </parent>
-
     <groupId>io.redlink.geocoding</groupId>
     <artifactId>geocoding</artifactId>
     <version>0.3.0-SNAPSHOT</version>
@@ -16,6 +9,31 @@
 
     <name>Geocoding</name>
     <description>Geocoding Library</description>
+    <url>https://bitbucket.org/redlinkgmbh/geocoding</url>
+    <inceptionYear>2016</inceptionYear>
+
+    <organization>
+        <name>Redlink GmbH</name>
+        <url>https://redlink.co</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Jakob Frank</name>
+            <email>jakob.frank@redlink.co</email>
+            <organization>Redlink GmbH</organization>
+        </developer>
+        <developer>
+            <name>Alfonso Noriega</name>
+            <email>alfonso.noriega@redlink.co</email>
+            <organization>Redlink GmbH</organization>
+        </developer>
+        <developer>
+            <name>Rupert Westenthaler</name>
+            <email>rupert.westenthaler@redlink.co</email>
+            <organization>Redlink GmbH</organization>
+        </developer>
+    </developers>
 
     <modules>
         <module>api</module>
@@ -28,6 +46,19 @@
         <module>spring-boot-it</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>redlink.releases</id>
+            <name>Redlink Releases</name>
+            <url>https://repo.redlink.io/mvn/content/repositories/redlink/</url>
+        </repository>
+        <snapshotRepository>
+            <id>redlink.snapshots</id>
+            <name>Redlink Snapshots</name>
+            <url>https://repo.redlink.io/mvn/content/repositories/redlink-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <scm>
         <connection>scm:git:https://bitbucket.org/redlinkgmbh/geocoding.git</connection>
         <developerConnection>scm:git:git@bitbucket.org:redlinkgmbh/geocoding.git</developerConnection>
@@ -35,15 +66,22 @@
         <tag>HEAD</tag>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>redlink.nexus</id>
-            <url>https://repo.redlink.io/mvn/content/groups/private/</url>
-        </repository>
-    </repositories>
-
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+
         <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <gmaps.version>0.1.17</gmaps.version>
+        <guava.version>23.0</guava.version>
+        <jsoup.version>1.10.3</jsoup.version>
+        <httpclient.version>4.5.5</httpclient.version>
+        <commons-lang3.version>3.6</commons-lang3.version>
+        <logback.version>1.2.3</logback.version>
+        <junit.version>4.12</junit.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <mockito.version>1.10.19</mockito.version>
     </properties>
 
     <dependencyManagement>
@@ -51,7 +89,72 @@
             <dependency>
                 <groupId>com.google.maps</groupId>
                 <artifactId>google-maps-services</artifactId>
-                <version>0.1.17</version>
+                <version>${gmaps.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -59,7 +162,16 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <optimize>true</optimize>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -85,35 +197,140 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <pushChanges>false</pushChanges>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>${project.artifactId}-v@{project.version}</tagNameFormat>
-                    <localCheckout>true</localCheckout>
-                    <connectionUrl>scm:git:file://${project.basedir}/</connectionUrl>
-                    <indentSize>4</indentSize>
-                </configuration>
-            </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <configuration>
+                        <rules>
+                            <dependencyConvergence />
+                        </rules>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.20.1</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <pushChanges>false</pushChanges>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <tagNameFormat>${project.artifactId}-@{project.version}</tagNameFormat>
+                        <localCheckout>true</localCheckout>
+                        <connectionUrl>scm:git:file://${project.basedir}/</connectionUrl>
+                        <indentSize>4</indentSize>
+
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <releaseProfiles>release</releaseProfiles>
+                        <goals>deploy</goals>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.8</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>aggregate</id>
+                                <goals>
+                                    <goal>aggregate-jar</goal>
+                                </goals>
+                                <phase>verify</phase>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <groups>
+                                        <group>
+                                            <title>Geocoding</title>
+                                            <packages>io.redlink.geocoding:io.redlink.geocoding.cache:io.redlink.geocoding.google:io.redlink.geocoding.nominatim</packages>
+                                        </group>
+                                        <group>
+                                            <title>Spring Boot Autoconfiguration</title>
+                                            <packages>io.redlink.geocoding.spring.*</packages>
+                                        </group>
+                                    </groups>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
