@@ -2,15 +2,13 @@ package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.internal.ApiConfig;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import io.redlink.geocoding.AddressComponent;
+import io.redlink.geocoding.AddressComponent.Type;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import io.redlink.geocoding.AddressComponent.Type;
-
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -52,9 +50,10 @@ public class GoogleMapsGeocoderIT {
         Assume.assumeThat("Google API-Key missing, provide it with -Dgoogle.apiKey", apiKey, Matchers.not(Matchers.isEmptyOrNullString()));
         Assume.assumeThat("Invalid Google API-Key (expected to start with ''", apiKey, Matchers.startsWith("AIza"));
 
-        context = new GeoApiContext();
-        context.setApiKey(apiKey);
-        context.setChannel(getClass().getSimpleName());
+        GeoApiContext.Builder contextBuilder = new GeoApiContext.Builder();
+        contextBuilder.apiKey(apiKey);
+        contextBuilder.channel(getClass().getSimpleName());
+        context = contextBuilder.build();
         gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"), false, true);
     }
 

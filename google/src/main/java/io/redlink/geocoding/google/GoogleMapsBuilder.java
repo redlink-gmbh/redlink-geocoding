@@ -14,12 +14,12 @@ import java.util.Objects;
  */
 public class GoogleMapsBuilder {
 
-    private final GeoApiContext context;
+    private final GeoApiContext.Builder context;
     private boolean apiKeySet, cryptoSecretSet;
     private Locale lang;
 
     public GoogleMapsBuilder() {
-        context = new GeoApiContext();
+        context = new GeoApiContext.Builder();
         lang = Locale.getDefault(Locale.Category.DISPLAY);
     }
 
@@ -34,28 +34,28 @@ public class GoogleMapsBuilder {
     }
 
     public GoogleMapsBuilder setProxy(Proxy proxy) {
-        context.setProxy(proxy);
+        context.proxy(proxy);
         return this;
     }
 
     public GoogleMapsBuilder setQueryRateLimit(int maxQps) {
-        context.setQueryRateLimit(maxQps);
+        context.queryRateLimit(maxQps);
         return this;
     }
 
     public GoogleMapsBuilder setApiKey(String apiKey) {
-        context.setApiKey(apiKey);
+        context.apiKey(apiKey);
         apiKeySet = Objects.nonNull(apiKey);
         return this;
     }
 
     public GoogleMapsBuilder setChannel(String channel) {
-        context.setChannel(channel);
+        context.channel(channel);
         return this;
     }
 
     public GoogleMapsBuilder setCredentials(String clientId, String cryptoSecret) {
-        context.setEnterpriseCredentials(clientId, cryptoSecret);
+        context.enterpriseCredentials(clientId, cryptoSecret);
         cryptoSecretSet = Objects.nonNull(cryptoSecret);
         return this;
     }
@@ -63,7 +63,7 @@ public class GoogleMapsBuilder {
     public GoogleMapsGeocoder create() {
         // Check state
         if (cryptoSecretSet || apiKeySet) {
-            return new GoogleMapsGeocoder(context, lang, cryptoSecretSet, apiKeySet);
+            return new GoogleMapsGeocoder(context.build(), lang, cryptoSecretSet, apiKeySet);
         } else {
             throw new IllegalStateException("Must provide either API key or Maps for Work credentials.");
         }
