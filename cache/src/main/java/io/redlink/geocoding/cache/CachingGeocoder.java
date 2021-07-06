@@ -7,22 +7,22 @@ import com.google.common.cache.LoadingCache;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Alfonso Noriega
  */
 public class CachingGeocoder implements Geocoder {
 
-    private static final Logger log = LoggerFactory.getLogger(CachingGeocoder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CachingGeocoder.class);
+
     public static final int DEFAULT_CACHE_EXPIRE_TIME = 24;
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.HOURS;
 
@@ -78,7 +78,7 @@ public class CachingGeocoder implements Geocoder {
         try {
             return geocodeCache.get(new LangString(address, lang));
         } catch (ExecutionException e) {
-            log.error("Cache geo-coding service client unable to retrieve data with query '{}': {}", address, e.getMessage(), e);
+            LOG.error("Cache geo-coding service client unable to retrieve data with query '{}': {}", address, e.getMessage(), e);
             throw new IOException("Error loading geocodeCache for '" + address + "'", e);
         }
     }
@@ -88,7 +88,7 @@ public class CachingGeocoder implements Geocoder {
         try {
             return reverseGeocodeCache.get(new LangCoords(coordinates, lang));
         } catch (ExecutionException e) {
-            log.error("Cache reverse geo-coding service client unable to retrieve data with lat,long '{},{}': {}",
+            LOG.error("Cache reverse geo-coding service client unable to retrieve data with lat,long '{},{}': {}",
                     coordinates.lat(),coordinates.lon(), e.getMessage(), e);
             throw new IOException("Error loading reverseGeocodeCache for '" + coordinates + "'", e);
         }
@@ -99,7 +99,7 @@ public class CachingGeocoder implements Geocoder {
         try {
             return lookupCache.get(new LangString(placeId, lang));
         } catch (ExecutionException e) {
-            log.error("Cache lookup service client unable to retrieve data with palceId '{}': {}", placeId, e.getMessage(), e);
+            LOG.error("Cache lookup service client unable to retrieve data with palceId '{}': {}", placeId, e.getMessage(), e);
             throw new IOException("Error loading lookupCache for '" + placeId + "'", e);
         }
     }

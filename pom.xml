@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.redlink.geocoding</groupId>
@@ -14,23 +15,23 @@
 
     <organization>
         <name>Redlink GmbH</name>
-        <url>https://redlink.co</url>
+        <url>https://redlink.at</url>
     </organization>
 
     <developers>
         <developer>
             <name>Jakob Frank</name>
-            <email>jakob.frank@redlink.co</email>
+            <email>jakob.frank@redlink.at</email>
             <organization>Redlink GmbH</organization>
         </developer>
         <developer>
             <name>Alfonso Noriega</name>
-            <email>alfonso.noriega@redlink.co</email>
+            <email>alfonso.noriega@redlink.at</email>
             <organization>Redlink GmbH</organization>
         </developer>
         <developer>
             <name>Rupert Westenthaler</name>
-            <email>rupert.westenthaler@redlink.co</email>
+            <email>rupert.westenthaler@redlink.at</email>
             <organization>Redlink GmbH</organization>
         </developer>
     </developers>
@@ -205,13 +206,19 @@
                     <version>3.0.0-M1</version>
                     <configuration>
                         <rules>
+                            <requireMavenVersion>
+                                <version>3.3.9</version>
+                            </requireMavenVersion>
+                            <requireJavaVersion>
+                                <version>${java.version}</version>
+                            </requireJavaVersion>
                             <dependencyConvergence />
                         </rules>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>3.0.0-M5</version>
                     <executions>
                         <execution>
                             <id>integration-test</id>
@@ -224,36 +231,39 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>3.0.0-M5</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>3.0.0-M1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
+                    <version>3.0.0-M1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.0.0-M1</version>
                     <configuration>
                         <pushChanges>false</pushChanges>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -305,7 +315,9 @@
                                     <groups>
                                         <group>
                                             <title>Geocoding</title>
-                                            <packages>io.redlink.geocoding:io.redlink.geocoding.cache:io.redlink.geocoding.google:io.redlink.geocoding.nominatim</packages>
+                                            <packages>
+                                                io.redlink.geocoding:io.redlink.geocoding.cache:io.redlink.geocoding.google:io.redlink.geocoding.nominatim
+                                            </packages>
                                         </group>
                                         <group>
                                             <title>Spring Boot Autoconfiguration</title>

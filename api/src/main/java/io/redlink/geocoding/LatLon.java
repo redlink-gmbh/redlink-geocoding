@@ -7,7 +7,8 @@ package io.redlink.geocoding;
  * A position on earth, identified by latitude and longitude.
  */
 public class LatLon {
-    private double lat, lon;
+    private final double lat;
+    private final double lon;
 
     public LatLon(double lat, double lon) {
         this.lat = lat;
@@ -41,7 +42,7 @@ public class LatLon {
     }
 
     public int hashCode() {
-        return (Double.toString(lat) + Double.toString(lon)).hashCode();
+        return (Double.toString(lat) + lon).hashCode();
     }
 
     @Override
