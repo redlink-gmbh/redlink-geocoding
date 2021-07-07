@@ -76,6 +76,7 @@ public class CachingGeocoder implements Geocoder {
     @Override
     public List<Place> geocode(String address, Locale lang) throws IOException {
         try {
+            LOG.debug("Geocoding '{}'", address);
             return geocodeCache.get(new LangString(address, lang));
         } catch (ExecutionException e) {
             LOG.error("Cache geo-coding service client unable to retrieve data with query '{}': {}", address, e.getMessage(), e);
@@ -86,6 +87,7 @@ public class CachingGeocoder implements Geocoder {
     @Override
     public List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException {
         try {
+            LOG.debug("Reverse-Geocoding '{}'", coordinates);
             return reverseGeocodeCache.get(new LangCoords(coordinates, lang));
         } catch (ExecutionException e) {
             LOG.error("Cache reverse geo-coding service client unable to retrieve data with lat,long '{},{}': {}",
@@ -97,9 +99,10 @@ public class CachingGeocoder implements Geocoder {
     @Override
     public Place lookup(String placeId, Locale lang) throws IOException {
         try {
+            LOG.debug("Lookup of '{}'", placeId);
             return lookupCache.get(new LangString(placeId, lang));
         } catch (ExecutionException e) {
-            LOG.error("Cache lookup service client unable to retrieve data with palceId '{}': {}", placeId, e.getMessage(), e);
+            LOG.error("Cache lookup service client unable to retrieve data with placeId '{}': {}", placeId, e.getMessage(), e);
             throw new IOException("Error loading lookupCache for '" + placeId + "'", e);
         }
     }
