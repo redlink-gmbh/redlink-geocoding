@@ -1,23 +1,44 @@
-image: maven:3.3-jdk-8
+image: maven:3-openjdk-11
+clone:
+  depth: full  # SonarCloud scanner needs the full history to assign issues properly
+
+definitions:
+  steps:
+    - step: &build
+        caches:
+          - maven
+          - sonar
+        script:
+          - >
+            mvn -V -B -s .ci/settings.xml
+            clean
+            org.jacoco:jacoco-maven-plugin:prepare-agent
+            verify
+            org.jacoco:jacoco-maven-plugin:report
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+    - step: &build-test-deploy
+        caches:
+          - maven
+          - sonar
+        script:
+          - >
+            mvn -V -B -s .ci/settings.xml
+            clean
+            org.jacoco:jacoco-maven-plugin:prepare-agent
+            verify
+            org.jacoco:jacoco-maven-plugin:report
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+            -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
+          - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
 
 pipelines:
   default:
-    - step:
-        caches:
-          - maven
-        script:
-          - mvn -V -B -s .ci/settings.xml clean install
+    - step: *build
   branches:
     master:
-      - step:
-          caches:
-            - maven
-          script:
-            - mvn -V -B -s .ci/settings.xml clean install -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
-            - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+      - step: *build-test-deploy
   tags:
     geocoding-v*:
-      - step:
-          script:
-            - mvn -V -B -s .ci/settings.xml clean install -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
-            - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+      - step: *build-test-deploy
