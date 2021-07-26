@@ -12,17 +12,12 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
 
 /**
  *
@@ -34,41 +29,13 @@ public class CacheGeocoderTest {
     public static final double TEST_LAT = 45.0;
     public static final double TEST_LON = 12.0;
 
-    @Mock
-    private Geocoder mockGeocoder;
-    @Mock
-    private Place mockPlace;
-    @Mock
-    private LatLon mockLatLon;
+    private final LatLon mockLatLon = LatLon.valueOf(String.format("%f,%f", TEST_LAT, TEST_LON));
+    private final Place mockPlace = Place.create(TEST_ID, TEST_ADDRESS, mockLatLon);
 
     private final CachingGeocoder geocoder;
 
     public CacheGeocoderTest() {
-        MockitoAnnotations.initMocks(this);
-        geocoder = new CachingGeocoder(mockGeocoder);
-    }
-
-    @Before
-    public void init() throws IOException {
-        //Mocking geocoder
-        when(mockGeocoder.geocode(anyString())).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.geocode(anyString(), anyString())).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.geocode(anyString(), any(Locale.class))).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.reverseGeocode(any(LatLon.class))).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.reverseGeocode(any(LatLon.class), anyString())).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.reverseGeocode(any(LatLon.class), any(Locale.class))).thenReturn(Collections.singletonList(mockPlace));
-        when(mockGeocoder.lookup(anyString())).thenReturn(mockPlace);
-        when(mockGeocoder.lookup(anyString(), anyString())).thenReturn(mockPlace);
-        when(mockGeocoder.lookup(anyString(), any(Locale.class))).thenReturn(mockPlace);
-
-        //Mocking place
-        when(mockPlace.getPlaceId()).thenReturn(TEST_ID);
-        when(mockPlace.getAddress()).thenReturn(TEST_ADDRESS);
-        when(mockPlace.getLatLon()).thenReturn(mockLatLon);
-
-        //Mocking latlon
-        when(mockLatLon.lat()).thenReturn(TEST_LAT);
-        when(mockLatLon.lon()).thenReturn(TEST_LON);
+        geocoder = new CachingGeocoder(new MockGeocoder(mockPlace));
     }
 
     @Test
@@ -105,8 +72,10 @@ public class CacheGeocoderTest {
         final String placeId_1 = UUID.randomUUID().toString(), placeId_2 = UUID.randomUUID().toString();
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
-        Mockito.when(delegate.lookup(Mockito.anyString(), Mockito.any(Locale.class)))
-                .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null));
+        Mockito.when(delegate.lookup(placeId_1, (Locale) null))
+                .thenReturn(Place.create(placeId_1, null, null));
+        Mockito.when(delegate.lookup(placeId_2, (Locale) null))
+                .thenReturn(Place.create(placeId_2, null, null));
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
@@ -191,6 +160,31 @@ public class CacheGeocoderTest {
         Mockito.verify(delegate, Mockito.times(2)).reverseGeocode(loc_1, (Locale) null);
         Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2, (Locale) null);
         Mockito.verify(delegate, Mockito.never()).lookup(Mockito.anyString());
+    }
+
+
+    private static class MockGeocoder implements Geocoder {
+
+        private final Place mockPlace;
+
+        private MockGeocoder(Place mockPlace) {
+            this.mockPlace = mockPlace;
+        }
+
+        @Override
+        public List<Place> geocode(String address, Locale lang) {
+            return Collections.singletonList(mockPlace);
+        }
+
+        @Override
+        public List<Place> reverseGeocode(LatLon coordinates, Locale lang) {
+            return Collections.singletonList(mockPlace);
+        }
+
+        @Override
+        public Place lookup(String placeId, Locale lang) {
+            return mockPlace;
+        }
     }
 
 }

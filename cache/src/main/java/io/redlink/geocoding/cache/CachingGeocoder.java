@@ -144,8 +144,8 @@ public class CachingGeocoder implements Geocoder {
         @Override
         public String toString() {
             return "LangString{" +
-                    "lang=" + lang +
-                    ", value='" + value + '\'' +
+                    "value='" + value + '\'' +
+                    ", lang=" + lang +
                     '}';
         }
     }
@@ -176,8 +176,8 @@ public class CachingGeocoder implements Geocoder {
         @Override
         public String toString() {
             return "LangCoords{" +
-                    "lang=" + lang +
-                    ", coords=" + coords +
+                    "coords=" + coords +
+                    ", lang=" + lang +
                     '}';
         }
     }
