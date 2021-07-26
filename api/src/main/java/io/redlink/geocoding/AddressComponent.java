@@ -57,7 +57,8 @@ public class AddressComponent implements Comparable<AddressComponent>{
     }
     
 
-    public static enum Type {
+    @SuppressWarnings("java:S115")
+    public enum Type {
         streetNumber,
         street,
         sublocality,

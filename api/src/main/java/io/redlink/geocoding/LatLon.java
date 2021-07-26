@@ -32,13 +32,12 @@ public class LatLon {
         return valueOf(s[0], s[1]);
     }
 
-    public boolean equals(Object obj) {
-        if (LatLon.class.isAssignableFrom(obj.getClass())) {
-            LatLon latLonObj = (LatLon) obj;
-            return (this.lat == latLonObj.lat() && this.lon == latLonObj.lon());
-        } else {
-            return false;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LatLon latLon = (LatLon) o;
+        return Double.compare(latLon.lat, lat) == 0 && Double.compare(latLon.lon, lon) == 0;
     }
 
     public int hashCode() {

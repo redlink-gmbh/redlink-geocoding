@@ -11,7 +11,7 @@ public abstract class GeocodingAutoConfiguration {
 
     protected final GeocodingProperties properties;
 
-    public GeocodingAutoConfiguration(GeocodingProperties properties) {
+    protected GeocodingAutoConfiguration(GeocodingProperties properties) {
         this.properties = properties;
     }
 

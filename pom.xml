@@ -47,6 +47,13 @@
         <module>spring-boot-it</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://bitbucket.org/redlinkgmbh/geocoding.git</connection>
+        <developerConnection>scm:git:git@bitbucket.org:redlinkgmbh/geocoding.git</developerConnection>
+        <url>https://bitbucket.org/redlinkgmbh/geocoding/src</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <distributionManagement>
         <repository>
             <id>redlink.releases</id>
@@ -59,13 +66,6 @@
             <url>https://repo.redlink.io/mvn/content/repositories/redlink-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <scm>
-        <connection>scm:git:https://bitbucket.org/redlinkgmbh/geocoding.git</connection>
-        <developerConnection>scm:git:git@bitbucket.org:redlinkgmbh/geocoding.git</developerConnection>
-        <url>https://bitbucket.org/redlinkgmbh/geocoding/src</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

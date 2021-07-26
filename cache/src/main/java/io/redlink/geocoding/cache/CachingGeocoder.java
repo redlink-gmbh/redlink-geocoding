@@ -35,7 +35,7 @@ public class CachingGeocoder implements Geocoder {
     private final String cacheExpiry;
 
     protected CachingGeocoder(Geocoder geocoder) {
-      this(geocoder, DEFAULT_CACHE_EXPIRE_TIME, DEFAULT_TIME_UNIT);
+        this(geocoder, DEFAULT_CACHE_EXPIRE_TIME, DEFAULT_TIME_UNIT);
     }
 
     protected CachingGeocoder(Geocoder geocoder, long cacheExpireTime, TimeUnit timeUnit) {
@@ -50,7 +50,7 @@ public class CachingGeocoder implements Geocoder {
                 .build(new CacheLoader<LangString, List<Place>>() {
                     @Override
                     public List<Place> load(LangString s) throws Exception {
-                        return CachingGeocoder.this.geocoder.geocode(s.value,s.lang);
+                        return CachingGeocoder.this.geocoder.geocode(s.value, s.lang);
                     }
                 });
 
@@ -65,7 +65,7 @@ public class CachingGeocoder implements Geocoder {
 
         lookupCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<LangString,Place>() {
+                .build(new CacheLoader<LangString, Place>() {
                     @Override
                     public Place load(LangString s) throws Exception {
                         return CachingGeocoder.this.geocoder.lookup(s.value, s.lang);
@@ -91,7 +91,7 @@ public class CachingGeocoder implements Geocoder {
             return reverseGeocodeCache.get(new LangCoords(coordinates, lang));
         } catch (ExecutionException e) {
             LOG.error("Cache reverse geo-coding service client unable to retrieve data with lat,long '{},{}': {}",
-                    coordinates.lat(),coordinates.lon(), e.getMessage(), e);
+                    coordinates.lat(), coordinates.lon(), e.getMessage(), e);
             throw new IOException("Error loading reverseGeocodeCache for '" + coordinates + "'", e);
         }
     }
@@ -106,8 +106,7 @@ public class CachingGeocoder implements Geocoder {
             throw new IOException("Error loading lookupCache for '" + placeId + "'", e);
         }
     }
-    
-    
+
 
     @Override
     public String toString() {
@@ -119,10 +118,10 @@ public class CachingGeocoder implements Geocoder {
     }
 
     private static class LangString {
-        
+
         final Locale lang;
         final String value;
-        
+
         LangString(String value, Locale lang) {
             this.lang = lang;
             this.value = value;
@@ -182,6 +181,6 @@ public class CachingGeocoder implements Geocoder {
                     '}';
         }
     }
-    
-    
+
+
 }

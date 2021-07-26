@@ -2,7 +2,6 @@ package io.redlink.geocoding.cache;
 
 import com.google.common.base.Preconditions;
 import io.redlink.geocoding.Geocoder;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,7 +18,7 @@ public class CachingGeocoderBuilder {
     }
 
     public CachingGeocoderBuilder(Geocoder geocoder) {
-        setGeocoder(geocoder);
+        this.geocoder = geocoder;
     }
 
     public CachingGeocoderBuilder setCacheExpiry(long timeout, TimeUnit timeUnit) {

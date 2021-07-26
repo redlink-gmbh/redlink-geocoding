@@ -15,8 +15,8 @@ import java.util.Objects;
 public class Place {
     private String placeId;
     private String address;
-    private Collection<AddressComponent> components = new LinkedList<>();
-    private Map<String,Object> metadata = new HashMap<>();
+    private final Collection<AddressComponent> components = new LinkedList<>();
+    private final Map<String,Object> metadata = new HashMap<>();
     
     private LatLon latLon;
 
@@ -25,7 +25,7 @@ public class Place {
 
     protected Place(String placeId) {
         this();
-        setPlaceId(placeId);
+        this.placeId = placeId;
     }
 
     public String getPlaceId() {

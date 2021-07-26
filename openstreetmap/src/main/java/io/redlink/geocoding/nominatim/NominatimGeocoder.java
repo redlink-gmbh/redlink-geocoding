@@ -65,7 +65,6 @@ public class NominatimGeocoder implements Geocoder {
     private final String email;
     private final Proxy proxy;
     private final RateLimiter rateLimiter;
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
@@ -253,14 +252,14 @@ public class NominatimGeocoder implements Geocoder {
         if (rateLimiter != null) rateLimiter.acquire();
         final HttpClientBuilder builder = HttpClientBuilder.create();
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
-            log.trace("Direct Connection");
+            LOG.trace("Direct Connection");
         } else if (proxy.type() == Proxy.Type.HTTP) {
             final InetSocketAddress proxyAddress = (InetSocketAddress) proxy.address();
             final HttpHost proxyHost = new HttpHost(proxyAddress.getAddress(), proxyAddress.getPort());
             builder.setProxy(proxyHost);
-            log.debug("Using Proxy {}", proxyHost);
+            LOG.debug("Using Proxy {}", proxyHost);
         } else {
-            log.warn("Unsupported Proxy-Type {}, fallback to DIRECT connection", proxy.type());
+            LOG.warn("Unsupported Proxy-Type {}, fallback to DIRECT connection", proxy.type());
         }
         return builder.build();
     }

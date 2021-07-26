@@ -3,6 +3,13 @@ package io.redlink.geocoding.cache;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,10 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -22,6 +25,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
+ *
  */
 public class CacheGeocoderTest {
 
@@ -73,8 +77,8 @@ public class CacheGeocoderTest {
         Assert.assertEquals(1, places.size());
         Assert.assertEquals(TEST_ID, places.get(0).getPlaceId());
         Assert.assertEquals(TEST_ADDRESS, places.get(0).getAddress());
-        Assert.assertEquals(TEST_LAT, places.get(0).getLatLon().lat(),0);
-        Assert.assertEquals(TEST_LON, places.get(0).getLatLon().lon(),0);
+        Assert.assertEquals(TEST_LAT, places.get(0).getLatLon().lat(), 0);
+        Assert.assertEquals(TEST_LON, places.get(0).getLatLon().lon(), 0);
     }
 
     @Test
@@ -83,8 +87,8 @@ public class CacheGeocoderTest {
         Assert.assertEquals(1, places.size());
         Assert.assertEquals(TEST_ID, places.get(0).getPlaceId());
         Assert.assertEquals(TEST_ADDRESS, places.get(0).getAddress());
-        Assert.assertEquals(TEST_LAT, places.get(0).getLatLon().lat(),0);
-        Assert.assertEquals(TEST_LON, places.get(0).getLatLon().lon(),0);
+        Assert.assertEquals(TEST_LAT, places.get(0).getLatLon().lat(), 0);
+        Assert.assertEquals(TEST_LON, places.get(0).getLatLon().lon(), 0);
     }
 
     @Test
@@ -92,8 +96,8 @@ public class CacheGeocoderTest {
         Place place = geocoder.lookup("any address");
         Assert.assertEquals(TEST_ID, place.getPlaceId());
         Assert.assertEquals(TEST_ADDRESS, place.getAddress());
-        Assert.assertEquals(TEST_LAT, place.getLatLon().lat(),0);
-        Assert.assertEquals(TEST_LON, place.getLatLon().lon(),0);
+        Assert.assertEquals(TEST_LAT, place.getLatLon().lat(), 0);
+        Assert.assertEquals(TEST_LON, place.getLatLon().lon(), 0);
     }
 
     @Test
@@ -102,17 +106,17 @@ public class CacheGeocoderTest {
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.lookup(Mockito.anyString(), Mockito.any(Locale.class)))
-                .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null))  ;
+                .thenAnswer(invocation -> Place.create(String.valueOf(invocation.getArguments()[0]), null, null));
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertEquals(cache.lookup(placeId_2).getPlaceId(), placeId_2);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertEquals(cache.lookup(placeId_2).getPlaceId(), placeId_2);
         assertEquals(cache.lookup(placeId_1).getPlaceId(), placeId_1);
 
@@ -125,7 +129,7 @@ public class CacheGeocoderTest {
 
     @Test
     public void testGeocodeCaching() throws Exception {
-        final String placeId_1 = UUID.randomUUID().toString(), 
+        final String placeId_1 = UUID.randomUUID().toString(),
                 placeId_2 = UUID.randomUUID().toString();
         final Place place_1 = Place.create(placeId_1, "place1", new LatLon(1, 1)),
                 place_2 = Place.create(placeId_2, "place2", new LatLon(2, 2));
@@ -140,11 +144,11 @@ public class CacheGeocoderTest {
         assertThat(cache.geocode(placeId_1, (Locale) null), Matchers.contains(place_1));
         assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
         assertThat(cache.geocode(placeId_2), Matchers.contains(place_2));
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertThat(cache.geocode(placeId_2), Matchers.contains(place_2));
         assertThat(cache.geocode(placeId_1), Matchers.contains(place_1));
 
@@ -173,13 +177,13 @@ public class CacheGeocoderTest {
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
         Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1, (Locale) null);
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
         Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_1, (Locale) null);
         assertThat(cache.reverseGeocode(loc_2), Matchers.contains(place_2));
         Mockito.verify(delegate, Mockito.times(1)).reverseGeocode(loc_2, (Locale) null);
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        TimeUnit.SECONDS.sleep(1);
         assertThat(cache.reverseGeocode(loc_2), Matchers.contains(place_2));
         assertThat(cache.reverseGeocode(loc_1), Matchers.contains(place_1));
 
