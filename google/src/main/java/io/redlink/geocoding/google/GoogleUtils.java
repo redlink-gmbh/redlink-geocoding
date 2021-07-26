@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Converting Utils Google &lt;---&gt; Redlink.
  */
-public final class GoogleUtils {
+final class GoogleUtils {
 
     private GoogleUtils() {
     }

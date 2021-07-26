@@ -1,58 +1,75 @@
 package io.redlink.geocoding.nominatim;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.hamcrest.Matchers;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
+ *
  */
 public class NominatimGeocoderTest {
 
+    @ClassRule
+    public static WireMockRule wiremock = new WireMockRule(WireMockConfiguration.options()
+            .dynamicPort()
+    );
 
     private final NominatimGeocoder geocoder;
 
     public NominatimGeocoderTest() throws IOException, URISyntaxException {
-
-        final CloseableHttpClient httpClient = Mockito.mock(CloseableHttpClient.class);
-        Mockito.when(httpClient.execute(Mockito.any(HttpGet.class), Mockito.any(NominatimGeocoder.JsoupResponseHandler.class)))
-                .then(invocation -> {
-                    final HttpGet request = (HttpGet) invocation.getArguments()[0];
-                    final String requestUri = request.getURI().toASCIIString();
-                    final NominatimGeocoder.JsoupResponseHandler handler = (NominatimGeocoder.JsoupResponseHandler) invocation.getArguments()[1];
-
-                    final Document jsoup;
-                    if (StringUtils.contains(requestUri, NominatimGeocoder.SERVICE_GEOCODE)) {
-                        jsoup = loadTestData("/geocode");
-                    } else if (StringUtils.contains(requestUri, NominatimGeocoder.SERVICE_REVERSE)) {
-                        jsoup = loadTestData("/reverse");
-                    } else if (StringUtils.contains(requestUri, NominatimGeocoder.SERVICE_LOOKUP)) {
-                        jsoup = loadTestData("/lookup");
-                    } else {
-                        throw new ClientProtocolException();
-                    }
-                    return handler.parseJsoup(jsoup);
-                });
-
-        geocoder = Mockito.spy(new NominatimGeocoder("http://example.com/", Locale.ENGLISH, null, null));
-        Mockito.when(geocoder.createHttpClient()).thenReturn(httpClient);
+        geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
     }
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE)
+                .willReturn(createXmlResponse("/geocode-response.xml"))
+        );
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE)
+                .willReturn(createXmlResponse("/reverse-response.xml"))
+        );
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP)
+                .willReturn(createXmlResponse("/lookup-response.xml"))
+        );
+    }
+
+    private static MappingBuilder urlEndsWith(String path) {
+        return WireMock.any(
+                WireMock.urlPathMatching(
+                        String.format(".*\\Q%s\\E$", path)
+                )
+        );
+    }
+
+    private static ResponseDefinitionBuilder createXmlResponse(String responseFile) throws IOException {
+        return WireMock.ok()
+                .withHeader("Content-Type", "text/xml")
+                .withBody(
+                        IOUtils.resourceToByteArray(responseFile)
+                );
+    }
+
+
+
 
     private static Document loadTestData(String serviceLookup) throws IOException {
         return Jsoup.parse(NominatimGeocoderTest.class.getResourceAsStream(serviceLookup + "-response.xml"),
