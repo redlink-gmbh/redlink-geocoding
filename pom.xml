@@ -285,7 +285,7 @@
 
                         <useReleaseProfile>false</useReleaseProfile>
                         <releaseProfiles>release</releaseProfiles>
-                        <goals>deploy</goals>
+                        <goals>package javadoc:aggregate-jar verify deploy</goals>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -308,6 +308,18 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>quick</id>
+            <activation>
+                <property>
+                    <name>quick</name>
+                </property>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+                <skipITs>true</skipITs>
+            </properties>
+        </profile>
         <profile>
             <id>release</id>
             <build>

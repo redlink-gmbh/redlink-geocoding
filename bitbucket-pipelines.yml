@@ -29,7 +29,7 @@ definitions:
             org.jacoco:jacoco-maven-plugin:report
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
             -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
-          - mvn -B -s .ci/settings.xml deploy -DskipTests -DskipITs
+          - mvn -B -s .ci/settings.xml package javadoc:aggregate-jar deploy -Dquick
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
 
