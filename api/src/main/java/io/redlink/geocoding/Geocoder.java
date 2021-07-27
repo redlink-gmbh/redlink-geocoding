@@ -13,7 +13,7 @@ public interface Geocoder {
 
     default List<Place> geocode(String address) throws IOException {
         return geocode(address, (Locale) null);
-    }
+}
 
     default List<Place> geocode(String address, String language) throws IOException {
         return geocode(address, Locale.forLanguageTag(language));

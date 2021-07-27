@@ -4,35 +4,42 @@
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.google.GoogleMapsGeocoder;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 @ActiveProfiles("google")
 @EnableAutoConfiguration
-public class GoogleGeocoderTest {
+class GoogleGeocoderTest {
+
+    private final Geocoder geocoder;
 
     @Autowired
-    private Geocoder geocoder;
-
-    @Test
-    public void testInject() {
-        Assert.assertNotNull(geocoder);
+    GoogleGeocoderTest(Geocoder geocoder) {
+        this.geocoder = geocoder;
     }
 
     @Test
-    public void testType() throws Exception {
-        Assert.assertThat(geocoder, Matchers.instanceOf(GoogleMapsGeocoder.class));
+    void testInject() {
+        assertNotNull(geocoder, "Geocoder-Bean missing");
+    }
+
+    @Test
+    void testType() throws Exception {
+        assertThat(geocoder)
+                .as("GoogleGeocoder expected")
+                .isInstanceOf(GoogleMapsGeocoder.class);
     }
 }

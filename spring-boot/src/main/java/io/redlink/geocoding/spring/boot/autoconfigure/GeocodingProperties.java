@@ -3,14 +3,13 @@
  */
 package io.redlink.geocoding.spring.boot.autoconfigure;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.net.URL;
 import java.util.Locale;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  */
-@ConfigurationProperties(prefix = "geocoding", ignoreNestedProperties = false)
+@ConfigurationProperties(prefix = "geocoding")
 public class GeocodingProperties {
 
     private GoogleMapsProperties google = new GoogleMapsProperties();

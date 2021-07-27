@@ -4,29 +4,30 @@ import io.redlink.geocoding.AddressComponent;
 import io.redlink.geocoding.AddressComponent.Type;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assumptions.assumeThat;
+import static org.assertj.core.api.Assumptions.assumeThatCode;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  */
-public class NominatimGeocoderIT {
+class NominatimGeocoderIT {
 
     private final String testPlaceId = "W30514164";
     private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
@@ -50,27 +51,33 @@ public class NominatimGeocoderIT {
                 null);
     }
 
-    @Before
+    @BeforeEach
     public void pingRemote() {
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+        assumeThatCode(() -> {
+            try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
 
-            final StatusLine statusLine = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), HttpResponse::getStatusLine);
-            Assume.assumeThat("Remote Service Status", statusLine.getStatusCode(), Matchers.allOf(Matchers.greaterThanOrEqualTo(200), Matchers.lessThan(300)));
-        } catch (IOException e) {
-            Assume.assumeNoException("Ping to remote service failed", e);
-        }
+                final StatusLine statusLine = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), HttpResponse::getStatusLine);
+                assumeThat(statusLine.getStatusCode())
+                        .as("Remote Service Status")
+                        .isBetween(200, 299);
+            }
+        })
+        .doesNotThrowAnyException();
     }
 
     @Test
-    public void testGeocode() throws IOException {
+    void testGeocode() throws IOException {
         final List<Place> places = osmGeocoder.geocode(testAddress);
 
-        Assert.assertEquals(2, places.size());
-        Assert.assertEquals("N3081433444", places.get(0).getPlaceId());
-        Assert.assertEquals(coworkingFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(47.8229144, places.get(0).getLatLon().lat(), 0);
-        Assert.assertEquals(13.0404834, places.get(0).getLatLon().lon(), 0);
-        Assert.assertNotNull(places.get(0).getComponents());
+        Assertions.assertThat(places)
+                .as("OSM Places")
+                .hasSize(2)
+                .as("First Result")
+                .first()
+                .hasFieldOrPropertyWithValue("placeId", "N3081433444")
+                .hasFieldOrPropertyWithValue("address", coworkingFormattedAddress);
+
+
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
 
         EnumMap<Type, String> expected = new EnumMap<>(Type.class);
@@ -83,32 +90,34 @@ public class NominatimGeocoderIT {
         expected.put(Type.country, "Austria");
         for(AddressComponent ac : addrComps){
             String expValue = expected.remove(ac.getType());
-            Assert.assertNotNull("Unexpected " + ac, expValue);
-            Assert.assertEquals(expValue, ac.getValue());
+            assertNotNull(expValue, "Unexpected " + ac);
+            assertEquals(expValue, ac.getValue(), "AddressComponent");
         }
-        Assert.assertTrue("Missing expected AddressComponents "+ expected,expected.isEmpty());
-        
+
+        assumeThat(expected)
+                .as("Missing expected AddressComponents "+ expected)
+                .isEmpty();
     }
 
     @Test
-    public void testReverseGeocode() throws IOException {
+    void testReverseGeocode() throws IOException {
         final List<Place> places = osmGeocoder.reverseGeocode(latLon);
 
-        Assert.assertEquals(1, places.size());
-        Assert.assertEquals(testPlaceId, places.get(0).getPlaceId());
-        Assert.assertEquals(testFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(), 0);
-        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(), 0);
+        Assertions.assertThat(places)
+                .as("reverse geocoding results")
+                .singleElement()
+                .as("reverse geocoded place")
+                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 
     @Test
-    public void testLookup() throws IOException {
+    void testLookup() throws IOException {
         final Place place = osmGeocoder.lookup(testPlaceId);
 
-        Assert.assertEquals(testPlaceId, place.getPlaceId());
-        Assert.assertEquals(testFormattedAddress, place.getAddress());
-        Assert.assertEquals(testLat, place.getLatLon().lat(), 0.01);
-        Assert.assertEquals(testLon, place.getLatLon().lon(), 0.01);
-
+        Assertions.assertThat(place)
+                .as("place lookup")
+                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 }

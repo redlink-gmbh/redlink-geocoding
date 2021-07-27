@@ -1,19 +1,20 @@
 package io.redlink.geocoding.google;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import java.io.IOException;
+import java.net.Proxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.net.Proxy;
-
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 /**
+ *
  */
-public class GoogleMapsBuilderTest {
+class GoogleMapsBuilderTest {
 
     @Mock
     private Proxy proxy;
@@ -22,26 +23,27 @@ public class GoogleMapsBuilderTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         when(proxy.type()).thenReturn(Proxy.Type.DIRECT);
     }
 
     @Test
-    public void testCreate() throws IOException {
-        Assert.assertNotNull(new GoogleMapsBuilder()
+    void testCreate() throws IOException {
+        assertNotNull(new GoogleMapsBuilder()
                 .setApiKey("API key")
                 .setChannel("channel")
                 .setCredentials("client", "cryptoSecret")
                 .setLocale("de")
                 .setProxy(proxy)
-                .create());
+                .create(), "Create GoogleMaps instance");
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testWithoutCredentials() {
-        new GoogleMapsBuilder()
-                .create();
-        Assert.fail("Expected an IllegalStateException");
+    @Test
+    void testWithoutCredentials() {
+        final GoogleMapsBuilder builder = new GoogleMapsBuilder();
+        assertThatCode(builder::create)
+                .as("Incomplete Builder")
+                .isInstanceOf(IllegalStateException.class);
     }
 }
