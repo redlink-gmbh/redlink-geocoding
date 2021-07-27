@@ -5,6 +5,7 @@ clone:
 definitions:
   steps:
     - step: &build
+        name: Build
         caches:
           - maven
           - sonar
@@ -17,6 +18,7 @@ definitions:
             org.jacoco:jacoco-maven-plugin:report
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
     - step: &build-test-deploy
+        name: Build, Test & Deploy
         caches:
           - maven
           - sonar
