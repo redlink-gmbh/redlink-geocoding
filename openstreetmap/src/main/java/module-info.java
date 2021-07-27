@@ -1,5 +1,5 @@
 module io.redlink.geocoding.osm {
-    requires io.redlink.geocoding.api;
+    requires transitive io.redlink.geocoding.api;
     requires org.slf4j;
     requires org.apache.commons.lang3;
     requires org.apache.httpcomponents.httpcore;

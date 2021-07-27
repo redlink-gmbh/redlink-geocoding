@@ -14,17 +14,22 @@ import java.util.Locale;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
+import static org.assertj.core.api.Assumptions.assumeThatCode;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 /**
+ *
  */
-public class GoogleMapsGeocoderIT {
+class GoogleMapsGeocoderIT {
 
     static {
         LoggerFactory.getLogger(GoogleMapsGeocoderIT.class)
@@ -46,8 +51,12 @@ public class GoogleMapsGeocoderIT {
 
     public GoogleMapsGeocoderIT() {
         final String apiKey = System.getProperty("google.apiKey", System.getenv("GOOGLE_API_KEY"));
-        Assume.assumeThat("Google API-Key missing, provide it with -Dgoogle.apiKey", apiKey, Matchers.not(Matchers.isEmptyOrNullString()));
-        Assume.assumeThat("Invalid Google API-Key (expected to start with ''", apiKey, Matchers.startsWith("AIza"));
+
+        assumeThat(apiKey)
+                .as("Google API-Key missing, provide it with -Dgoogle.apiKey")
+                .isNotEmpty()
+                .as("Invalid Google API-Key (expected to start with 'AIza'")
+                .startsWith("AIza");
 
         GeoApiContext.Builder contextBuilder = new GeoApiContext.Builder();
         contextBuilder.apiKey(apiKey);
@@ -56,9 +65,9 @@ public class GoogleMapsGeocoderIT {
         gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"), false, true);
     }
 
-    @Before
-    public void pingRemote() {
-        try {
+    @BeforeEach
+    void pingRemote() {
+        assumeThatCode(() -> {
             final OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
                     .head()
@@ -66,22 +75,25 @@ public class GoogleMapsGeocoderIT {
                     .build();
 
             final Response response = client.newCall(request).execute();
-            Assume.assumeTrue("Remote Service Status", response.isSuccessful());
-        } catch (IOException e) {
-            Assume.assumeNoException("Ping to remote service failed", e);
-        }
+            assumeTrue(response.isSuccessful(), "Remote Service Status");
+        })
+        .as("Ping to remote service")
+        .doesNotThrowAnyException();
     }
 
     @Test
-    public void testGeocode() throws IOException {
+    void testGeocode() throws IOException {
         final List<Place> places = gmGeocoder.geocode(testAddress);
 
-        Assert.assertEquals(1, places.size());
-        Assert.assertEquals(testPlaceId, places.get(0).getPlaceId());
-        Assert.assertEquals(testFormattedAddress, places.get(0).getAddress());
-        Assert.assertEquals(testLat, places.get(0).getLatLon().lat(),1e-3);
-        Assert.assertEquals(testLon, places.get(0).getLatLon().lon(),1e-3);
-        
+        assertThat(places)
+                .as("Geocoded Place")
+                .singleElement()
+                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
+                .extracting(Place::getLatLon)
+                .hasFieldOrPropertyWithValue("lat", testLat)
+                .hasFieldOrPropertyWithValue("lon", testLon);
+
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
 
         EnumMap<Type, String> expected = new EnumMap<>(Type.class);
@@ -93,32 +105,37 @@ public class GoogleMapsGeocoderIT {
         expected.put(Type.state, "Salzburg");
         expected.put(Type.countryCode, "at");
         expected.put(Type.country, "Austria");
-        for(AddressComponent ac : addrComps){
+        for (AddressComponent ac : addrComps) {
             String expValue = expected.remove(ac.getType());
-            Assert.assertNotNull("Unexpected " + ac, expValue);
-            Assert.assertEquals(expValue, ac.getValue());
+            assertNotNull(expValue, "Unexpected " + ac);
+            assertEquals(expValue, ac.getValue(), "AddressComponent");
         }
-        Assert.assertTrue("Missing expected AddressComponents "+ expected,expected.isEmpty());
-        
+        assertThat(expected)
+                .as("Missing expected AddressComponents " + expected)
+                .isEmpty();
 
     }
 
     @Test
-    public void testReverseGeocode() throws IOException {
+    void testReverseGeocode() throws IOException {
         final List<Place> places = gmGeocoder.reverseGeocode(latLon);
 
-        Assert.assertThat(places.size(), Matchers.greaterThanOrEqualTo(1));
+        assertThat(places)
+                .as("places found")
+                .hasSizeGreaterThanOrEqualTo(1);
     }
 
     @Test
-    public void testLookup() throws IOException {
+    void testLookup() throws IOException {
         final Place place = gmGeocoder.lookup(testPlaceId);
 
-        Assert.assertEquals(testPlaceId, place.getPlaceId());
-        Assert.assertEquals(testFormattedAddress, place.getAddress());
-        Assert.assertEquals(testLat, place.getLatLon().lat(),1e-3);
-        Assert.assertEquals(testLon, place.getLatLon().lon(),1e-3);
-
+        assertThat(place)
+                .as("Place Lookup")
+                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
+                .extracting(Place::getLatLon)
+                .hasFieldOrPropertyWithValue("lat", testLat)
+                .hasFieldOrPropertyWithValue("lon", testLon);
     }
 
 }

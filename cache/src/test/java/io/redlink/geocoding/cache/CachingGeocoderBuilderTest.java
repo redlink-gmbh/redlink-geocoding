@@ -1,30 +1,33 @@
 package io.redlink.geocoding.cache;
 
 import io.redlink.geocoding.Geocoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
+ *
  */
-public class CachingGeocoderBuilderTest {
+class CachingGeocoderBuilderTest {
 
-    @Test(expected = IllegalStateException.class)
-    public void testCreateWithoutDelegate() throws Exception {
-        new CachingGeocoderBuilder().create();
-        fail("Expected IllegalStateException");
+    @Test
+    void testCreateWithoutDelegate() throws Exception {
+        final CachingGeocoderBuilder builder = new CachingGeocoderBuilder();
+        assertThatCode(builder::create)
+                .as("Incomplete Builder")
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void testCreate() {
-        Geocoder delegate = Mockito.mock(Geocoder.class);
+    void testCreate() {
+        final Geocoder delegate = Mockito.mock(Geocoder.class);
         assertNotNull(new CachingGeocoderBuilder()
                 .setGeocoder(delegate)
-                .create());
+                .create(), "Caching Builder");
         assertNotNull(new CachingGeocoderBuilder(delegate)
-                .create());
+                .create(), "Caching Builder");
     }
 
 }

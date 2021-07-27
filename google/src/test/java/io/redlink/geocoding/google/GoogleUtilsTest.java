@@ -6,31 +6,27 @@ import com.google.maps.model.LatLng;
 import com.google.maps.model.PlaceDetails;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by fonso on 30.01.17.
  */
-public class GoogleUtilsTest {
+class GoogleUtilsTest {
 
     private final GeocodingResult googleMockedGeoResult = new GeocodingResult();
     private final Geometry googleGeometry = new Geometry();
-    private final LatLng googleMockedLocation = new LatLng(45.00,12.00);
+    private final LatLng googleMockedLocation = new LatLng(45.00, 12.00);
 
     private PlaceDetails googlePlaceDetails = new PlaceDetails();
 
-    private final LatLon redlinkLatLon = new LatLon(45.00,12.00);
+    private final LatLon redlinkLatLon = new LatLon(45.00, 12.00);
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         googleGeometry.location = googleMockedLocation;
 
         googleMockedGeoResult.placeId = "00000000";
@@ -44,36 +40,41 @@ public class GoogleUtilsTest {
 
 
     @Test
-    public void testGoogle2Places() {
+    void testGoogle2Places() {
         final List<Place> places = GoogleUtils.google2Places(new GeocodingResult[]{googleMockedGeoResult});
 
-        Assert.assertEquals(1,places.size());
-        Assert.assertEquals("00000000",places.get(0).getPlaceId());
-        Assert.assertEquals("Test Address 0, 00 - 0000 Test Region",places.get(0).getAddress());
-        Assert.assertEquals(45.00, places.get(0).getLatLon().lat(),0);
-        Assert.assertEquals(12.00,places.get(0).getLatLon().lon(),0);
+        assertThat(places)
+                .as("convert Google to Places")
+                .singleElement()
+                .hasFieldOrPropertyWithValue("placeId", "00000000")
+                .hasFieldOrPropertyWithValue("address", "Test Address 0, 00 - 0000 Test Region")
+                .extracting(Place::getLatLon)
+                .hasFieldOrPropertyWithValue("lat", 45D)
+                .hasFieldOrPropertyWithValue("lon", 12D);
     }
 
     @Test
-    public void testPlaceDetails2Place() {
+    void testPlaceDetails2Place() {
         Place place = GoogleUtils.placeDetails2Place(googlePlaceDetails);
 
-        Assert.assertEquals("00000000",place.getPlaceId());
-        Assert.assertEquals("Test Address 0, 00 - 0000 Test Region",place.getAddress());
-        Assert.assertEquals(45.00, place.getLatLon().lat(),0);
-        Assert.assertEquals(12.00,place.getLatLon().lon(),0);
+        assertThat(place)
+                .as("convert Google PlaceDetails to Place")
+                .hasFieldOrPropertyWithValue("placeId", "00000000")
+                .hasFieldOrPropertyWithValue("address", "Test Address 0, 00 - 0000 Test Region")
+                .extracting(Place::getLatLon)
+                .hasFieldOrPropertyWithValue("lat", 45D)
+                .hasFieldOrPropertyWithValue("lon", 12D);
 
     }
 
     @Test
-    public void testLatLon2LatLng() {
+    void testLatLon2LatLng() {
         final LatLng latLng = GoogleUtils.latLon2LatLng(redlinkLatLon);
 
-        Assert.assertEquals(45.00, latLng.lat, 0);
-        Assert.assertEquals(12.00,latLng.lng,0);
-
+        assertThat(latLng)
+                .as("convert LatLon to Google LatLng")
+                .hasFieldOrPropertyWithValue("lat", 45D)
+                .hasFieldOrPropertyWithValue("lng", 12D);
     }
-
-
 
 }

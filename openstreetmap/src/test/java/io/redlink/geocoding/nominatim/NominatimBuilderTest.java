@@ -1,24 +1,27 @@
 package io.redlink.geocoding.nominatim;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
+ *
  */
-public class NominatimBuilderTest {
+class NominatimBuilderTest {
 
     @Test
-    public void testCreate() throws Exception {
+    void testCreate() {
         assertNotNull(new NominatimBuilder()
-                .create());
+                .create(), "Nominatim Builder");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testWithIllegalURI() {
-        new NominatimBuilder()
-                .setBaseUrl("-- not a valid baseUrl --")
-                .create();
-        fail("Expected IllegalArgumentException");
+    @Test
+    void testWithIllegalURI() {
+        final NominatimBuilder builder = new NominatimBuilder()
+                .setBaseUrl("-- not a valid baseUrl --");
+        assertThatCode(builder::create)
+                .isInstanceOf(IllegalArgumentException.class)
+        ;
     }
 }
