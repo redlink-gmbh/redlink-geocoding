@@ -108,10 +108,7 @@ class NominatimGeocoderIT {
                 .singleElement()
                 .as("reverse geocoded place")
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
-                .extracting(Place::getLatLon)
-                .hasFieldOrPropertyWithValue("lat", testLat)
-                .hasFieldOrPropertyWithValue("lon", testLon);
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 
     @Test
@@ -121,10 +118,6 @@ class NominatimGeocoderIT {
         Assertions.assertThat(place)
                 .as("place lookup")
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
-                .extracting(Place::getLatLon)
-                .hasFieldOrPropertyWithValue("lat", testLat)
-                .hasFieldOrPropertyWithValue("lon", testLon);
-
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 }

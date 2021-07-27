@@ -44,10 +44,9 @@ class GoogleMapsGeocoderIT {
     private final Double testLat = 47.82273;
     private final Double testLon = 13.040612;
 
-    private final GeoApiContext context;
     private final GoogleMapsGeocoder gmGeocoder;
 
-    private LatLon latLon = new LatLon(testLat, testLon);
+    private final LatLon latLon = new LatLon(testLat, testLon);
 
     public GoogleMapsGeocoderIT() {
         final String apiKey = System.getProperty("google.apiKey", System.getenv("GOOGLE_API_KEY"));
@@ -61,8 +60,12 @@ class GoogleMapsGeocoderIT {
         GeoApiContext.Builder contextBuilder = new GeoApiContext.Builder();
         contextBuilder.apiKey(apiKey);
         contextBuilder.channel(getClass().getSimpleName());
-        context = contextBuilder.build();
-        gmGeocoder = new GoogleMapsGeocoder(context, Locale.forLanguageTag("en"), false, true);
+        gmGeocoder = new GoogleMapsGeocoder(
+                contextBuilder.build(),
+                Locale.forLanguageTag("en"),
+                false,
+                true
+        );
     }
 
     @BeforeEach
@@ -89,10 +92,7 @@ class GoogleMapsGeocoderIT {
                 .as("Geocoded Place")
                 .singleElement()
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
-                .extracting(Place::getLatLon)
-                .hasFieldOrPropertyWithValue("lat", testLat)
-                .hasFieldOrPropertyWithValue("lon", testLon);
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
 
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
 
@@ -132,10 +132,7 @@ class GoogleMapsGeocoderIT {
         assertThat(place)
                 .as("Place Lookup")
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress)
-                .extracting(Place::getLatLon)
-                .hasFieldOrPropertyWithValue("lat", testLat)
-                .hasFieldOrPropertyWithValue("lon", testLon);
+                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 
 }
