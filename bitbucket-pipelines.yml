@@ -40,5 +40,5 @@ pipelines:
     master:
       - step: *build-test-deploy
   tags:
-    geocoding-v*:
+    v*:
       - step: *build-test-deploy
