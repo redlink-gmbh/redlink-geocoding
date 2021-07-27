@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 /**
  */
-public class NominatimGeocoderIT {
+class NominatimGeocoderIT {
 
     private final String testPlaceId = "W30514164";
     private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";

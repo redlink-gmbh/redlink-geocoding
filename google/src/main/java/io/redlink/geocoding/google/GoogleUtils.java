@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ final class GoogleUtils {
             Arrays.stream(ac.types).collect(Collectors.toCollection(() -> types));
             if (types.contains(AddressComponentType.COUNTRY)) {
                 components.putIfAbsent(Type.country, new io.redlink.geocoding.AddressComponent(Type.country, ac.longName));
-                components.putIfAbsent(Type.countryCode, new io.redlink.geocoding.AddressComponent(Type.countryCode, ac.shortName.toLowerCase()));
+                components.putIfAbsent(Type.countryCode, new io.redlink.geocoding.AddressComponent(Type.countryCode, ac.shortName.toLowerCase(Locale.ROOT)));
             }
             if (types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
                 components.putIfAbsent(Type.state, new io.redlink.geocoding.AddressComponent(Type.state, ac.longName));

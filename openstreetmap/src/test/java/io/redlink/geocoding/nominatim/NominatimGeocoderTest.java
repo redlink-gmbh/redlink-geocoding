@@ -107,7 +107,7 @@ class NominatimGeocoderTest {
     }
 
     @Test
-    public void testLookup() throws Exception {
+    void testLookup() throws Exception {
         final Place place = geocoder.lookup("N240109189");
 
         assertThat(place)

@@ -4,7 +4,6 @@
 package io.redlink.geocoding.google;
 
 import com.google.maps.GeoApiContext;
-
 import java.net.Proxy;
 import java.util.Locale;
 import java.util.Objects;
@@ -15,7 +14,8 @@ import java.util.Objects;
 public class GoogleMapsBuilder {
 
     private final GeoApiContext.Builder context;
-    private boolean apiKeySet, cryptoSecretSet;
+    private boolean apiKeySet;
+    private boolean cryptoSecretSet;
     private Locale lang;
 
     public GoogleMapsBuilder() {
