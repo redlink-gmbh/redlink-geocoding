@@ -6,11 +6,12 @@ package io.redlink.geocoding;
 /**
  * A position on earth, identified by latitude and longitude.
  */
-public class LatLon {
+public final class LatLon {
+
     private final double lat;
     private final double lon;
 
-    public LatLon(double lat, double lon) {
+    private LatLon(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
     }
@@ -23,8 +24,12 @@ public class LatLon {
         return lon;
     }
 
+    public static LatLon create(double lat, double lon) {
+        return new LatLon(lat, lon);
+    }
+
     public static LatLon valueOf(String lat, String lon) {
-        return new LatLon(Double.parseDouble(lat), Double.parseDouble(lon));
+        return create(Double.parseDouble(lat), Double.parseDouble(lon));
     }
 
     public static LatLon valueOf(String latLon) {

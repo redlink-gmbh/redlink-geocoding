@@ -22,8 +22,6 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.Assumptions.assumeThatCode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  */
@@ -41,9 +39,7 @@ class NominatimGeocoderIT {
     private final NominatimGeocoder osmGeocoder;
 
     public NominatimGeocoderIT() {
-        latLon = mock(LatLon.class);
-        when(latLon.lat()).thenReturn(testLat);
-        when(latLon.lon()).thenReturn(testLon);
+        latLon = LatLon.create(testLat, testLon);
 
         osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER,
                 Locale.forLanguageTag("en"),

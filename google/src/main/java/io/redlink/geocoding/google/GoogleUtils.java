@@ -36,11 +36,11 @@ final class GoogleUtils {
     }
 
     private static Place geocodingResult2Place(GeocodingResult google) {
-        Place place = Place.create(google.placeId,
+        return Place.create(google.placeId,
                 google.formattedAddress,
-                latLng2latLon(google.geometry.location));
-        place.getComponents().addAll(mapAddressComponents(google.addressComponents));
-        return place;
+                latLng2latLon(google.geometry.location),
+                mapAddressComponents(google.addressComponents),
+                Map.of());
     }
 
     public static LatLng latLon2LatLng(LatLon coordinates) {
@@ -54,7 +54,7 @@ final class GoogleUtils {
     }
 
     private static LatLon latLng2latLon(LatLng latLng) {
-        return new LatLon(latLng.lat, latLng.lng);
+        return LatLon.create(latLng.lat, latLng.lng);
     }
 
     private static Collection<io.redlink.geocoding.AddressComponent> mapAddressComponents(AddressComponent[] acs) {
@@ -66,26 +66,26 @@ final class GoogleUtils {
             EnumSet<AddressComponentType> types = EnumSet.noneOf(AddressComponentType.class);
             Arrays.stream(ac.types).collect(Collectors.toCollection(() -> types));
             if (types.contains(AddressComponentType.COUNTRY)) {
-                components.putIfAbsent(Type.country, new io.redlink.geocoding.AddressComponent(Type.country, ac.longName));
-                components.putIfAbsent(Type.countryCode, new io.redlink.geocoding.AddressComponent(Type.countryCode, ac.shortName.toLowerCase(Locale.ROOT)));
+                components.putIfAbsent(Type.country, io.redlink.geocoding.AddressComponent.create(Type.country, ac.longName));
+                components.putIfAbsent(Type.countryCode, io.redlink.geocoding.AddressComponent.create(Type.countryCode, ac.shortName.toLowerCase(Locale.ROOT)));
             }
             if (types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
-                components.putIfAbsent(Type.state, new io.redlink.geocoding.AddressComponent(Type.state, ac.longName));
+                components.putIfAbsent(Type.state, io.redlink.geocoding.AddressComponent.create(Type.state, ac.longName));
             }
             if (types.contains(AddressComponentType.POSTAL_CODE)) {
-                components.putIfAbsent(Type.postalCode, new io.redlink.geocoding.AddressComponent(Type.postalCode, ac.longName));
+                components.putIfAbsent(Type.postalCode, io.redlink.geocoding.AddressComponent.create(Type.postalCode, ac.longName));
             }
             if (types.contains(AddressComponentType.LOCALITY)) {
-                components.putIfAbsent(Type.city, new io.redlink.geocoding.AddressComponent(Type.city, ac.longName));
+                components.putIfAbsent(Type.city, io.redlink.geocoding.AddressComponent.create(Type.city, ac.longName));
             }
             if (types.contains(AddressComponentType.SUBLOCALITY_LEVEL_1)) {
-                components.putIfAbsent(Type.sublocality, new io.redlink.geocoding.AddressComponent(Type.sublocality, ac.longName));
+                components.putIfAbsent(Type.sublocality, io.redlink.geocoding.AddressComponent.create(Type.sublocality, ac.longName));
             }
             if (types.contains(AddressComponentType.ROUTE)) {
-                components.putIfAbsent(Type.street, new io.redlink.geocoding.AddressComponent(Type.street, ac.longName));
+                components.putIfAbsent(Type.street, io.redlink.geocoding.AddressComponent.create(Type.street, ac.longName));
             }
             if (types.contains(AddressComponentType.STREET_NUMBER)) {
-                components.putIfAbsent(Type.streetNumber, new io.redlink.geocoding.AddressComponent(Type.streetNumber, ac.longName));
+                components.putIfAbsent(Type.streetNumber, io.redlink.geocoding.AddressComponent.create(Type.streetNumber, ac.longName));
             }
         });
         return components.values();
