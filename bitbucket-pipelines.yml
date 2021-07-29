@@ -22,6 +22,9 @@ definitions:
         caches:
           - maven
           - sonar
+          - jib
+        service:
+          - docker
         script:
           - >
             mvn -V -B -s .ci/settings.xml
@@ -31,9 +34,19 @@ definitions:
             org.jacoco:jacoco-maven-plugin:report
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
             -Dnominatim.email=hello@redlink.io -Dgoogle.apiKey=${GOOGLE_APIKEY}
-          - mvn -B -s .ci/settings.xml package javadoc:aggregate-jar deploy -Dquick
+          - >
+            mvn -B -s .ci/settings.xml
+            package
+            javadoc:aggregate-jar
+            deploy
+            -Dquick
+            -Ddocker.image.namespace="${PRIVATE_DOCKER_REGISTRY_URL}/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}"
+            -Ddocker.image.buildId="build${BITBUCKET_BUILD_NUMBER}_${BITBUCKET_COMMIT:0:7}"
+            -Djib.to.auth.username="${PRIVATE_DOCKER_REGISTRY_USER}"
+            -Djib.to.auth.password="${PRIVATE_DOCKER_REGISTRY_PASS}"
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+    jib: ~/.cache/google-cloud-tools-java/jib
 
 pipelines:
   default:

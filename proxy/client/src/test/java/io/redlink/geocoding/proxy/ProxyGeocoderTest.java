@@ -44,10 +44,10 @@ class ProxyGeocoderTest {
     @BeforeAll
     static void beforeAll() throws JsonProcessingException {
         wiremock.start();
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s", basePath)))
+        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", basePath, Endpoints.API_VERSION)))
                 .willReturn(WireMock.noContent())
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", basePath, Endpoints.GEOCODE)))
+        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.GEOCODE)))
                 .willReturn(WireMock.okJson(mapper.writeValueAsString(
                         List.of(
                                 PlaceDTO.fromPlace(place1),
@@ -55,7 +55,7 @@ class ProxyGeocoderTest {
                         )
                 )))
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", basePath, Endpoints.REVERSE_GEOCODE)))
+        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.REVERSE_GEOCODE)))
                 .willReturn(WireMock.okJson(mapper.writeValueAsString(
                         List.of(
                                 PlaceDTO.fromPlace(place2),
@@ -63,7 +63,7 @@ class ProxyGeocoderTest {
                         )
                 )))
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", basePath, Endpoints.LOOKUP)))
+        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.LOOKUP)))
                 .willReturn(WireMock.okJson(mapper.writeValueAsString(
                         PlaceDTO.fromPlace(place1)
                 )))
@@ -112,7 +112,7 @@ class ProxyGeocoderTest {
                 Set.of(
                         AddressComponent.create(AddressComponent.Type.street, address)
                 ),
-                Map.of("souce", "testdata")
+                Map.of("source", "testdata")
         );
     }
 }

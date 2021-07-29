@@ -5,6 +5,8 @@ package io.redlink.geocoding.proxy.io;
 
 public final class Endpoints {
 
+    public static final String API_VERSION = "v1";
+
     public static final String GEOCODE = "geocode";
     public static final String REVERSE_GEOCODE = "reverse";
     public static final String LOOKUP = "lookup";

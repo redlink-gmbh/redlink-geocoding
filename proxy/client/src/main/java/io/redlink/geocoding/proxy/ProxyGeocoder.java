@@ -14,6 +14,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -104,7 +105,12 @@ public class ProxyGeocoder implements Geocoder, Closeable {
     }
 
     private URIBuilder createUriBuilder(String service, Locale lang) throws URISyntaxException {
-        final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUri.toString(), "/") + prependIfMissing(service, "/"));
+        final URIBuilder uriBuilder = new URIBuilder(
+                String.join("/", Arrays.asList(
+                        removeEnd(baseUri.toString(), "/"),
+                        Endpoints.API_VERSION,
+                        service
+                )));
         if (Objects.nonNull(lang)) {
             uriBuilder.setParameter(Endpoints.PARAM_LANG, lang.toLanguageTag());
         } else if (Objects.nonNull(language)) {
@@ -154,13 +160,4 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         }
     }
 
-    private static String prependIfMissing(String string, String prefix) {
-        if (string == null) {
-            return null;
-        } else if (string.startsWith(prefix)) {
-            return string;
-        } else {
-            return prefix + string;
-        }
-    }
 }

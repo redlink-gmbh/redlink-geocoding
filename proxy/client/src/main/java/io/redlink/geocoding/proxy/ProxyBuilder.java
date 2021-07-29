@@ -22,6 +22,10 @@ public class ProxyBuilder {
         this(URI.create(baseUri));
     }
 
+    public static ProxyBuilder configure() {
+        return new ProxyBuilder();
+    }
+
     public ProxyBuilder setBaseUri(URI baseUri) {
         this.baseUri = baseUri;
         return this;
