@@ -43,6 +43,8 @@
         <module>google</module>
         <module>openstreetmap</module>
 
+        <module>proxy</module>
+
         <module>spring-boot</module>
         <module>spring-boot-it</module>
     </modules>
@@ -156,6 +158,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
