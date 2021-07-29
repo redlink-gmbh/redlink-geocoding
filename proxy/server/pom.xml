@@ -75,7 +75,7 @@
                 <executions>
                     <execution>
                         <id>docker-local</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>dockerBuild</goal>
                         </goals>
