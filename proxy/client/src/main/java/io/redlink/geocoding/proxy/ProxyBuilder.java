@@ -27,6 +27,10 @@ public class ProxyBuilder {
         return this;
     }
 
+    public ProxyBuilder setBaseUri(String baseUri) {
+        return setBaseUri(URI.create(baseUri));
+    }
+
     public ProxyBuilder setLocale(Locale locale) {
         this.language = locale;
         return this;
