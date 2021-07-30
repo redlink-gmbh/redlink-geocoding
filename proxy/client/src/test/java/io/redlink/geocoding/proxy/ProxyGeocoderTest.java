@@ -68,6 +68,10 @@ class ProxyGeocoderTest {
                         PlaceDTO.fromPlace(place1)
                 )))
         );
+        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.LOOKUP)))
+                .withQueryParam(Endpoints.PARAM_PLACE_ID, WireMock.equalTo("does-not-exist"))
+                .willReturn(WireMock.notFound())
+        );
     }
 
     @AfterAll
@@ -101,7 +105,12 @@ class ProxyGeocoderTest {
     void testLookup() throws IOException {
         Assertions.assertThat(geocoder.lookup(RandomStringUtils.randomAlphabetic(8)))
                 .as("Lookup Result")
+                .isPresent().get()
                 .isEqualTo(place1);
+
+        Assertions.assertThat(geocoder.lookup("does-not-exist"))
+                .as("Lookup Result")
+                .isEmpty();
     }
 
     static Place createPlace(String address) {

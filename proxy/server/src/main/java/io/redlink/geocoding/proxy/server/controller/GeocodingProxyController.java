@@ -83,10 +83,9 @@ public class GeocodingProxyController {
             @RequestParam(value = Endpoints.PARAM_LANG, required = false) Locale lang
     ) {
         try {
-            return ResponseEntity.ok(
-                    PlaceDTO.fromPlace(
-                            geocoder.lookup(placeId, lang)
-                    )
+            return ResponseEntity.of(
+                    geocoder.lookup(placeId, lang)
+                            .map(PlaceDTO::fromPlace)
             );
         } catch (IOException e) {
             LOG.warn("Could not lookup {}: {}", placeId, e.getMessage(), e);

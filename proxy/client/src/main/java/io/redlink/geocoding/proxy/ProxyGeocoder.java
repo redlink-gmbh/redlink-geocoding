@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -86,19 +87,23 @@ public class ProxyGeocoder implements Geocoder, Closeable {
     }
 
     @Override
-    public Place lookup(String placeId, Locale lang) throws IOException {
+    public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try {
             URIBuilder b = createUriBuilder(Endpoints.LOOKUP, lang);
             b.setParameter(Endpoints.PARAM_PLACE_ID, placeId);
 
             final HttpGet request = new HttpGet(b.build());
-            return httpClient.execute(request, (HttpResponse response) -> {
-                if (isSuccess(response)) {
-                    return objectMapper.readValue(response.getEntity().getContent(),
-                            PlaceDTO.class);
-                }
-                throw createIOException(response);
-            }).toPlace();
+            return Optional.ofNullable(
+                    httpClient.execute(request, (HttpResponse response) -> {
+                        if (isSuccess(response)) {
+                            return objectMapper.readValue(response.getEntity().getContent(),
+                                    PlaceDTO.class);
+                        } else if (isNotFound(response)) {
+                            return null;
+                        }
+                        throw createIOException(response);
+                    })
+            ).map(PlaceDTO::toPlace);
         } catch (URISyntaxException e) {
             throw createIOException(Endpoints.LOOKUP, e);
         }
@@ -141,6 +146,11 @@ public class ProxyGeocoder implements Geocoder, Closeable {
     private boolean isSuccess(HttpResponse response) {
         final int statusCode = response.getStatusLine().getStatusCode();
         return statusCode >= 200 && statusCode < 300 && Objects.nonNull(response.getEntity());
+    }
+
+    private boolean isNotFound(HttpResponse response) {
+        final int statusCode = response.getStatusLine().getStatusCode();
+        return statusCode == 404;
     }
 
     @Override
