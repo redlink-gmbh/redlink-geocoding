@@ -3,6 +3,8 @@
  */
 package io.redlink.geocoding;
 
+import static java.lang.String.format;
+
 /**
  * A position on earth, identified by latitude and longitude.
  */
@@ -29,7 +31,11 @@ public final class LatLon {
     }
 
     public static LatLon valueOf(String lat, String lon) {
-        return create(Double.parseDouble(lat), Double.parseDouble(lon));
+        try {
+            return create(Double.parseDouble(lat), Double.parseDouble(lon));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(format("Parsing '%s,%s' failed", lat, lon), e);
+        }
     }
 
     public static LatLon valueOf(String latLon) {

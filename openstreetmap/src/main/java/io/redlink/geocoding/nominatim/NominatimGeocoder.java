@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -47,7 +48,7 @@ public class NominatimGeocoder implements Geocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 
-    public static final String PUBLIC_NOMINATIM_SERVER = "http://nominatim.openstreetmap.org/";
+    public static final String PUBLIC_NOMINATIM_SERVER = "https://nominatim.openstreetmap.org/";
     protected static final String SERVICE_GEOCODE = "/search";
     protected static final String SERVICE_REVERSE = "/reverse";
     protected static final String SERVICE_LOOKUP = "/lookup";
@@ -111,7 +112,7 @@ public class NominatimGeocoder implements Geocoder {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
                     return doc.select("searchresults place").stream()
-                            .map(NominatimGeocoder::readPlace)
+                            .map(NominatimGeocoder.this::readPlace)
                             .flatMap(Optional::stream)
                             .collect(Collectors.toList());
                 }
@@ -177,21 +178,32 @@ public class NominatimGeocoder implements Geocoder {
      * While some names are very common especially the {@link Type#city} level uses
      * different names in different regions and is in fact missing for some (e.g. Berlin)
      */
-    private static Optional<Place> readPlace(Element element) {
+    Optional<Place> readPlace(Element element) {
         if (element == null) {
             return Optional.empty();
         }
 
         final String placeId = createPlaceId(element);
         final String displayName = element.attr("display_name");
-        final LatLon latLon = LatLon.valueOf(element.attr("lat"), element.attr("lon"));
+        if (StringUtils.isAnyBlank(placeId, displayName)) {
+            return Optional.empty();
+        }
 
+        final LatLon latLon;
+        try {
+            latLon = LatLon.valueOf(element.attr("lat"), element.attr("lon"));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
 
         final Map<Type, AddressComponent> components = new EnumMap<>(Type.class);
         final Map<String, String> metadata = new HashMap<>();
-        element.children().forEach(c -> {
-            String value = c.text();
-            switch (c.nodeName()) {
+        element.children().forEach(child -> {
+            final String value = child.text();
+            if (StringUtils.isBlank(value)) {
+                return;
+            }
+            switch (child.nodeName()) {
                 case "country_code":
                     components.put(Type.countryCode, AddressComponent.create(Type.countryCode, value));
                     break;
@@ -221,18 +233,21 @@ public class NominatimGeocoder implements Geocoder {
                     components.put(Type.streetNumber, AddressComponent.create(Type.streetNumber, value));
                     break;
                 default: //add unmapped fields to the metadata
-                    metadata.put(c.nodeName(), value);
+                    metadata.put(child.nodeName(), value);
             }
         });
 
         return Optional.of(
-                Place.create(placeId, displayName, latLon, components.values(), metadata)
+                Place.create(placeId, displayName, latLon, Set.copyOf(components.values()), metadata)
         );
     }
 
     private static String createPlaceId(Element element) {
         final String type = element.attr("osm_type");
         final String osmId = element.attr("osm_id");
+        if (StringUtils.isAnyBlank(type, osmId)) {
+            return null;
+        }
         return String.format(Locale.ENGLISH, "%S%s", type.charAt(0), osmId);
     }
 
