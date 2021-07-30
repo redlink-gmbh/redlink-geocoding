@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -111,6 +112,7 @@ public class NominatimGeocoder implements Geocoder {
                 protected List<Place> parseJsoup(Document doc) {
                     return doc.select("searchresults place").stream()
                             .map(NominatimGeocoder::readPlace)
+                            .flatMap(Optional::stream)
                             .collect(Collectors.toList());
                 }
             });
@@ -144,16 +146,16 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId, Locale lang) throws IOException {
+    public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
             final URI uri = createUriBuilder(SERVICE_LOOKUP, lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
             final HttpGet request = new HttpGet(uri);
-            final Place place = client.execute(request, new JsoupResponseHandler<Place>(uri) {
+            final Optional<Place> place = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
-                protected Place parseJsoup(Document doc) {
+                protected Optional<Place> parseJsoup(Document doc) {
                     return readPlace(doc.select("lookupresults place").first());
                 }
             });
@@ -164,12 +166,16 @@ public class NominatimGeocoder implements Geocoder {
         }
     }
 
-    private static Place readPlace(Element element) {
+    private static Optional<Place> readPlace(Element element) {
+        if (element == null) {
+            return Optional.empty();
+        }
+
         Place place = Place.create(createPlaceId(element),
                 element.attr("display_name"),
                 LatLon.valueOf(element.attr("lat"), element.attr("lon")));
         processPlaceDetails(place, element);
-        return place;
+        return Optional.of(place);
     }
 
     /**

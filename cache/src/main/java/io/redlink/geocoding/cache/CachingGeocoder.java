@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class CachingGeocoder implements Geocoder {
 
     private final LoadingCache<LangString, List<Place>> geocodeCache;
     private final LoadingCache<LangCoords, List<Place>> reverseGeocodeCache;
-    private final LoadingCache<LangString, Place> lookupCache;
+    private final LoadingCache<LangString, Optional<Place>> lookupCache;
 
     private final String cacheExpiry;
 
@@ -47,7 +48,7 @@ public class CachingGeocoder implements Geocoder {
 
         geocodeCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<LangString, List<Place>>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public List<Place> load(LangString s) throws Exception {
                         return CachingGeocoder.this.geocoder.geocode(s.value, s.lang);
@@ -56,7 +57,7 @@ public class CachingGeocoder implements Geocoder {
 
         reverseGeocodeCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<LangCoords, List<Place>>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public List<Place> load(LangCoords coordinates) throws Exception {
                         return CachingGeocoder.this.geocoder.reverseGeocode(coordinates.coords, coordinates.lang);
@@ -65,9 +66,9 @@ public class CachingGeocoder implements Geocoder {
 
         lookupCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, timeUnit)
-                .build(new CacheLoader<LangString, Place>() {
+                .build(new CacheLoader<>() {
                     @Override
-                    public Place load(LangString s) throws Exception {
+                    public Optional<Place> load(LangString s) throws Exception {
                         return CachingGeocoder.this.geocoder.lookup(s.value, s.lang);
                     }
                 });
@@ -97,7 +98,7 @@ public class CachingGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId, Locale lang) throws IOException {
+    public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try {
             LOG.debug("Lookup of '{}'", placeId);
             return lookupCache.get(new LangString(placeId, lang));
