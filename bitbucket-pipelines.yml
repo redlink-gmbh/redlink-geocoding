@@ -23,7 +23,7 @@ definitions:
           - maven
           - sonar
           - jib
-        service:
+        services:
           - docker
         script:
           - >

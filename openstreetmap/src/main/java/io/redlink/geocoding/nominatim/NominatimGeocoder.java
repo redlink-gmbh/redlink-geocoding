@@ -193,6 +193,7 @@ public class NominatimGeocoder implements Geocoder {
         try {
             latLon = LatLon.valueOf(element.attr("lat"), element.attr("lon"));
         } catch (IllegalArgumentException e) {
+            LOG.trace("Ignoring place {} with invalid coordinates: {}", placeId, e.getMessage());
             return Optional.empty();
         }
 
