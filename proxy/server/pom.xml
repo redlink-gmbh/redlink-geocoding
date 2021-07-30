@@ -17,6 +17,9 @@
     <properties>
         <docker.image.namespace>${project.parent.artifactId}</docker.image.namespace>
         <docker.image.buildId>latest</docker.image.buildId>
+
+        <docker.local.skip>false</docker.local.skip>
+        <docker.upload.skip>false</docker.upload.skip>
     </properties>
 
     <dependencies>
@@ -57,6 +60,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>io.redlink.geocoding.proxy.server</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-install-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -88,6 +102,7 @@
                                     </platform>
                                 </platforms>
                             </from>
+                            <skip>${docker.local.skip}</skip>
                         </configuration>
                     </execution>
                     <execution>
@@ -109,6 +124,7 @@
                                     </platform>
                                 </platforms>
                             </from>
+                            <skip>${docker.upload.skip}</skip>
                         </configuration>
                     </execution>
                 </executions>
