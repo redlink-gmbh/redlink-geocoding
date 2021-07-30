@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpHead;
@@ -109,11 +110,19 @@ class NominatimGeocoderIT {
 
     @Test
     void testLookup() throws IOException {
-        final Place place = osmGeocoder.lookup(testPlaceId);
+        final Optional<Place> place = osmGeocoder.lookup(testPlaceId);
 
         Assertions.assertThat(place)
                 .as("place lookup")
+                .isPresent().get()
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
                 .hasFieldOrPropertyWithValue("address", testFormattedAddress);
+    }
+
+    @Test
+    void testInvalidLookup() throws IOException {
+        Assertions.assertThat(osmGeocoder.lookup("#!invalid"))
+                .as("Invalid placeId -> empty")
+                .isEmpty();
     }
 }

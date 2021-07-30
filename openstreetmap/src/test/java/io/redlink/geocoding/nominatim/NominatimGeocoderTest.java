@@ -10,6 +10,7 @@ import io.redlink.geocoding.Place;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -108,10 +109,11 @@ class NominatimGeocoderTest {
 
     @Test
     void testLookup() throws Exception {
-        final Place place = geocoder.lookup("N240109189");
+        final Optional<Place> place = geocoder.lookup("N240109189");
 
         assertThat(place)
                 .as("place lookup")
+                .isPresent().get()
                 .hasFieldOrPropertyWithValue("placeId", "N240109189")
                 .hasFieldOrPropertyWithValue("address", "Berlin, Deutschland")
                 .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5170365,13.3888599"));

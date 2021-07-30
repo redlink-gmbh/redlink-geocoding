@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -80,8 +81,8 @@ class GoogleMapsGeocoderIT {
             final Response response = client.newCall(request).execute();
             assumeTrue(response.isSuccessful(), "Remote Service Status");
         })
-        .as("Ping to remote service")
-        .doesNotThrowAnyException();
+                .as("Ping to remote service")
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -127,12 +128,20 @@ class GoogleMapsGeocoderIT {
 
     @Test
     void testLookup() throws IOException {
-        final Place place = gmGeocoder.lookup(testPlaceId);
+        final Optional<Place> place = gmGeocoder.lookup(testPlaceId);
 
         assertThat(place)
                 .as("Place Lookup")
+                .isPresent().get()
                 .hasFieldOrPropertyWithValue("placeId", testPlaceId)
                 .hasFieldOrPropertyWithValue("address", testFormattedAddress);
     }
 
+    @Test
+    void testInvalidLookup() throws IOException {
+        assertThat(gmGeocoder.lookup("#!invalid"))
+                .as("Invalid placeId -> empty()")
+                .isEmpty();
+
+    }
 }

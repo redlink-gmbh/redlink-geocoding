@@ -6,6 +6,7 @@ package io.redlink.geocoding;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  */
@@ -31,14 +32,14 @@ public interface Geocoder {
 
     List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException;
 
-    default Place lookup(String placeId) throws IOException {
+    default Optional<Place> lookup(String placeId) throws IOException {
         return lookup(placeId, (Locale) null);
     }
 
-    default Place lookup(String placeId, String language) throws IOException {
+    default Optional<Place> lookup(String placeId, String language) throws IOException {
         return lookup(placeId, Locale.forLanguageTag(language));
     }
 
-    Place lookup(String placeId, Locale lang) throws IOException;
+    Optional<Place> lookup(String placeId, Locale lang) throws IOException;
 
 }

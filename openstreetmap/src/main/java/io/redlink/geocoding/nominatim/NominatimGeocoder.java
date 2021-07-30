@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -111,6 +112,7 @@ public class NominatimGeocoder implements Geocoder {
                 protected List<Place> parseJsoup(Document doc) {
                     return doc.select("searchresults place").stream()
                             .map(NominatimGeocoder::readPlace)
+                            .flatMap(Optional::stream)
                             .collect(Collectors.toList());
                 }
             });
@@ -150,16 +152,16 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId, Locale lang) throws IOException {
+    public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
             final URI uri = createUriBuilder(SERVICE_LOOKUP, lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
             final HttpGet request = new HttpGet(uri);
-            final Place place = client.execute(request, new JsoupResponseHandler<Place>(uri) {
+            final Optional<Place> place = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
-                protected Place parseJsoup(Document doc) {
+                protected Optional<Place> parseJsoup(Document doc) {
                     return readPlace(doc.select("lookupresults place").first());
                 }
             });
@@ -175,7 +177,11 @@ public class NominatimGeocoder implements Geocoder {
      * While some names are very common especially the {@link Type#city} level uses
      * different names in different regions and is in fact missing for some (e.g. Berlin)
      */
-    private static Place readPlace(Element element) {
+    private static Optional<Place> readPlace(Element element) {
+        if (element == null) {
+            return Optional.empty();
+        }
+
         final String placeId = createPlaceId(element);
         final String displayName = element.attr("display_name");
         final LatLon latLon = LatLon.valueOf(element.attr("lat"), element.attr("lon"));
@@ -219,7 +225,9 @@ public class NominatimGeocoder implements Geocoder {
             }
         });
 
-        return Place.create(placeId, displayName, latLon, components.values(), metadata);
+        return Optional.of(
+                Place.create(placeId, displayName, latLon, components.values(), metadata)
+        );
     }
 
     private static String createPlaceId(Element element) {

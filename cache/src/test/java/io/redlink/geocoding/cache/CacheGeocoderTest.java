@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.anyString;
 
 /**
@@ -59,11 +59,12 @@ class CacheGeocoderTest {
 
     @Test
     void testLookup() throws IOException {
-        Place place = geocoder.lookup("any address");
+        Optional<Place> place = geocoder.lookup("any address");
 
         assertThat(place)
                 .as("lookup result")
-                .isEqualTo(mockPlace);
+                .isPresent()
+                .hasValue(mockPlace);
     }
 
     @Test
@@ -72,21 +73,39 @@ class CacheGeocoderTest {
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.lookup(placeId_1, (Locale) null))
-                .thenReturn(Place.create(placeId_1, null, null));
+                .thenReturn(Optional.of(Place.create(placeId_1, null, null)));
         Mockito.when(delegate.lookup(placeId_2, (Locale) null))
-                .thenReturn(Place.create(placeId_2, null, null));
+                .thenReturn(Optional.of(Place.create(placeId_2, null, null)));
 
         final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
-        assertEquals(placeId_1, cache.lookup(placeId_1).getPlaceId(), "lookup place1");
-        assertEquals(placeId_1, cache.lookup(placeId_1).getPlaceId(), "lookup place1 again");
+        assertThat(cache.lookup(placeId_1))
+                .as("lookup place 1")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_1);
+        assertThat(cache.lookup(placeId_1))
+                .as("lookup place 1 again")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_1);
 
         TimeUnit.SECONDS.sleep(1);
-        assertEquals(placeId_2, cache.lookup(placeId_2).getPlaceId(), "lookup place2");
-        assertEquals(placeId_1, cache.lookup(placeId_1).getPlaceId(), "lookup place1 again");
+        assertThat(cache.lookup(placeId_2))
+                .as("lookup place 2")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_2);
+        assertThat(cache.lookup(placeId_1))
+                .as("lookup place 1 again")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_1);
 
         TimeUnit.SECONDS.sleep(1);
-        assertEquals(placeId_2, cache.lookup(placeId_2).getPlaceId(), "lookup place2 again");
-        assertEquals(placeId_1, cache.lookup(placeId_1).getPlaceId(), "lookup place1 again");
+        assertThat(cache.lookup(placeId_2))
+                .as("lookup place 2 again")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_2);
+        assertThat(cache.lookup(placeId_1))
+                .as("lookup place 1 again")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId_1);
 
         Mockito.verify(delegate, Mockito.never()).geocode(Mockito.anyString());
         Mockito.verify(delegate, Mockito.never()).reverseGeocode(Mockito.any(LatLon.class));
@@ -217,8 +236,8 @@ class CacheGeocoderTest {
         }
 
         @Override
-        public Place lookup(String placeId, Locale lang) {
-            return mockPlace;
+        public Optional<Place> lookup(String placeId, Locale lang) {
+            return Optional.of(mockPlace);
         }
     }
 

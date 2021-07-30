@@ -6,12 +6,14 @@ package io.redlink.geocoding.google;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.PlacesApi;
+import com.google.maps.errors.InvalidRequestException;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,16 +73,19 @@ public class GoogleMapsGeocoder implements Geocoder {
     }
 
     @Override
-    public Place lookup(String placeId, Locale lang) throws IOException {
+    public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try {
             final Place place = placeDetails2Place(PlacesApi.placeDetails(context, placeId)
                     .language((lang == null ? language : lang).toLanguageTag())
                     .await());
             LOG.debug("Lookup of {} resulted in {}", placeId, place);
-            return place;
+            return Optional.of(place);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException(e);
+        } catch (InvalidRequestException e) {
+            LOG.trace("Invalid Request for lookup {}", placeId, e);
+            return Optional.empty();
         } catch (Exception e) {
             throw new IOException(e);
         }
