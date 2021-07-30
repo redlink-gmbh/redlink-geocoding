@@ -14,13 +14,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -47,7 +48,7 @@ public class NominatimGeocoder implements Geocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 
-    public static final String PUBLIC_NOMINATIM_SERVER = "http://nominatim.openstreetmap.org/";
+    public static final String PUBLIC_NOMINATIM_SERVER = "https://nominatim.openstreetmap.org/";
     protected static final String SERVICE_GEOCODE = "/search";
     protected static final String SERVICE_REVERSE = "/reverse";
     protected static final String SERVICE_LOOKUP = "/lookup";
@@ -111,7 +112,7 @@ public class NominatimGeocoder implements Geocoder {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
                     return doc.select("searchresults place").stream()
-                            .map(NominatimGeocoder::readPlace)
+                            .map(NominatimGeocoder.this::readPlace)
                             .flatMap(Optional::stream)
                             .collect(Collectors.toList());
                 }
@@ -131,13 +132,19 @@ public class NominatimGeocoder implements Geocoder {
                     .setParameter(PARAM_LON, String.valueOf(coordinates.lon()))
                     .build();
             final HttpGet request = new HttpGet(uri);
-            final List<Place> places = Collections.singletonList(client.execute(request, new JsoupResponseHandler<Place>(uri) {
+            final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
-                protected Place parseJsoup(Document doc) {
+                protected List<Place> parseJsoup(Document doc) {
                     final Element result = doc.select("reversegeocode result").first();
-                    return Place.create(createPlaceId(result), result.text(), coordinates);
+                    if (result == null) {
+                        return List.of();
+                    } else {
+                        return List.of(
+                                Place.create(createPlaceId(result), result.text(), coordinates)
+                        );
+                    }
                 }
-            }));
+            });
             LOG.debug("Reverse-Geocoding '{}' resulted in {} places", coordinates, places.size());
             return places;
         } catch (URISyntaxException e) {
@@ -166,78 +173,82 @@ public class NominatimGeocoder implements Geocoder {
         }
     }
 
-    private static Optional<Place> readPlace(Element element) {
-        if (element == null) {
-            return Optional.empty();
-        }
-
-        Place place = Place.create(createPlaceId(element),
-                element.attr("display_name"),
-                LatLon.valueOf(element.attr("lat"), element.attr("lon")));
-        processPlaceDetails(place, element);
-        return Optional.of(place);
-    }
-
     /**
      * The element names of place details are different between different regions.
      * While some names are very common especially the {@link Type#city} level uses
      * different names in different regions and is in fact missing for some (e.g. Berlin)
-     *
-     * @param place
-     * @param element
      */
-    private static void processPlaceDetails(Place place, Element element) {
+    Optional<Place> readPlace(Element element) {
         if (element == null) {
-            return;
+            return Optional.empty();
         }
-        Map<Type, AddressComponent> components = new EnumMap<>(Type.class);
-        element.children().forEach(c -> {
-            String value = c.text();
-            switch (c.nodeName()) {
+
+        final String placeId = createPlaceId(element);
+        final String displayName = element.attr("display_name");
+        if (StringUtils.isAnyBlank(placeId, displayName)) {
+            return Optional.empty();
+        }
+
+        final LatLon latLon;
+        try {
+            latLon = LatLon.valueOf(element.attr("lat"), element.attr("lon"));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+
+        final Map<Type, AddressComponent> components = new EnumMap<>(Type.class);
+        final Map<String, String> metadata = new HashMap<>();
+        element.children().forEach(child -> {
+            final String value = child.text();
+            if (StringUtils.isBlank(value)) {
+                return;
+            }
+            switch (child.nodeName()) {
                 case "country_code":
-                    components.put(Type.countryCode, new AddressComponent(Type.countryCode, value));
+                    components.put(Type.countryCode, AddressComponent.create(Type.countryCode, value));
                     break;
                 case "country":
-                    components.put(Type.country, new AddressComponent(Type.country, value));
+                    components.put(Type.country, AddressComponent.create(Type.country, value));
                     break;
                 case "postcode":
-                    components.put(Type.postalCode, new AddressComponent(Type.postalCode, value));
+                    components.put(Type.postalCode, AddressComponent.create(Type.postalCode, value));
                     break;
                 case "state":
-                    components.put(Type.state, new AddressComponent(Type.state, value));
+                    components.put(Type.state, AddressComponent.create(Type.state, value));
                     break;
                 case "village":
                 case "city":
                 case "town":
-                    components.put(Type.city, new AddressComponent(Type.city, value));
+                    components.put(Type.city, AddressComponent.create(Type.city, value));
                     break;
                 case "city_district":
                     //case "suburb":
                     //case "neighbourhood":
-                    components.put(Type.sublocality, new AddressComponent(Type.sublocality, value));
+                    components.put(Type.sublocality, AddressComponent.create(Type.sublocality, value));
                     break;
                 case "road":
-                    components.put(Type.street, new AddressComponent(Type.street, value));
+                    components.put(Type.street, AddressComponent.create(Type.street, value));
                     break;
                 case "house_number":
-                    components.put(Type.streetNumber, new AddressComponent(Type.streetNumber, value));
+                    components.put(Type.streetNumber, AddressComponent.create(Type.streetNumber, value));
                     break;
                 default: //add unmapped fields to the metadata
-                    place.getMetadata().put(c.nodeName(), value);
+                    metadata.put(child.nodeName(), value);
             }
         });
-        place.getComponents().addAll(components.values());
 
+        return Optional.of(
+                Place.create(placeId, displayName, latLon, Set.copyOf(components.values()), metadata)
+        );
     }
 
     private static String createPlaceId(Element element) {
         final String type = element.attr("osm_type");
         final String osmId = element.attr("osm_id");
-        return String.format(Locale.ENGLISH, "%S%s", type.substring(0, 1), osmId);
-    }
-
-    protected URIBuilder createUriBuilder(String service) throws URISyntaxException {
-        return createUriBuilder(service, null);
+        if (StringUtils.isAnyBlank(type, osmId)) {
+            return null;
+        }
+        return String.format(Locale.ENGLISH, "%S%s", type.charAt(0), osmId);
     }
 
     protected URIBuilder createUriBuilder(String service, Locale lang) throws URISyntaxException {

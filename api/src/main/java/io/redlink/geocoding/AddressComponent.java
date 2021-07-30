@@ -1,11 +1,11 @@
 package io.redlink.geocoding;
 
-public class AddressComponent implements Comparable<AddressComponent>{
+public final class AddressComponent implements Comparable<AddressComponent>{
 
     private final Type type;
     private final String value;
     
-    public AddressComponent(Type type, String value) {
+    private AddressComponent(Type type, String value) {
         this.type = type;
         this.value = value;
     }
@@ -17,12 +17,12 @@ public class AddressComponent implements Comparable<AddressComponent>{
     public String getValue() {
         return value;
     }
-    
+
     @Override
     public int compareTo(AddressComponent o) {
         return Integer.compare(type.ordinal(),o.type.ordinal());
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -55,7 +55,10 @@ public class AddressComponent implements Comparable<AddressComponent>{
     public String toString() {
         return "AddressComponent [type=" + type + ", value=" + value + "]";
     }
-    
+
+    public static AddressComponent create(Type type, String value) {
+        return new AddressComponent(type, value);
+    }
 
     @SuppressWarnings("java:S115")
     public enum Type {

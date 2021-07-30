@@ -1,0 +1,8 @@
+geocoding:
+  cache-timeout: ${GEO_CACHE_SECONDS:-1}
+  google:
+    api-key: ${GOOGLE_API_KEY:}
+  lang: ${GEO_DEFAULT_LANG:}
+  nominatim:
+    base-url: ${NOMINATIM_BASE_URL:}
+    email: ${NOMINATIM_MAIL:}

@@ -37,6 +37,12 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.redlink.geocoding</groupId>
+            <artifactId>geocoding-proxy</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>io.redlink.geocoding</groupId>

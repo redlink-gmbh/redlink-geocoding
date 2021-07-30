@@ -43,6 +43,8 @@
         <module>google</module>
         <module>openstreetmap</module>
 
+        <module>proxy</module>
+
         <module>spring-boot</module>
         <module>spring-boot-it</module>
     </modules>
@@ -77,6 +79,7 @@
         <gmaps.version>0.18.2</gmaps.version>
         <guava.version>30.1.1-jre</guava.version>
         <jsoup.version>1.14.1</jsoup.version>
+        <jackson.version>2.12.4</jackson.version>
         <httpclient.version>4.5.13</httpclient.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <logback.version>1.2.4</logback.version>
@@ -104,6 +107,16 @@
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -145,6 +158,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>

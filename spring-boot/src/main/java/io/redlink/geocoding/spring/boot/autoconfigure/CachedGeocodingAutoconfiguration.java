@@ -27,7 +27,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnBean(Geocoder.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
 @Conditional(CachedGeocodingAutoconfiguration.CacheConfigurationCondition.class)
-@AutoConfigureAfter({GoogleGeocodingAutoConfiguration.class, NominatimGeocodingAutoConfiguration.class})
+@AutoConfigureAfter({
+        GoogleGeocodingAutoConfiguration.class,
+        NominatimGeocodingAutoConfiguration.class,
+        ProxyGeocodingAutoConfiguration.class,
+})
 public class CachedGeocodingAutoconfiguration extends GeocodingAutoConfiguration {
 
     private final Geocoder geocoder;

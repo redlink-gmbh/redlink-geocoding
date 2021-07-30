@@ -3,6 +3,7 @@
  */
 package io.redlink.geocoding.spring.boot.autoconfigure;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,6 +16,8 @@ public class GeocodingProperties {
     private GoogleMapsProperties google = new GoogleMapsProperties();
 
     private NominatimProperties nominatim = new NominatimProperties();
+
+    private ProxyProperties proxyService = new ProxyProperties();
 
     private Locale lang = Locale.ENGLISH;
 
@@ -92,6 +95,19 @@ public class GeocodingProperties {
         }
     }
 
+    public static class ProxyProperties {
+        private URI baseUrl;
+
+        public URI getBaseUrl() {
+            return baseUrl;
+        }
+
+        public ProxyProperties setBaseUrl(URI baseUrl) {
+            this.baseUrl = baseUrl;
+            return this;
+        }
+    }
+
     public GoogleMapsProperties getGoogle() {
         return google;
     }
@@ -107,6 +123,15 @@ public class GeocodingProperties {
 
     public GeocodingProperties setNominatim(NominatimProperties nominatim) {
         this.nominatim = nominatim;
+        return this;
+    }
+
+    public ProxyProperties getProxyService() {
+        return proxyService;
+    }
+
+    public GeocodingProperties setProxyService(ProxyProperties proxyService) {
+        this.proxyService = proxyService;
         return this;
     }
 

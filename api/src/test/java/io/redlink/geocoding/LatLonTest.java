@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  *
  */
 class LatLonTest {
-    private final LatLon latLon1 = new LatLon(45.000, 12.000);
-    private final LatLon latLon2 = new LatLon(45.000, 12.000);
-    private final LatLon latLon3 = new LatLon(43.0204, 15.010);
-    private final LatLon latLon4 = new LatLon(40.10006, 13.000);
+    private final LatLon latLon1 = LatLon.create(45.000, 12.000);
+    private final LatLon latLon2 = LatLon.create(45.000, 12.000);
+    private final LatLon latLon3 = LatLon.create(43.0204, 15.010);
+    private final LatLon latLon4 = LatLon.create(40.10006, 13.000);
 
     @Test
     void testEqual() {
@@ -46,7 +46,7 @@ class LatLonTest {
         final Random rnd = new Random();
         final double lat = -90d + 180d * rnd.nextDouble(),
                 lon = -180d + 360d * rnd.nextDouble();
-        final LatLon expected = new LatLon(lat, lon);
+        final LatLon expected = LatLon.create(lat, lon);
 
         assertEquals(expected, LatLon.valueOf(lat + "," + lon), "parsing from string");
         assertEquals(expected, LatLon.valueOf(String.valueOf(lat), String.valueOf(lon)), "parsing from strings");

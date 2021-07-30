@@ -5,16 +5,18 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import io.redlink.geocoding.AddressComponent;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -71,16 +73,6 @@ class NominatimGeocoderTest {
                 );
     }
 
-
-
-
-    private static Document loadTestData(String serviceLookup) throws IOException {
-        return Jsoup.parse(NominatimGeocoderTest.class.getResourceAsStream(serviceLookup + "-response.xml"),
-                "utf-8",
-                "http://example.com/",
-                Parser.xmlParser());
-    }
-
     @Test
     void testGeocode() throws Exception {
         final List<Place> places = geocoder.geocode("135 pilkington, avenue birmingham");
@@ -117,5 +109,55 @@ class NominatimGeocoderTest {
                 .hasFieldOrPropertyWithValue("placeId", "N240109189")
                 .hasFieldOrPropertyWithValue("address", "Berlin, Deutschland")
                 .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5170365,13.3888599"));
+    }
+
+    @Test
+    void testReadPlace() {
+        // Something that works
+        final Place place = Place.create("X123123", "The Street", LatLon.create(15, 25),
+                Set.of(AddressComponent.create(AddressComponent.Type.street, "Street")),
+                Map.of("source", "test"));
+        final Optional<Place> actual = geocoder.readPlace(createPlaceElement(
+                place.getPlaceId(), place.getAddress(),
+                String.format("%f,%f", place.getLatLon().lat(), place.getLatLon().lon()),
+                Map.of(
+                        "road", "Street",
+                        "source", "test"
+                )
+        ));
+        assertThat(actual)
+                .as("Working example")
+                .isPresent().get()
+                .isEqualTo(place);
+
+        assertThat(geocoder.readPlace(createPlaceElement(
+                null, "10 Downing Street", "15,25", Map.of()
+        )))
+                .as("No PlaceId")
+                .isEmpty();
+        assertThat(geocoder.readPlace(createPlaceElement(
+                "X123", null, "15,25", Map.of()
+        )))
+                .as("No Street")
+                .isEmpty();
+        assertThat(geocoder.readPlace(createPlaceElement(
+                "X123", "Downtown", "somewhere", Map.of()
+        )))
+                .as("Invalid Coordinates")
+                .isEmpty();
+    }
+
+    static Element createPlaceElement(String placeId, String address, String latLon, Map<String, String> components) {
+        final Element place = new Element("place")
+                .attr("osm_type", StringUtils.repeat(StringUtils.left(placeId, 1), 5))
+                .attr("osm_id", StringUtils.substring(placeId, 1))
+                .attr("display_name", address)
+                .attr("lat", StringUtils.substringBefore(latLon, ","))
+                .attr("lon", StringUtils.substringAfter(latLon, ","))
+        ;
+
+        components.forEach((k,v) -> new Element(k).text(v).appendTo(place));
+
+        return place;
     }
 }

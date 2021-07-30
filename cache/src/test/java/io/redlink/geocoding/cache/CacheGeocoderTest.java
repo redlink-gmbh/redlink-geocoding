@@ -118,8 +118,8 @@ class CacheGeocoderTest {
     void testGeocodeCaching() throws Exception {
         final String placeId_1 = UUID.randomUUID().toString(),
                 placeId_2 = UUID.randomUUID().toString();
-        final Place place_1 = Place.create(placeId_1, "place1", new LatLon(1, 1)),
-                place_2 = Place.create(placeId_2, "place2", new LatLon(2, 2));
+        final Place place_1 = Place.create(placeId_1, "place1", LatLon.create(1, 1)),
+                place_2 = Place.create(placeId_2, "place2", LatLon.create(2, 2));
 
         final Geocoder delegate = Mockito.mock(Geocoder.class);
         Mockito.when(delegate.geocode(placeId_1, (Locale) null))
@@ -166,8 +166,8 @@ class CacheGeocoderTest {
     @Test
     void testReverseCaching() throws Exception {
         final Random rnd = new Random();
-        final LatLon loc_1 = new LatLon(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble()),
-                loc_2 = new LatLon(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble());
+        final LatLon loc_1 = LatLon.create(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble()),
+                loc_2 = LatLon.create(-90d + 180d * rnd.nextDouble(), -180d + 360d * rnd.nextDouble());
         final String placeId_1 = UUID.randomUUID().toString(), placeId_2 = UUID.randomUUID().toString();
         final Place place_1 = Place.create(placeId_1, null, loc_1),
                 place_2 = Place.create(placeId_2, null, loc_2);

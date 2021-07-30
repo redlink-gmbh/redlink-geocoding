@@ -47,7 +47,7 @@ class GoogleMapsGeocoderIT {
 
     private final GoogleMapsGeocoder gmGeocoder;
 
-    private final LatLon latLon = new LatLon(testLat, testLon);
+    private final LatLon latLon = LatLon.create(testLat, testLon);
 
     public GoogleMapsGeocoderIT() {
         final String apiKey = System.getProperty("google.apiKey", System.getenv("GOOGLE_API_KEY"));

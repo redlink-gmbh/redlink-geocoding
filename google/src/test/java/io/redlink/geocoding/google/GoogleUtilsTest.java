@@ -23,7 +23,7 @@ class GoogleUtilsTest {
 
     private PlaceDetails googlePlaceDetails = new PlaceDetails();
 
-    private final LatLon redlinkLatLon = new LatLon(45.00, 12.00);
+    private final LatLon redlinkLatLon = LatLon.create(45.00, 12.00);
 
     @BeforeEach
     void setup() {
