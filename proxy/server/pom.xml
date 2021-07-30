@@ -17,6 +17,9 @@
     <properties>
         <docker.image.namespace>${project.parent.artifactId}</docker.image.namespace>
         <docker.image.buildId>latest</docker.image.buildId>
+
+        <docker.local.skip>false</docker.local.skip>
+        <docker.upload.skip>false</docker.upload.skip>
     </properties>
 
     <dependencies>
@@ -99,6 +102,7 @@
                                     </platform>
                                 </platforms>
                             </from>
+                            <skip>${docker.local.skip}</skip>
                         </configuration>
                     </execution>
                     <execution>
@@ -120,6 +124,7 @@
                                     </platform>
                                 </platforms>
                             </from>
+                            <skip>${docker.upload.skip}</skip>
                         </configuration>
                     </execution>
                 </executions>
