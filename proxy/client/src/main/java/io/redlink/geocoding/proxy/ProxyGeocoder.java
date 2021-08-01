@@ -53,6 +53,10 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         this(baseUri, language, null);
     }
 
+    public static ProxyBuilder configure() {
+        return new ProxyBuilder();
+    }
+
     @Override
     public List<Place> geocode(String address, Locale lang) throws IOException {
         try {
@@ -158,6 +162,11 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         if (internalHttpClient) {
             httpClient.close();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ProxyGeocoder [baseUri=" + baseUri + ", language=" + language + ']';
     }
 
     private static String removeEnd(String string, String suffix) {
