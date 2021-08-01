@@ -54,6 +54,8 @@ pipelines:
   branches:
     master:
       - step: *build-test-deploy
+    maintenance-v*:
+      - step: *build-test-deploy
   tags:
     v*:
       - step: *build-test-deploy
