@@ -7,6 +7,8 @@ import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.proxy.ProxyBuilder;
 import io.redlink.geocoding.proxy.ProxyGeocoder;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -31,6 +33,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @AutoConfigureAfter({NominatimGeocodingAutoConfiguration.class})
 public class ProxyGeocodingAutoConfiguration extends GeocodingAutoConfiguration {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyGeocodingAutoConfiguration.class);
+
     public ProxyGeocodingAutoConfiguration(GeocodingProperties properties) {
         super(properties);
     }
@@ -40,12 +44,14 @@ public class ProxyGeocodingAutoConfiguration extends GeocodingAutoConfiguration 
     public Geocoder nominatim() {
         final GeocodingProperties.ProxyProperties proxyProperties = properties.getProxyService();
 
-        final ProxyBuilder proxyBuilder = ProxyBuilder.configure()
+        final ProxyBuilder proxyBuilder = ProxyGeocoder.configure()
                     .setBaseUri(proxyProperties.getBaseUrl());
 
-        return proxyBuilder
+        final ProxyGeocoder proxyGeocoder = proxyBuilder
                 .setLocale(properties.getLang())
                 .create();
+        LOG.info("Initializing {}", proxyGeocoder);
+        return proxyGeocoder;
     }
 
     static class ProxyGeocoderCondition implements ConfigurationCondition {

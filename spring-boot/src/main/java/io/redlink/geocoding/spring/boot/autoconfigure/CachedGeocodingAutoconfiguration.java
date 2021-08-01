@@ -6,6 +6,8 @@ package io.redlink.geocoding.spring.boot.autoconfigure;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.cache.CachingGeocoder;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -34,6 +36,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 })
 public class CachedGeocodingAutoconfiguration extends GeocodingAutoConfiguration {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CachedGeocodingAutoconfiguration.class);
+
     private final Geocoder geocoder;
 
     public CachedGeocodingAutoconfiguration(GeocodingProperties properties, Geocoder geocoder) {
@@ -45,10 +49,12 @@ public class CachedGeocodingAutoconfiguration extends GeocodingAutoConfiguration
     @Bean("cachedGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public CachingGeocoder cacheGeocoder() {
-        return CachingGeocoder.configure()
+        final CachingGeocoder cachingGeocoder = CachingGeocoder.configure()
                 .setCacheExpiry(properties.getCacheTimeout(), TimeUnit.SECONDS)
                 .setGeocoder(geocoder)
                 .create();
+        LOG.info("Initializing {}", cachingGeocoder);
+        return cachingGeocoder;
     }
 
     static class CacheConfigurationCondition implements ConfigurationCondition {
