@@ -6,6 +6,8 @@ package io.redlink.geocoding.spring.boot.autoconfigure;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.nominatim.NominatimBuilder;
 import io.redlink.geocoding.nominatim.NominatimGeocoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -24,6 +26,8 @@ import org.springframework.context.annotation.Scope;
 @AutoConfigureAfter({GoogleGeocodingAutoConfiguration.class})
 public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfiguration {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocodingAutoConfiguration.class);
+
     public NominatimGeocodingAutoConfiguration(GeocodingProperties properties) {
         super(properties);
     }
@@ -40,10 +44,12 @@ public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfigurat
             nominatimBuilder.setBaseUrl(nominatim.getBaseUrl());
         }
 
-        return nominatimBuilder
+        final NominatimGeocoder nominatimGeocoder = nominatimBuilder
                 .setLocale(properties.getLang())
                 .setProxy(buildProxy())
                 .create();
+        LOG.info("Initializing {}", nominatimGeocoder);
+        return nominatimGeocoder;
     }
 
 }

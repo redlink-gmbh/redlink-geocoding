@@ -7,6 +7,8 @@ import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.google.GoogleMapsBuilder;
 import io.redlink.geocoding.google.GoogleMapsGeocoder;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +30,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Conditional(GoogleGeocodingAutoConfiguration.GoogleMapsCondition.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
 public class GoogleGeocodingAutoConfiguration extends GeocodingAutoConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocodingAutoConfiguration.class);
 
     public GoogleGeocodingAutoConfiguration(GeocodingProperties properties) {
         super(properties);
@@ -51,10 +55,12 @@ public class GoogleGeocodingAutoConfiguration extends GeocodingAutoConfiguration
             googleMapsBuilder.setCredentials(google.getClientId(), google.getCryptoSecret());
         }
 
-        return googleMapsBuilder
+        final GoogleMapsGeocoder googleMapsGeocoder = googleMapsBuilder
                 .setLocale(properties.getLang())
                 .setProxy(buildProxy())
                 .create();
+        LOG.info("Initializing {}", googleMapsGeocoder);
+        return googleMapsGeocoder;
     }
 
     static class GoogleMapsCondition implements ConfigurationCondition {
