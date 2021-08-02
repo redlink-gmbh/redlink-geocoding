@@ -25,8 +25,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyGeocoder implements Geocoder, Closeable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyGeocoder.class);
 
     private final URI baseUri;
     private final Locale language;
@@ -64,10 +68,12 @@ public class ProxyGeocoder implements Geocoder, Closeable {
             b.setParameter(Endpoints.PARAM_ADDRESS, address);
 
             final HttpGet request = new HttpGet(b.build());
-            return httpClient.execute(request, this::readPlaceList)
+            final List<Place> places = httpClient.execute(request, this::readPlaceList)
                     .stream()
                     .map(PlaceDTO::toPlace)
                     .collect(Collectors.toList());
+            LOG.debug("Geocoding '{}' resulted in {} places", address, places.size());
+            return places;
         } catch (URISyntaxException e) {
             throw createIOException(Endpoints.GEOCODE, e);
         }
@@ -81,10 +87,12 @@ public class ProxyGeocoder implements Geocoder, Closeable {
             b.setParameter(Endpoints.PARAM_LON, String.valueOf(coordinates.lon()));
 
             final HttpGet request = new HttpGet(b.build());
-            return httpClient.execute(request, this::readPlaceList)
+            final List<Place> places = httpClient.execute(request, this::readPlaceList)
                     .stream()
                     .map(PlaceDTO::toPlace)
                     .collect(Collectors.toList());
+            LOG.debug("Reverse-Geocoding '{}' resulted in {} places", coordinates, places.size());
+            return places;
         } catch (URISyntaxException e) {
             throw createIOException(Endpoints.REVERSE_GEOCODE, e);
         }
@@ -97,7 +105,7 @@ public class ProxyGeocoder implements Geocoder, Closeable {
             b.setParameter(Endpoints.PARAM_PLACE_ID, placeId);
 
             final HttpGet request = new HttpGet(b.build());
-            return Optional.ofNullable(
+            final Optional<Place> place = Optional.ofNullable(
                     httpClient.execute(request, (HttpResponse response) -> {
                         if (isSuccess(response)) {
                             return objectMapper.readValue(response.getEntity().getContent(),
@@ -108,6 +116,8 @@ public class ProxyGeocoder implements Geocoder, Closeable {
                         throw createIOException(response);
                     })
             ).map(PlaceDTO::toPlace);
+            LOG.debug("Lookup of {} resulted in {}", placeId, place);
+            return place;
         } catch (URISyntaxException e) {
             throw createIOException(Endpoints.LOOKUP, e);
         }

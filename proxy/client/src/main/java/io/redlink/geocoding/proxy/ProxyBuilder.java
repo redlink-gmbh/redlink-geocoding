@@ -22,6 +22,10 @@ public class ProxyBuilder {
         this(URI.create(baseUri));
     }
 
+    /**
+     * @deprecated use {@link ProxyGeocoder#configure()}
+     */
+    @Deprecated(forRemoval = true, since = "1.1.0")
     public static ProxyBuilder configure() {
         return new ProxyBuilder();
     }

@@ -1,5 +1,6 @@
 module io.redlink.geocoding.proxy {
     requires transitive io.redlink.geocoding.api;
+    requires org.slf4j;
 
     requires com.fasterxml.jackson.databind;
     requires io.redlink.geocoding.proxy.commons;
