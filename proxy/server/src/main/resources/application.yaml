@@ -6,3 +6,12 @@ geocoding:
   nominatim:
     base-url: ${NOMINATIM_BASE_URL:}
     email: ${NOMINATIM_MAIL:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - metrics
+          - prometheus

@@ -3,6 +3,8 @@
  */
 package io.redlink.geocoding.proxy.server.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.proxy.io.Endpoints;
@@ -10,7 +12,9 @@ import io.redlink.geocoding.proxy.io.PlaceDTO;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -27,13 +31,16 @@ public class GeocodingProxyController {
     private static final Logger LOG = LoggerFactory.getLogger(GeocodingProxyController.class);
 
     private final Geocoder geocoder;
+    private final MeterRegistry meterRegistry;
 
-    public GeocodingProxyController(Geocoder geocoder) {
+    public GeocodingProxyController(Geocoder geocoder, MeterRegistry meterRegistry) {
         this.geocoder = geocoder;
+        this.meterRegistry = meterRegistry;
     }
 
     @GetMapping
     public ResponseEntity<Void> ping() {
+        meterRegistry.counter("ping").increment();
         return ResponseEntity.noContent().build();
     }
 
@@ -43,6 +50,8 @@ public class GeocodingProxyController {
             @RequestParam(value = Endpoints.PARAM_LANG, required = false) Locale lang
     ) {
         try {
+            LOG.debug("Geocode {} ({})", address, lang);
+            meterRegistry.counter("geocode", createLangTag(lang)).increment();
             return ResponseEntity.ok(
                     geocoder.geocode(address, lang)
                             .stream()
@@ -64,6 +73,8 @@ public class GeocodingProxyController {
     ) {
         final LatLon coordinates = LatLon.create(lat, lon);
         try {
+            LOG.debug("Reverse Geocode {},{} ({})", coordinates.lat(), coordinates.lon(), lang);
+            meterRegistry.counter("geo-reverse", createLangTag(lang)).increment();
             return ResponseEntity.ok(
                     geocoder.reverseGeocode(coordinates, lang)
                             .stream()
@@ -83,6 +94,8 @@ public class GeocodingProxyController {
             @RequestParam(value = Endpoints.PARAM_LANG, required = false) Locale lang
     ) {
         try {
+            LOG.debug("Lookup {} ({})", placeId, lang);
+            meterRegistry.counter("lookup", createLangTag(lang)).increment();
             return ResponseEntity.of(
                     geocoder.lookup(placeId, lang)
                             .map(PlaceDTO::fromPlace)
@@ -94,5 +107,13 @@ public class GeocodingProxyController {
         }
     }
 
+    private static Tags createLangTag(Locale lang) {
+        return Tags.of("lang",
+                Optional.ofNullable(lang)
+                        .map(Locale::getLanguage)
+                        .filter(StringUtils::isNotBlank)
+                        .orElse("none")
+        );
+    }
 
 }
