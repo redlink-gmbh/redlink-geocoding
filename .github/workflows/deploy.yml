@@ -1,7 +1,9 @@
 name: Publish package to the Maven Central Repository
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [ "Build and Test" ]
+    types: [ completed ]
+    branches: [ main ]
 
 env:
   DOCKER_REGISTRY: ghcr.io/${{ github.repository }}
@@ -10,7 +12,7 @@ jobs:
   publish:
     name: Publish to Sonatype OSS
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'redlink-gmbh/redlink-geocoding' }}
+    if: ${{ github.repository == 'redlink-gmbh/redlink-geocoding' && github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Maven Central Repository
