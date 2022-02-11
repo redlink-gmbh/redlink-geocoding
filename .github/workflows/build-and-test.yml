@@ -1,21 +1,37 @@
-name: Bulid and Test
+name: Build and Test
 
 on:
   push:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '11'
-        distribution: temurin
+        distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -V -B clean verify
+      run: mvn -V -B 
+        clean
+        org.jacoco:jacoco-maven-plugin:prepare-agent
+        verify
+        org.jacoco:jacoco-maven-plugin:report
+        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        -Dsonar.organization=redlink
+        -Dsonar.host.url=https://sonarcloud.io
+        -Dsonar.projectKey=redlink-gmbh_redlink-geocoding
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
