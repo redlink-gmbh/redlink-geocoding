@@ -26,6 +26,8 @@ jobs:
         verify
         org.jacoco:jacoco-maven-plugin:report
         org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        -Dnominatim.email=${{ secrets.NOMINATIM_USER }} 
+        -Dgoogle.apiKey=${{ secrets.GOOGLE_APIKEY }}
         -Dsonar.organization=redlink
         -Dsonar.host.url=https://sonarcloud.io
         -Dsonar.projectKey=redlink-gmbh_redlink-geocoding
