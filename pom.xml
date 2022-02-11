@@ -100,7 +100,7 @@
         <slf4j.version>1.7.32</slf4j.version>
         <gmaps.version>0.18.2</gmaps.version>
         <guava.version>30.1.1-jre</guava.version>
-        <jsoup.version>1.14.1</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
         <jackson.version>2.12.4</jackson.version>
         <httpclient.version>4.5.13</httpclient.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
