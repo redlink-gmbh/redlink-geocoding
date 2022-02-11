@@ -1,4 +1,13 @@
 # Redlink Geocoding Library
+
+[![Build Status](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/build-and-test.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=redlink-gmbh_redlink-geocoding&metric=alert_status)](https://sonarcloud.io/dashboard?id=redlink-gmbh_redlink-geocoding)
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.redlink.geocoding/geocoding.png)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.redlink.geocoding%22)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/io.redlink.geocoding/geocoding.png)](https://oss.sonatype.org/#nexus-search;gav~io.redlink.geocoding~~~~)
+[![Javadocs](https://www.javadoc.io/badge/io.redlink.geocoding/geocoding.svg)](https://www.javadoc.io/doc/io.redlink.geocoding/geocoding)
+[![Apache 2.0 License](https://img.shields.io/github/license/redlink-gmbh/geocoding.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 The Redlink geocoding library provides the means to perform geographical 
 information enhancement based on different services. At the current 
 development state it is possible to do based on [Google Maps](https://developers.google.com/maps/documentation/geocoding/intro) 
