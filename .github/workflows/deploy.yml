@@ -1,0 +1,38 @@
+name: Publish package to the Maven Central Repository
+on:
+  push:
+    branches: [main]
+
+env:
+  DOCKER_REGISTRY: ghcr.io/${{ github.repository }}
+
+jobs:
+  publish:
+    name: Publish to Sonatype OSS
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'redlink-gmbh/redlink-geocoding' }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - name: Compile & Test
+        run: mvn -V -B clean verify
+      - name: Publish package
+        run: mvn -B --no-transfer-progress 
+          package javadoc:aggregate-jar deploy 
+          -Dquick
+          -Ddocker.local.skip=true
+          -Ddocker.image.namespace=${{ env.DOCKER_REGISTRY }}
+          -Ddocker.image.buildId=build${{ github.run_number }}_${GITHUB_SHA:0:7}
+          -Djib.to.auth.username=${{ github.actor }}
+          -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
