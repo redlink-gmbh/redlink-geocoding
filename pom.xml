@@ -8,15 +8,23 @@
     <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Geocoding</name>
-    <description>Geocoding Library</description>
-    <url>https://bitbucket.org/redlinkgmbh/geocoding</url>
+    <name>Redlink Geocoding</name>
+    <description>Redlink Geocoding Library</description>
+    <url>https://github.com/redlink-gmbh/redlink-geocoding</url>
     <inceptionYear>2016</inceptionYear>
 
     <organization>
         <name>Redlink GmbH</name>
         <url>https://redlink.at</url>
     </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <distribution>repo</distribution>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
     <developers>
         <developer>
@@ -50,23 +58,21 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://bitbucket.org/redlinkgmbh/geocoding.git</connection>
-        <developerConnection>scm:git:git@bitbucket.org:redlinkgmbh/geocoding.git</developerConnection>
-        <url>https://bitbucket.org/redlinkgmbh/geocoding/src</url>
+        <connection>scm:git:https://github.com/redlink-gmbh/redlink-geocoding.git</connection>
+        <developerConnection>scm:git:git@github.com:redlink-gmbh/redlink-geocoding.git</developerConnection>
+        <url>https://github.com/redlink-gmbh/redlink-geocoding</url>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
-        <repository>
-            <id>redlink.releases</id>
-            <name>Redlink Releases</name>
-            <url>https://repo.redlink.io/mvn/content/repositories/redlink/</url>
-        </repository>
         <snapshotRepository>
-            <id>redlink.snapshots</id>
-            <name>Redlink Snapshots</name>
-            <url>https://repo.redlink.io/mvn/content/repositories/redlink-snapshots/</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <properties>

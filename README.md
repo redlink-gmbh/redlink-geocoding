@@ -2,7 +2,7 @@
 The Redlink geocoding library provides the means to perform geographical 
 information enhancement based on different services. At the current 
 development state it is possible to do based on [Google Maps](https://developers.google.com/maps/documentation/geocoding/intro) 
-or [Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim) services:
+or [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) services:
  
 * _geocoding_: given a partial address find places which could fit.
 * _reverse geocoding_: providing coordinates find places located at that point.
@@ -12,7 +12,7 @@ The library is divided in 4 separate artifacts:
 
 * API which contains the basic interface and generic classes to build up the real functionality.
 * Google Maps Geocoder an implementation of the geocoder using the [Google Maps](https://developers.google.com/maps/documentation/geocoding/intro) service.
-* Open Street Maps Geocoder an implementation of the geocoder using the [Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim) service.
+* Open Street Maps Geocoder an implementation of the geocoder using the [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) service.
 * Cache Geocoder is a wrapper for any Geocoder which uses basic guava cache to reduce the amount of calls made to the services and improve the response time.
 
 ## General (API)
@@ -135,30 +135,35 @@ geocoding.proxy=
 
 Maven dependency:
 ```xml
-<dependency>
-    <groupId>io.redlink.geocoding</groupId>
-    <artifactId>geocoding-spring-boot-autoconfigure</artifactId>
-    <version>${geocoding.version}</version>
-</dependency>
-<!-- Add an implementation provider, at least one: -->
-<dependency>
-    <groupId>io.redlink.geocoding</groupId>
-    <artifactId>geocoding-google</artifactId>
-    <version>${geocoding.version}</version>
-    <scope>runtime</scope>
-</dependency>
-<dependency>
-    <groupId>io.redlink.geocoding</groupId>
-    <artifactId>geocoding-osm</artifactId>
-    <version>${geocoding.version}</version>
-    <scope>runtime</scope>
-</dependency>
-<!-- optionally the chache -->
-<dependency>
-    <groupId>io.redlink.geocoding</groupId>
-    <artifactId>geocoding-cache</artifactId>
-    <version>${geocoding.version}</version>
-    <scope>runtime</scope>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>io.redlink.geocoding</groupId>
+        <artifactId>geocoding-spring-boot-autoconfigure</artifactId>
+        <version>${geocoding.version}</version>
+    </dependency>
+    <!-- Add an implementation provider, at least one: -->
+    <dependency>
+        <groupId>io.redlink.geocoding</groupId>
+        <artifactId>geocoding-google</artifactId>
+        <version>${geocoding.version}</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.redlink.geocoding</groupId>
+        <artifactId>geocoding-osm</artifactId>
+        <version>${geocoding.version}</version>
+        <scope>runtime</scope>
+    </dependency>
+    <!-- optionally the chache -->
+    <dependency>
+        <groupId>io.redlink.geocoding</groupId>
+        <artifactId>geocoding-cache</artifactId>
+        <version>${geocoding.version}</version>
+        <scope>runtime</scope>
+    </dependency>
+</dependencies>
 ```
+## License
+Free use of this software is granted under the terms of the Apache License Version 2.0.
+See the [License](LICENSE.txt) for more details.
 
