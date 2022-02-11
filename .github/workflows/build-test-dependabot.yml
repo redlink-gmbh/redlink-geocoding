@@ -1,13 +1,16 @@
-name: Build and Test
+name: "Dependabot: Build and Test"
 
 on:
   push:
   pull_request:
     types: [ opened, synchronize, reopened ]
 
+permissions:
+  checks: write
+
 jobs:
   build:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor == 'dependabot[bot]' }}
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
@@ -23,20 +26,10 @@ jobs:
     - name: Build with Maven
       run: mvn -V -B --no-transfer-progress
         clean
-        org.jacoco:jacoco-maven-plugin:prepare-agent
         verify
-        org.jacoco:jacoco-maven-plugin:report
-        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        -Dnominatim.email="${{ secrets.NOMINATIM_USER }}" 
-        -Dgoogle.apiKey="${{ secrets.GOOGLE_API_KEY }}"
-        -Dsonar.organization=redlink
-        -Dsonar.host.url=https://sonarcloud.io
-        -Dsonar.projectKey=redlink-gmbh_redlink-geocoding
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
         files: '**/TEST-*.xml'
+        comment_mode: off
