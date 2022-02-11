@@ -5,9 +5,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
@@ -18,3 +16,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -V -B clean verify
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: 'TEST-*.xml'
