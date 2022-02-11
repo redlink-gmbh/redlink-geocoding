@@ -6,7 +6,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.redlink.geocoding/geocoding.png)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.redlink.geocoding%22)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/io.redlink.geocoding/geocoding.png)](https://oss.sonatype.org/#nexus-search;gav~io.redlink.geocoding~~~~)
 [![Javadocs](https://www.javadoc.io/badge/io.redlink.geocoding/geocoding.svg)](https://www.javadoc.io/doc/io.redlink.geocoding/geocoding)
-[![Apache 2.0 License](https://img.shields.io/github/license/redlink-gmbh/geocoding.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Apache 2.0 License](https://img.shields.io/github/license/redlink-gmbh/redlink-geocoding.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 The Redlink geocoding library provides the means to perform geographical 
 information enhancement based on different services. At the current 
