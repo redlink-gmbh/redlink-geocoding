@@ -1,6 +1,6 @@
 # Redlink Geocoding Library
 
-[![Build Status](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/build-and-test.yml)
+[![Build, Test & Publish](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/maven-build-and-deploy.yaml/badge.svg)](https://github.com/redlink-gmbh/redlink-geocoding/actions/workflows/maven-build-and-deploy.yaml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=redlink-gmbh_redlink-geocoding&metric=alert_status)](https://sonarcloud.io/dashboard?id=redlink-gmbh_redlink-geocoding)
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.redlink.geocoding/geocoding.png)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.redlink.geocoding%22)
