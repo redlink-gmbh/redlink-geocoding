@@ -19,7 +19,7 @@ jobs:
         name: Checkout
         with:
           fetch-depth: 2
-      - name: Set up JDK 11
+      - name: Set up Java/Maven
         uses: actions/setup-java@v2
         with:
           java-version: '11'
@@ -34,16 +34,17 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set up JDK 11
+      - name: Set up Java/Maven
         uses: actions/setup-java@v2
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
+      - name: Compile & Test
         run: mvn -V -B --no-transfer-progress
           clean
           org.jacoco:jacoco-maven-plugin:prepare-agent
@@ -52,28 +53,30 @@ jobs:
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dnominatim.email="${{ secrets.NOMINATIM_USER }}"
           -Dgoogle.apiKey="${{ secrets.GOOGLE_API_KEY }}"
+          -Dsonar.skip=${{ github.actor == 'dependabot[bot]' }}
           -Dsonar.organization=redlink
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.projectKey=redlink-gmbh_redlink-geocoding
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Publish Unit Test Results
+      - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
           files: '**/TEST-*.xml'
 
   deploy:
-    name: Publish ${{ needs.version.outputs.version }}
+    name: Publish
     needs:
       - version
       - build
     runs-on: ubuntu-latest
     if: github.repository == 'redlink-gmbh/redlink-geocoding'
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Maven Central Repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Java/Maven
         uses: actions/setup-java@v2
         with:
           java-version: '11'
@@ -86,8 +89,8 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Compile & Test
-        run: mvn -V -B clean verify
-      - name: Publish package
+        run: mvn -V -B --no-transfer-progress clean verify
+      - name: Publish Packages
         run: mvn -B --no-transfer-progress
           package javadoc:aggregate-jar deploy
           -Prelease
@@ -100,3 +103,4 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
