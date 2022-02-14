@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class GeocodingProxyController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeocodingProxyController.class);
+
+    private static final Pattern SANITIZE_PATTERN = Pattern.compile("[\t\r\n]+");
 
     private final Geocoder geocoder;
     private final MeterRegistry meterRegistry;
@@ -62,7 +65,10 @@ public class GeocodingProxyController {
             @RequestParam(value = Endpoints.PARAM_LANG, required = false) Locale lang
     ) {
         try {
-            LOG.debug("Geocode {} ({})", address, lang);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Geocode {} ({})", sanitizeForLog(address), lang);
+            }
+
             meterRegistry.counter("geocode", createLangTag(lang)).increment();
             return ResponseEntity.ok(
                     geocoder.geocode(address, lang)
@@ -71,7 +77,9 @@ public class GeocodingProxyController {
                             .collect(Collectors.toList())
             );
         } catch (IOException e) {
-            LOG.warn("Could not geocode {}: {}", address, e.getMessage(), e);
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Could not geocode {}: {}", sanitizeForLog(address), e.getMessage(), e);
+            }
             return ResponseEntity.internalServerError()
                     .build();
         }
@@ -106,14 +114,18 @@ public class GeocodingProxyController {
             @RequestParam(value = Endpoints.PARAM_LANG, required = false) Locale lang
     ) {
         try {
-            LOG.debug("Lookup {} ({})", placeId, lang);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Lookup {} ({})", sanitizeForLog(placeId), lang);
+            }
             meterRegistry.counter("lookup", createLangTag(lang)).increment();
             return ResponseEntity.of(
                     geocoder.lookup(placeId, lang)
                             .map(PlaceDTO::fromPlace)
             );
         } catch (IOException e) {
-            LOG.warn("Could not lookup {}: {}", placeId, e.getMessage(), e);
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Could not lookup {}: {}", sanitizeForLog(placeId), e.getMessage(), e);
+            }
             return ResponseEntity.internalServerError()
                     .build();
         }
@@ -126,6 +138,13 @@ public class GeocodingProxyController {
                         .filter(StringUtils::isNotBlank)
                         .orElse("none")
         );
+    }
+
+    private static String sanitizeForLog(String input) {
+        if (StringUtils.isBlank(input)) {
+            return input;
+        }
+        return SANITIZE_PATTERN.matcher(input).replaceAll(" ");
     }
 
 }
