@@ -97,7 +97,7 @@
         <java.version>11</java.version>
 
         <spring.boot.version>2.5.3</spring.boot.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <gmaps.version>0.18.2</gmaps.version>
         <guava.version>30.1.1-jre</guava.version>
         <jsoup.version>1.14.3</jsoup.version>
