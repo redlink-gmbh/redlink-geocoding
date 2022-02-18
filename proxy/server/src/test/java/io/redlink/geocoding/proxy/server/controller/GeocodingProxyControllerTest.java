@@ -25,11 +25,11 @@ import io.redlink.geocoding.proxy.io.PlaceDTO;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GeocodingProxyControllerTest {
 
@@ -47,25 +47,39 @@ class GeocodingProxyControllerTest {
     @Test
     void testGeocode() {
         final ResponseEntity<List<PlaceDTO>> response2 = controller.geocode("Salzburg", lang);
-        Assertions.assertTrue(response2.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(response2.hasBody());
-        MatcherAssert.assertThat(response2.getBody(), Matchers.iterableWithSize(1));
+        assertTrue(response2.getStatusCode().is2xxSuccessful(), "Status Code 200");
+        assertTrue(response2.hasBody(), "Body Expected");
+        assertThat(response2.getBody())
+                .describedAs("Validate Geocoding Response")
+                .singleElement()
+                .hasFieldOrPropertyWithValue("placeId", "place-1")
+                .hasFieldOrPropertyWithValue("address", "Salzburg")
+        ;
     }
 
     @Test
     void testReverseGeocode() {
         final ResponseEntity<List<PlaceDTO>> response2 = controller.reverseGeocode(45,45, lang);
-        Assertions.assertTrue(response2.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(response2.hasBody());
-        MatcherAssert.assertThat(response2.getBody(), Matchers.iterableWithSize(1));
+        assertTrue(response2.getStatusCode().is2xxSuccessful(), "Status Code 200");
+        assertTrue(response2.hasBody(), "Body Expected");
+        assertThat(response2.getBody())
+                .describedAs("Validate Reverse-Geocoding Response")
+                .singleElement()
+                .hasFieldOrPropertyWithValue("placeId", "place-2")
+                .hasFieldOrPropertyWithValue("address", "Somewhere")
+        ;
     }
 
     @Test
     void testLookup() {
         final ResponseEntity<PlaceDTO> response2 = controller.lookup("place-999", lang);
-        Assertions.assertTrue(response2.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(response2.hasBody());
-        MatcherAssert.assertThat(response2.getBody(), Matchers.notNullValue());
+        assertTrue(response2.getStatusCode().is2xxSuccessful(), "Status Code 200");
+        assertTrue(response2.hasBody(), "Body Expected");
+        assertThat(response2.getBody())
+                .describedAs("Validate Lookup Response")
+                .hasFieldOrPropertyWithValue("placeId", "place-999")
+                .hasFieldOrPropertyWithValue("address", "Somewhere")
+        ;
     }
 
 
