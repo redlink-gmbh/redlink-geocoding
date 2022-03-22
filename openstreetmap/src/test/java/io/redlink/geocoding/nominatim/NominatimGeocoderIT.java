@@ -26,11 +26,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,10 +66,10 @@ class NominatimGeocoderIT {
     @BeforeEach
     public void pingRemote() {
         assumeThatCode(() -> {
-            try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            try (CloseableHttpClient client = HttpClients.createDefault()) {
 
-                final StatusLine statusLine = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), HttpResponse::getStatusLine);
-                assumeThat(statusLine.getStatusCode())
+                final int status = client.execute(new HttpHead(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER), ClassicHttpResponse::getCode);
+                assumeThat(status)
                         .as("Remote Service Status")
                         .isBetween(200, 299);
             }
