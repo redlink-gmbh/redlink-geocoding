@@ -106,7 +106,7 @@
         <logback.version>1.2.4</logback.version>
         <junit.version>5.8.2</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>3.11.2</mockito.version>
+        <mockito.version>4.4.0</mockito.version>
         <wiremock.version>2.29.1</wiremock.version>
 
         <argLine />
@@ -317,7 +317,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.0.0-M2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
