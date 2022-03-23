@@ -36,13 +36,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.net.URIBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -120,7 +121,7 @@ public class NominatimGeocoder implements Geocoder {
                     .setParameter(PARAM_QUERY, address)
                     .build();
             final HttpGet request = new HttpGet(uri);
-            final List<Place> places = client.execute(request, new JsoupResponseHandler<List<Place>>(uri) {
+            final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
                     return doc.select("searchresults place").stream()
@@ -280,7 +281,7 @@ public class NominatimGeocoder implements Geocoder {
 
     protected CloseableHttpClient createHttpClient() {
         if (rateLimiter != null) rateLimiter.acquire();
-        final HttpClientBuilder builder = HttpClientBuilder.create();
+        final HttpClientBuilder builder = HttpClients.custom();
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             LOG.trace("Direct Connection");
         } else if (proxy.type() == Proxy.Type.HTTP) {
@@ -301,7 +302,7 @@ public class NominatimGeocoder implements Geocoder {
     }
 
 
-    protected abstract static class JsoupResponseHandler<T> implements ResponseHandler<T> {
+    protected abstract static class JsoupResponseHandler<T> implements HttpClientResponseHandler<T> {
         private final URI requestUri;
 
         protected JsoupResponseHandler(URI requestUri) {
@@ -309,8 +310,8 @@ public class NominatimGeocoder implements Geocoder {
         }
 
         @Override
-        public T handleResponse(HttpResponse response) throws IOException {
-            final int statusCode = response.getStatusLine().getStatusCode();
+        public T handleResponse(ClassicHttpResponse response) throws IOException {
+            final int statusCode = response.getCode();
             if (statusCode >= 200 && statusCode < 300) {
                 final Document document = Jsoup.parse(response.getEntity().getContent(), "utf-8", requestUri.toString(), Parser.xmlParser());
                 return parseJsoup(document);

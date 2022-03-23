@@ -32,11 +32,12 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         this.language = language;
         this.internalHttpClient = httpClient != null;
         this.httpClient = Objects.requireNonNullElseGet(httpClient,
-                () -> HttpClientBuilder.create().useSystemProperties().build()
+                () -> HttpClients.custom().useSystemProperties().build()
         );
         objectMapper = JsonMapper.builder().build();
 
@@ -118,7 +119,7 @@ public class ProxyGeocoder implements Geocoder, Closeable {
 
             final HttpGet request = new HttpGet(b.build());
             final Optional<Place> place = Optional.ofNullable(
-                    httpClient.execute(request, (HttpResponse response) -> {
+                    httpClient.execute(request, (ClassicHttpResponse response) -> {
                         if (isSuccess(response)) {
                             return objectMapper.readValue(response.getEntity().getContent(),
                                     PlaceDTO.class);
@@ -150,7 +151,7 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         return uriBuilder;
     }
 
-    private List<PlaceDTO> readPlaceList(HttpResponse response) throws IOException {
+    private List<PlaceDTO> readPlaceList(ClassicHttpResponse response) throws IOException {
         if (isSuccess(response)) {
             return objectMapper.readValue(response.getEntity().getContent(),
                     objectMapper.getTypeFactory().constructCollectionLikeType(List.class, PlaceDTO.class));
@@ -160,8 +161,8 @@ public class ProxyGeocoder implements Geocoder, Closeable {
 
     private IOException createIOException(HttpResponse response) {
         return new IOException(String.format("Could not read result from server response: HTTP-%d (%s)",
-                response.getStatusLine().getStatusCode(),
-                response.getStatusLine().getReasonPhrase()
+                response.getCode(),
+                response.getReasonPhrase()
         ));
     }
 
@@ -169,13 +170,13 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         return new IOException(String.format("Could not build request uri for %s", endpoint), e);
     }
 
-    private boolean isSuccess(HttpResponse response) {
-        final int statusCode = response.getStatusLine().getStatusCode();
+    private boolean isSuccess(ClassicHttpResponse response) {
+        final int statusCode = response.getCode();
         return statusCode >= 200 && statusCode < 300 && Objects.nonNull(response.getEntity());
     }
 
     private boolean isNotFound(HttpResponse response) {
-        final int statusCode = response.getStatusLine().getStatusCode();
+        final int statusCode = response.getCode();
         return statusCode == 404;
     }
 
