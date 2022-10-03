@@ -23,14 +23,15 @@ import io.redlink.geocoding.AddressComponent.Type;
 import io.redlink.geocoding.LatLon;
 import io.redlink.geocoding.Place;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,6 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.Assumptions.assumeThatCode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  *
@@ -88,14 +88,14 @@ class GoogleMapsGeocoderIT {
     @BeforeEach
     void pingRemote() {
         assumeThatCode(() -> {
-            final OkHttpClient client = new OkHttpClient();
-            final Request request = new Request.Builder()
-                    .head()
-                    .url(new ApiConfig("/").hostName)
+            final HttpClient client = HttpClient.newHttpClient();
+            final HttpRequest request = HttpRequest.newBuilder()
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(new ApiConfig("/").hostName))
                     .build();
+            final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
 
-            final Response response = client.newCall(request).execute();
-            assumeTrue(response.isSuccessful(), "Remote Service Status");
+            assumeThat(response.statusCode()).isBetween(200, 299);
         })
                 .as("Ping to remote service")
                 .doesNotThrowAnyException();

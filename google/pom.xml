@@ -28,6 +28,26 @@
     <artifactId>geocoding-google</artifactId>
     <name>Geocoding :: Google Maps</name>
 
+    <properties>
+        <!-- Fix for dependency convergence in google-maps-services -->
+        <kotlin-stdlib.version>1.7.10</kotlin-stdlib.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.redlink.geocoding</groupId>
@@ -37,18 +57,12 @@
         <dependency>
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-stdlib</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <!-- Fix for dependency convergence in google-maps-services -->
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>1.7.10</version>
+            <!-- This is a workaround for https://github.com/googlemaps/google-maps-services-java/issues/832 -->
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-jvm</artifactId>
+            <version>5.0.0-alpha.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
