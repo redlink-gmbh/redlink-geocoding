@@ -97,16 +97,16 @@
 
         <spring.boot.version>2.7.3</spring.boot.version>
         <slf4j.version>2.0.0</slf4j.version>
-        <gmaps.version>2.0.0</gmaps.version>
+        <gmaps.version>2.1.0</gmaps.version>
         <guava.version>31.1-jre</guava.version>
         <jsoup.version>1.15.3</jsoup.version>
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.13.4</jackson.version>
         <httpclient.version>5.1.3</httpclient.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <logback.version>1.2.11</logback.version>
         <junit.version>5.9.0</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <mockito.version>4.6.1</mockito.version>
+        <mockito.version>4.8.0</mockito.version>
         <wiremock.version>2.33.2</wiremock.version>
 
         <argLine />
@@ -212,6 +212,12 @@
                 <version>${wiremock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.12.14</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -249,7 +255,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.0</version>
                     <executions>
                         <execution>
                             <id>check-prerequisites</id>
