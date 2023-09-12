@@ -106,7 +106,7 @@
         <junit.version>5.9.0</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.8.0</mockito.version>
-        <wiremock.version>2.33.2</wiremock.version>
+        <wiremock.version>2.35.1</wiremock.version>
 
         <argLine />
     </properties>
