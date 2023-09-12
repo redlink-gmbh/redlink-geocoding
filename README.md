@@ -17,12 +17,13 @@ or [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) services:
 * _reverse geocoding_: providing coordinates find places located at that point.
 * _lookup_: find a place given an ID (specific for the service used).
 
-The library is divided in 4 separate artifacts:
+The library is divided in 5 main artifacts:
 
 * API which contains the basic interface and generic classes to build up the real functionality.
 * Google Maps Geocoder an implementation of the geocoder using the [Google Maps](https://developers.google.com/maps/documentation/geocoding/intro) service.
 * Open Street Maps Geocoder an implementation of the geocoder using the [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) service.
 * Cache Geocoder is a wrapper for any Geocoder which uses basic guava cache to reduce the amount of calls made to the services and improve the response time.
+* Proxy Geocoder provides a central geocoding proxy that forwards requests to one of the above providers.
 
 ## General (API)
 This artifact contains the basic interface and classes to use the library or develop implementations for other geographical services. All the other artifacts on the library depend on this one.
@@ -122,12 +123,45 @@ Maven dependency:
 </dependency>
 ```
 
+## Proxy Geocoder
+The proxy-geocoder consists of two parts: a proxy-server and a client-side implementation to be used
+instead (or in addition to) the above listed modules.
+
+### Proxy Server
+The Geocoding Proxy is provided as a docker-image and can be launched simply by running
+```shell
+docker run -d -p 8080:8080 -e NOMINATIM_BASE_URL=https://example.com ghcr.io/redlink-gmbh/redlink-geocoding/geocoding-proxy-server
+```
+The geocoding providers are autoconfigured using env-variables:
+* For Google provide an API-key using `GOOGLE_API_KEY`
+* For Nominatim, optionally provide `NOMINATIM_BASE_URL` and `NOMINATIM_MAIL`
+* For Caching configure the cache-ttl: `GEO_CACHE_SECONDS`
+
+### Proxy Client
+
+The geocoding-proxy just needs to be configured with the base-url of the proxy-server:
+
+```java
+final Geocoder proxyGeocoder = ProxyGeocoder.configure()
+               .setBaseUri("http://localhost:8080/")
+               .create();
+```
+
+Maven dependency:
+```xml
+<dependency>
+    <groupId>io.redlink.geocoding</groupId>
+    <artifactId>geocoding-proxy</artifactId>
+    <version>${geocoding.version}</version>
+</dependency>
+```
+
 ## Spring-Boot Autoconfiguration
 
 For quick and easy use of the `Geocoder` in [spring-boot] projects use the `geocoding-spring-boot-autoconfigure` module,
 and configure the geocoders with the following `application.properties`:
 
-```
+```properties
 # GoogleMaps Geocoder, provide either api-key or client-id and crypto-secret
 geocoding.google.api-key=
 geocoding.google.client-id=
@@ -136,6 +170,8 @@ geocoding.google.channel=
 # Nominatim Geocoder
 geocoding.nominatim.base-url=
 geocoding.nominatim.email=
+# Proxy Geocoder
+geocoding.proxy-service.base-url=
 # General Options
 geocoding.cache-timeout=
 geocoding.lang=
@@ -160,6 +196,12 @@ Maven dependency:
     <dependency>
         <groupId>io.redlink.geocoding</groupId>
         <artifactId>geocoding-osm</artifactId>
+        <version>${geocoding.version}</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.redlink.geocoding</groupId>
+        <artifactId>geocoding-proxy</artifactId>
         <version>${geocoding.version}</version>
         <scope>runtime</scope>
     </dependency>

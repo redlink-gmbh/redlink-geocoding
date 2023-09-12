@@ -42,7 +42,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnMissingBean(Geocoder.class)
 @Conditional(ProxyGeocodingAutoConfiguration.ProxyGeocoderCondition.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
-@AutoConfigureAfter({NominatimGeocodingAutoConfiguration.class})
+@AutoConfigureAfter({GoogleGeocodingAutoConfiguration.class, NominatimGeocodingAutoConfiguration.class})
 public class ProxyGeocodingAutoConfiguration extends GeocodingAutoConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyGeocodingAutoConfiguration.class);
