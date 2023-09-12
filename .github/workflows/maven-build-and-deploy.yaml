@@ -27,8 +27,7 @@ jobs:
           cache: maven
       - name: Detect Version
         id: version
-        run: VERSION=$(mvn -B -q -N exec:exec -Dexec.executable=echo -Dexec.args='${project.version}')
-          echo "::set-output name=version::${VERSION}"
+        run: mvn -B -q -N exec:exec -Dexec.executable=echo -Dexec.args='version=${project.version}' -Dexec.outputFile="$GITHUB_OUTPUT"
 
   build:
     name: Build and Test
