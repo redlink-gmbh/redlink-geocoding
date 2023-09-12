@@ -32,18 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by fonso on 30.01.17.
  */
 class GoogleUtilsTest {
+    private static final LatLng GOOGLE_MOCKED_LOCATION = new LatLng(45.00, 12.00);
+    private static final LatLon REDLINK_LAT_LON = LatLon.create(45.00, 12.00);
 
     private final GeocodingResult googleMockedGeoResult = new GeocodingResult();
     private final Geometry googleGeometry = new Geometry();
-    private final LatLng googleMockedLocation = new LatLng(45.00, 12.00);
+    private final PlaceDetails googlePlaceDetails = new PlaceDetails();
 
-    private PlaceDetails googlePlaceDetails = new PlaceDetails();
-
-    private final LatLon redlinkLatLon = LatLon.create(45.00, 12.00);
 
     @BeforeEach
     void setup() {
-        googleGeometry.location = googleMockedLocation;
+        googleGeometry.location = GOOGLE_MOCKED_LOCATION;
 
         googleMockedGeoResult.placeId = "00000000";
         googleMockedGeoResult.formattedAddress = "Test Address 0, 00 - 0000 Test Region";
@@ -85,7 +84,7 @@ class GoogleUtilsTest {
 
     @Test
     void testLatLon2LatLng() {
-        final LatLng latLng = GoogleUtils.latLon2LatLng(redlinkLatLon);
+        final LatLng latLng = GoogleUtils.latLon2LatLng(REDLINK_LAT_LON);
 
         assertThat(latLng)
                 .as("convert LatLon to Google LatLng")

@@ -55,15 +55,15 @@ class GoogleMapsGeocoderIT {
         SLF4JBridgeHandler.install();
     }
 
-    private final String testPlaceId = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
-    private final String testFormattedAddress = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
-    private final String testAddress = "jakob haringer strasse 3";
-    private final Double testLat = 47.82273;
-    private final Double testLon = 13.040612;
+    private static final String TEST_PLACE_ID = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
+    private static final String TEST_FORMATTED_ADDRESS = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
+    private static final String TEST_ADDRESS = "jakob haringer strasse 3";
+    private static final Double TEST_LAT = 47.82273;
+    private static final Double TEST_LON = 13.040612;
 
     private final GoogleMapsGeocoder gmGeocoder;
 
-    private final LatLon latLon = LatLon.create(testLat, testLon);
+    private final LatLon latLon = LatLon.create(TEST_LAT, TEST_LON);
 
     public GoogleMapsGeocoderIT() {
         final String apiKey = System.getProperty("google.apiKey", System.getenv("GOOGLE_API_KEY"));
@@ -95,7 +95,9 @@ class GoogleMapsGeocoderIT {
                     .build();
             final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
 
-            assumeThat(response.statusCode()).isBetween(200, 299);
+            assumeThat(response.statusCode())
+                    .as("Ping to remote service")
+                    .isBetween(200, 399);
         })
                 .as("Ping to remote service")
                 .doesNotThrowAnyException();
@@ -103,13 +105,13 @@ class GoogleMapsGeocoderIT {
 
     @Test
     void testGeocode() throws IOException {
-        final List<Place> places = gmGeocoder.geocode(testAddress);
+        final List<Place> places = gmGeocoder.geocode(TEST_ADDRESS);
 
         assertThat(places)
                 .as("Geocoded Place")
                 .singleElement()
-                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
+                .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
+                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
 
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
 
@@ -144,13 +146,13 @@ class GoogleMapsGeocoderIT {
 
     @Test
     void testLookup() throws IOException {
-        final Optional<Place> place = gmGeocoder.lookup(testPlaceId);
+        final Optional<Place> place = gmGeocoder.lookup(TEST_PLACE_ID);
 
         assertThat(place)
                 .as("Place Lookup")
                 .isPresent().get()
-                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
+                .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
+                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
     }
 
     @Test
