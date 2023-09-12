@@ -124,7 +124,7 @@ public class NominatimGeocoder implements Geocoder {
             final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
-                    return doc.select("searchresults place").stream()
+                    return doc.select("place").stream()
                             .map(NominatimGeocoder.this::readPlace)
                             .flatMap(Optional::stream)
                             .collect(Collectors.toList());
@@ -148,7 +148,7 @@ public class NominatimGeocoder implements Geocoder {
             final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
-                    final Element result = doc.select("reversegeocode result").first();
+                    final Element result = doc.selectFirst("reversegeocode result");
                     if (result == null) {
                         return List.of();
                     } else {
@@ -176,7 +176,7 @@ public class NominatimGeocoder implements Geocoder {
             final Optional<Place> place = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected Optional<Place> parseJsoup(Document doc) {
-                    return readPlace(doc.select("lookupresults place").first());
+                    return readPlace(doc.selectFirst("place"));
                 }
             });
             LOG.debug("Lookup of {} resulted in {}", placeId, place);

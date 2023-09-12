@@ -43,19 +43,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class NominatimGeocoderIT {
 
-    private final String testPlaceId = "W30514164";
-    private final String testFormattedAddress = "Techno-Z III, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
-    private final String coworkingFormattedAddress = "Coworkingspace Salzburg, 3, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
-    private final String testAddress = "jakob haringer strasse 3";
-    private final double testLat = 47.8227343;
-    private final double testLon = 13.0408988;
+    private static final String TEST_PLACE_ID = "N1692249731";
+    private static final String TEST_FORMATTED_ADDRESS = "Techno-Z, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
+    private static final String COWORKING_FORMATTED_ADDRESS = "Coworkingspace Salzburg, 3, Jakob-Haringer-Straße, Techno-Z, Itzling, Salzburg, 5020, Austria";
+    private static final String TEST_ADDRESS = "jakob haringer strasse 3";
+    private static final double TEST_LAT = 47.8227343;
+    private static final double TEST_LON = 13.0408988;
 
     private final LatLon latLon;
 
     private final NominatimGeocoder osmGeocoder;
 
     public NominatimGeocoderIT() {
-        latLon = LatLon.create(testLat, testLon);
+        latLon = LatLon.create(TEST_LAT, TEST_LON);
 
         osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER,
                 Locale.forLanguageTag("en"),
@@ -79,7 +79,7 @@ class NominatimGeocoderIT {
 
     @Test
     void testGeocode() throws IOException {
-        final List<Place> places = osmGeocoder.geocode(testAddress);
+        final List<Place> places = osmGeocoder.geocode(TEST_ADDRESS);
 
         Assertions.assertThat(places)
                 .as("OSM Places")
@@ -87,7 +87,7 @@ class NominatimGeocoderIT {
                 .as("First Result")
                 .first()
                 .hasFieldOrPropertyWithValue("placeId", "N3081433444")
-                .hasFieldOrPropertyWithValue("address", coworkingFormattedAddress);
+                .hasFieldOrPropertyWithValue("address", COWORKING_FORMATTED_ADDRESS);
 
 
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
@@ -119,19 +119,19 @@ class NominatimGeocoderIT {
                 .as("reverse geocoding results")
                 .singleElement()
                 .as("reverse geocoded place")
-                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
+                .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
+                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
     }
 
     @Test
     void testLookup() throws IOException {
-        final Optional<Place> place = osmGeocoder.lookup(testPlaceId);
+        final Optional<Place> place = osmGeocoder.lookup(TEST_PLACE_ID);
 
         Assertions.assertThat(place)
                 .as("place lookup")
                 .isPresent().get()
-                .hasFieldOrPropertyWithValue("placeId", testPlaceId)
-                .hasFieldOrPropertyWithValue("address", testFormattedAddress);
+                .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
+                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
     }
 
     @Test
