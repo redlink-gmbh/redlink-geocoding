@@ -35,37 +35,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  *
  */
 class NominatimGeocoderTest {
 
-    public static WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options()
+    private static final WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options()
             .dynamicPort()
     );
 
-    private final NominatimGeocoder geocoder;
-
-    public NominatimGeocoderTest() {
-        geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+    @BeforeAll
+    static void beforeClass() {
+        wiremock.start();
     }
 
-    @BeforeAll
-    static void beforeClass() throws Exception {
-        wiremock.start();
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE)
-                .willReturn(createXmlResponse("/geocode-response.xml"))
-        );
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE)
-                .willReturn(createXmlResponse("/reverse-response.xml"))
-        );
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP)
-                .willReturn(createXmlResponse("/lookup-response.xml"))
-        );
+    @BeforeEach
+    void setUp() {
+        wiremock.resetAll();
+        wiremock.stubFor(WireMock.any(WireMock.anyUrl()).willReturn(WireMock.notFound()));
     }
 
     @AfterAll
@@ -91,6 +84,12 @@ class NominatimGeocoderTest {
 
     @Test
     void testGeocode() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE)
+                .willReturn(createXmlResponse("/geocode-response.xml"))
+        );
+        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+
+
         final List<Place> places = geocoder.geocode("135 pilkington, avenue birmingham");
 
         assertThat(places)
@@ -103,7 +102,56 @@ class NominatimGeocoderTest {
     }
 
     @Test
+    void testGeocodeWithCustomSettings() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith("/my-geo-coding").willReturn(WireMock.unauthorized()));
+        wiremock.stubFor(urlEndsWith("/my-geo-coding")
+                .withQueryParam("custom", WireMock.equalTo("value"))
+                .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
+                .willReturn(createXmlResponse("/geocode-response.xml")));
+
+        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setGeocodeEndpoint("my-geo-coding")
+                .setStaticQueryParam("custom", "value")
+                .setStaticHeader("Custom-Header", "custom-value")
+                .create();
+
+        final String address = "135 pilkington, avenue birmingham";
+        final List<Place> places = geocoder.geocode(address);
+
+        assertThat(places)
+                .as("geocoding results")
+                .singleElement()
+                .as("geocoded place")
+                .hasFieldOrPropertyWithValue("placeId", "W90394480")
+                .hasFieldOrPropertyWithValue("address", "135, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK")
+                .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5487921,-1.8164307339635"));
+
+        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setGeocodeEndpoint("my-geo-coding")
+                .create();
+        assertThatCode(() -> wrong.geocode(address))
+                .as("Missing Headers/Query-Params")
+                .isInstanceOf(IOException.class);
+
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .create();
+        assertThatCode(() -> withDefaultEndpoint.geocode(address))
+                .as("Wrong endpoint")
+                .isInstanceOf(IOException.class);
+
+    }
+
+    @Test
     void testReverseGeocode() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE)
+                .willReturn(createXmlResponse("/reverse-response.xml"))
+        );
+        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+
         final List<Place> places = geocoder.reverseGeocode(LatLon.valueOf("52.5487429714954,-1.81602098644987"));
 
         assertThat(places)
@@ -116,7 +164,57 @@ class NominatimGeocoderTest {
     }
 
     @Test
+    void testReverseGeocodeWithCustomSettings() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith("/my-reverse-coding").willReturn(WireMock.unauthorized()));
+        wiremock.stubFor(urlEndsWith("/my-reverse-coding")
+                .withQueryParam("custom", WireMock.equalTo("value"))
+                .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
+                .willReturn(createXmlResponse("/reverse-response.xml")));
+
+        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setReverseEndpoint("my-reverse-coding")
+                .setStaticQueryParam("custom", "value")
+                .setStaticHeader("Custom-Header", "custom-value")
+                .create();
+
+        final LatLon coordinates = LatLon.valueOf("52.5487429714954,-1.81602098644987");
+        final List<Place> places = geocoder.reverseGeocode(coordinates);
+
+        assertThat(places)
+                .as("reverse geocoding results")
+                .singleElement()
+                .as("reverse geocoded place")
+                .hasFieldOrPropertyWithValue("placeId", "W90394420")
+                .hasFieldOrPropertyWithValue("address", "137, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK")
+                .hasFieldOrPropertyWithValue("latLon", coordinates);
+
+        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setReverseEndpoint("my-reverse-coding")
+                .create();
+        assertThatCode(() -> wrong.reverseGeocode(coordinates))
+                .as("Missing Headers/Query-Params")
+                .isInstanceOf(IOException.class);
+
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .create();
+        assertThatCode(() -> withDefaultEndpoint.reverseGeocode(coordinates))
+                .as("Wrong endpoint")
+                .isInstanceOf(IOException.class);
+
+    }
+
+
+    @Test
     void testLookup() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP)
+                .willReturn(createXmlResponse("/lookup-response.xml"))
+        );
+        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+
         final Optional<Place> place = geocoder.lookup("N240109189");
 
         assertThat(place)
@@ -128,7 +226,53 @@ class NominatimGeocoderTest {
     }
 
     @Test
+    void testLookupWithCustomSettings() throws Exception {
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith("/my-lookup").willReturn(WireMock.unauthorized()));
+        wiremock.stubFor(urlEndsWith("/my-lookup")
+                .withQueryParam("custom", WireMock.equalTo("value"))
+                .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
+                .willReturn(createXmlResponse("/lookup-response.xml")));
+
+        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLookupEndpoint("my-lookup")
+                .setStaticQueryParam("custom", "value")
+                .setStaticHeader("Custom-Header", "custom-value")
+                .create();
+
+        final String placeId = "N240109189";
+        final Optional<Place> place = geocoder.lookup(placeId);
+
+        assertThat(place)
+                .as("place lookup")
+                .isPresent().get()
+                .hasFieldOrPropertyWithValue("placeId", placeId)
+                .hasFieldOrPropertyWithValue("address", "Berlin, Deutschland")
+                .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5170365,13.3888599"));
+
+        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLookupEndpoint("my-lookup")
+                .create();
+        assertThatCode(() -> wrong.lookup(placeId))
+                .as("Missing Headers/Query-Params")
+                .isInstanceOf(IOException.class);
+
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+                .setBaseUrl(wiremock.baseUrl())
+                .create();
+        assertThatCode(() -> withDefaultEndpoint.lookup(placeId))
+                .as("Wrong endpoint")
+                .isInstanceOf(IOException.class);
+
+    }
+
+
+    @Test
     void testReadPlace() {
+        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+
         // Something that works
         final Place place = Place.create("X123123", "The Street", LatLon.create(15, 25),
                 Set.of(AddressComponent.create(AddressComponent.Type.street, "Street")),
@@ -143,8 +287,8 @@ class NominatimGeocoderTest {
         ));
         assertThat(actual)
                 .as("Working example")
-                .isPresent().get()
-                .isEqualTo(place);
+                .isPresent()
+                .contains(place);
 
         assertThat(geocoder.readPlace(createPlaceElement(
                 null, "10 Downing Street", "15,25", Map.of()
