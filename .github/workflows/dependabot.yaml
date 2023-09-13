@@ -19,7 +19,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Label Major Updates
         if: ${{steps.metadata.outputs.update-type == 'version-update:semver-major'}}
-        run: gh pr edit "$PR_URL" --add-label "major"
+        run: gh pr edit "$PR_URL" --add-label "major-update"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
