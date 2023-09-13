@@ -40,6 +40,10 @@ public class NominatimBuilder {
     private final Map<String, String> customQuery = new LinkedHashMap<>();
     private final Map<String, String> customHeaders = new LinkedHashMap<>();
 
+    /**
+     * @deprecated use {@link NominatimGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public NominatimBuilder() {
         baseUrl = NominatimGeocoder.PUBLIC_NOMINATIM_SERVER;
         locale = Locale.getDefault(Locale.Category.DISPLAY);

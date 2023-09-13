@@ -83,16 +83,36 @@ public class NominatimGeocoder implements Geocoder {
     @SuppressWarnings("UnstableApiUsage")
     private final RateLimiter rateLimiter;
 
-    NominatimGeocoder() {
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
+    protected NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
     }
 
-    NominatimGeocoder(String baseUrl) {
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
+    protected NominatimGeocoder(String baseUrl) {
         this(baseUrl, null, null, null);
     }
 
-    NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy) {
-        this(baseUrl, language, email, proxy, -1, new ServiceConfiguration());
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
+    protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy) {
+        this(baseUrl, language, email, proxy, -1);
+    }
+
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
+    protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps) {
+        this(baseUrl, language, email, proxy, maxQps, new ServiceConfiguration());
     }
 
     NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps, ServiceConfiguration serviceConfiguration) {
@@ -112,7 +132,16 @@ public class NominatimGeocoder implements Geocoder {
         }
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2", forRemoval = true)
     public static NominatimBuilder configure() {
+        return builder();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static NominatimBuilder builder() {
         return new NominatimBuilder();
     }
 

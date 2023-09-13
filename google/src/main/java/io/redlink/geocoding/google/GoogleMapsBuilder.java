@@ -30,6 +30,10 @@ public class GoogleMapsBuilder {
     private boolean cryptoSecretSet;
     private Locale lang;
 
+    /**
+     * @deprecated use {@link GoogleMapsGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public GoogleMapsBuilder() {
         context = new GeoApiContext.Builder();
         lang = Locale.getDefault(Locale.Category.DISPLAY);
@@ -72,6 +76,7 @@ public class GoogleMapsBuilder {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public GoogleMapsGeocoder create() {
         // Check state
         if (cryptoSecretSet || apiKeySet) {

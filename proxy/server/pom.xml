@@ -27,6 +27,7 @@
 
     <artifactId>geocoding-proxy-server</artifactId>
     <name>Geocoding :: Proxy-Server</name>
+    <description>A simple Geocoding Proxy to forward to Google or OpenStreetMap</description>
 
     <properties>
         <docker.image.namespace>${project.parent.artifactId}</docker.image.namespace>
@@ -135,7 +136,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.2</version>
                 <executions>
                     <execution>
                         <id>docker-local</id>
@@ -195,6 +196,15 @@
                         <ports>
                             <port>8080</port>
                         </ports>
+                        <labels>
+                            <org.opencontainers.image.title>${project.name}</org.opencontainers.image.title>
+                            <org.opencontainers.image.description>${project.description}</org.opencontainers.image.description>
+                            <org.opencontainers.image.url>${project.url}</org.opencontainers.image.url>
+                            <org.opencontainers.image.source>${project.scm.url}</org.opencontainers.image.source>
+                            <org.opencontainers.image.version>${project.version}</org.opencontainers.image.version>
+                            <org.opencontainers.image.created>${maven.build.timestamp}</org.opencontainers.image.created>
+                            <org.opencontainers.image.licenses>Apache-2.0</org.opencontainers.image.licenses>
+                        </labels>
                     </container>
                 </configuration>
             </plugin>

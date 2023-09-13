@@ -70,7 +70,16 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         this(baseUri, language, null);
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2", forRemoval = true)
     public static ProxyBuilder configure() {
+        return builder();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static ProxyBuilder builder() {
         return new ProxyBuilder();
     }
 

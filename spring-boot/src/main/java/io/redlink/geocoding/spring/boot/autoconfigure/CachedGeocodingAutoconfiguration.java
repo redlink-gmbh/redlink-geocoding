@@ -61,7 +61,7 @@ public class CachedGeocodingAutoconfiguration extends GeocodingAutoConfiguration
     @Bean("cachedGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public CachingGeocoder cacheGeocoder() {
-        final CachingGeocoder cachingGeocoder = CachingGeocoder.configure()
+        final CachingGeocoder cachingGeocoder = CachingGeocoder.builder()
                 .setCacheExpiry(properties.getCacheTimeout(), TimeUnit.SECONDS)
                 .setGeocoder(geocoder)
                 .create();

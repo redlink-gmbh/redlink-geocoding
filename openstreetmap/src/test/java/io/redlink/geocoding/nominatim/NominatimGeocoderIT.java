@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import org.apache.hc.client5.http.classic.methods.HttpHead;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -40,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
+ *
  */
 class NominatimGeocoderIT {
 
@@ -57,10 +57,11 @@ class NominatimGeocoderIT {
     public NominatimGeocoderIT() {
         latLon = LatLon.create(TEST_LAT, TEST_LON);
 
-        osmGeocoder = new NominatimGeocoder(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER,
-                Locale.forLanguageTag("en"),
-                System.getProperty("nominatim.email"),
-                null);
+        osmGeocoder = NominatimGeocoder.builder()
+                .setBaseUrl(NominatimGeocoder.PUBLIC_NOMINATIM_SERVER)
+                .setLocale("en")
+                .setEmail(System.getProperty("nominatim.email"))
+                .create();
     }
 
     @BeforeEach
@@ -74,7 +75,7 @@ class NominatimGeocoderIT {
                         .isBetween(200, 299);
             }
         })
-        .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -100,14 +101,14 @@ class NominatimGeocoderIT {
         expected.put(Type.state, "Salzburg");
         expected.put(Type.countryCode, "at");
         expected.put(Type.country, "Austria");
-        for(AddressComponent ac : addrComps){
+        for (AddressComponent ac : addrComps) {
             String expValue = expected.remove(ac.getType());
             assertNotNull(expValue, "Unexpected " + ac);
             assertEquals(expValue, ac.getValue(), "AddressComponent");
         }
 
         assumeThat(expected)
-                .as("Missing expected AddressComponents "+ expected)
+                .as("Missing expected AddressComponents " + expected)
                 .isEmpty();
     }
 

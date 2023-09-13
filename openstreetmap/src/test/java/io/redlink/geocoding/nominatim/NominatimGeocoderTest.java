@@ -110,7 +110,7 @@ class NominatimGeocoderTest {
                 .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
                 .willReturn(createXmlResponse("/geocode-response.xml")));
 
-        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setGeocodeEndpoint("my-geo-coding")
                 .setStaticQueryParam("custom", "value")
@@ -128,7 +128,7 @@ class NominatimGeocoderTest {
                 .hasFieldOrPropertyWithValue("address", "135, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK")
                 .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5487921,-1.8164307339635"));
 
-        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+        final NominatimGeocoder wrong = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setGeocodeEndpoint("my-geo-coding")
                 .create();
@@ -136,7 +136,7 @@ class NominatimGeocoderTest {
                 .as("Missing Headers/Query-Params")
                 .isInstanceOf(IOException.class);
 
-        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .create();
         assertThatCode(() -> withDefaultEndpoint.geocode(address))
@@ -172,7 +172,7 @@ class NominatimGeocoderTest {
                 .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
                 .willReturn(createXmlResponse("/reverse-response.xml")));
 
-        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setReverseEndpoint("my-reverse-coding")
                 .setStaticQueryParam("custom", "value")
@@ -190,7 +190,7 @@ class NominatimGeocoderTest {
                 .hasFieldOrPropertyWithValue("address", "137, Pilkington Avenue, Sutton Coldfield, Maney, Birmingham, West Midlands, England, B72 1LH, UK")
                 .hasFieldOrPropertyWithValue("latLon", coordinates);
 
-        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+        final NominatimGeocoder wrong = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setReverseEndpoint("my-reverse-coding")
                 .create();
@@ -198,7 +198,7 @@ class NominatimGeocoderTest {
                 .as("Missing Headers/Query-Params")
                 .isInstanceOf(IOException.class);
 
-        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .create();
         assertThatCode(() -> withDefaultEndpoint.reverseGeocode(coordinates))
@@ -234,7 +234,7 @@ class NominatimGeocoderTest {
                 .withHeader("Custom-Header", WireMock.equalToIgnoreCase("custom-value"))
                 .willReturn(createXmlResponse("/lookup-response.xml")));
 
-        final NominatimGeocoder geocoder = NominatimGeocoder.configure()
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setLookupEndpoint("my-lookup")
                 .setStaticQueryParam("custom", "value")
@@ -251,7 +251,7 @@ class NominatimGeocoderTest {
                 .hasFieldOrPropertyWithValue("address", "Berlin, Deutschland")
                 .hasFieldOrPropertyWithValue("latLon", LatLon.valueOf("52.5170365,13.3888599"));
 
-        final NominatimGeocoder wrong = NominatimGeocoder.configure()
+        final NominatimGeocoder wrong = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .setLookupEndpoint("my-lookup")
                 .create();
@@ -259,7 +259,7 @@ class NominatimGeocoderTest {
                 .as("Missing Headers/Query-Params")
                 .isInstanceOf(IOException.class);
 
-        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.configure()
+        final NominatimGeocoder withDefaultEndpoint = NominatimGeocoder.builder()
                 .setBaseUrl(wiremock.baseUrl())
                 .create();
         assertThatCode(() -> withDefaultEndpoint.lookup(placeId))
