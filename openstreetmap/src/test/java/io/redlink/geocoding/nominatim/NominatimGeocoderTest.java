@@ -87,7 +87,10 @@ class NominatimGeocoderTest {
         wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE)
                 .willReturn(createXmlResponse("/geocode-response.xml"))
         );
-        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLocale(Locale.ENGLISH)
+                .create();
 
 
         final List<Place> places = geocoder.geocode("135 pilkington, avenue birmingham");
@@ -150,7 +153,10 @@ class NominatimGeocoderTest {
         wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE)
                 .willReturn(createXmlResponse("/reverse-response.xml"))
         );
-        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLocale(Locale.ENGLISH)
+                .create();
 
         final List<Place> places = geocoder.reverseGeocode(LatLon.valueOf("52.5487429714954,-1.81602098644987"));
 
@@ -213,7 +219,10 @@ class NominatimGeocoderTest {
         wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP)
                 .willReturn(createXmlResponse("/lookup-response.xml"))
         );
-        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLocale(Locale.ENGLISH)
+                .create();
 
         final Optional<Place> place = geocoder.lookup("N240109189");
 
@@ -271,7 +280,10 @@ class NominatimGeocoderTest {
 
     @Test
     void testReadPlace() {
-        final NominatimGeocoder geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+        final NominatimGeocoder geocoder = NominatimGeocoder.builder()
+                .setBaseUrl(wiremock.baseUrl())
+                .setLocale(Locale.ENGLISH)
+                .create();
 
         // Something that works
         final Place place = Place.create("X123123", "The Street", LatLon.create(15, 25),
