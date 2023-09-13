@@ -81,18 +81,34 @@ public class NominatimGeocoder implements Geocoder {
     private final Proxy proxy;
     private final RateLimiter rateLimiter;
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected NominatimGeocoder() {
         this(PUBLIC_NOMINATIM_SERVER);
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected NominatimGeocoder(String baseUrl) {
         this(baseUrl, null, null, null);
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy) {
         this(baseUrl, language, email, proxy, -1);
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps) {
         this.baseUrl = URI.create(baseUrl);
         this.language = language;
@@ -109,7 +125,15 @@ public class NominatimGeocoder implements Geocoder {
         }
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2", forRemoval = true)
     public static NominatimBuilder configure() {
+        return builder();
+    }
+
+    public static NominatimBuilder builder() {
         return new NominatimBuilder();
     }
 

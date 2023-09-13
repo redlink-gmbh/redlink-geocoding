@@ -49,7 +49,7 @@ public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfigurat
     public Geocoder nominatim() {
         final GeocodingProperties.NominatimProperties nominatim = properties.getNominatim();
 
-        final NominatimBuilder nominatimBuilder = NominatimGeocoder.configure()
+        final NominatimBuilder nominatimBuilder = NominatimGeocoder.builder()
                     .setEmail(nominatim.getEmail());
 
         if (nominatim.getBaseUrl() != null) {

@@ -31,6 +31,10 @@ public class NominatimBuilder {
     private Proxy proxy = null;
     private int maxQps = -1;
 
+    /**
+     * @deprecated use {@link NominatimGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public NominatimBuilder() {
         baseUrl = NominatimGeocoder.PUBLIC_NOMINATIM_SERVER;
         locale = Locale.getDefault(Locale.Category.DISPLAY);

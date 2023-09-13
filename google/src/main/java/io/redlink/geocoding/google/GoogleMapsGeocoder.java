@@ -45,6 +45,10 @@ public class GoogleMapsGeocoder implements Geocoder {
     private final boolean apiKeySet;
     private final boolean cryptoSecretSet;
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected GoogleMapsGeocoder(GeoApiContext context, Locale lang, boolean cryptoSecretSet, boolean apiKeySet) {
         this.context = context;
         this.language = lang;
@@ -110,7 +114,15 @@ public class GoogleMapsGeocoder implements Geocoder {
         return "GoogleMapsGeocoder [auth:"+ (cryptoSecretSet ? " cryptoSecret" : "") + (apiKeySet ? " apiKey" : "") + ",language=" + language + "]";
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2", forRemoval = true)
     public static GoogleMapsBuilder configure() {
+        return builder();
+    }
+
+    public static GoogleMapsBuilder builder() {
         return new GoogleMapsBuilder();
     }
 }

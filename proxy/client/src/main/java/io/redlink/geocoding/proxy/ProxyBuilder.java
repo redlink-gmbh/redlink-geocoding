@@ -23,19 +23,31 @@ public class ProxyBuilder {
     private URI baseUri;
     private Locale language;
 
+    /**
+     * @deprecated use {@link ProxyGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public ProxyBuilder() {
     }
 
+    /**
+     * @deprecated use {@link ProxyGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public ProxyBuilder(URI baseUri) {
         this.baseUri = baseUri;
     }
 
+    /**
+     * @deprecated use {@link ProxyGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public ProxyBuilder(String baseUri) {
         this(URI.create(baseUri));
     }
 
     /**
-     * @deprecated use {@link ProxyGeocoder#configure()}
+     * @deprecated use {@link ProxyGeocoder#builder()}
      */
     @Deprecated(forRemoval = true, since = "1.1.0")
     public static ProxyBuilder configure() {
