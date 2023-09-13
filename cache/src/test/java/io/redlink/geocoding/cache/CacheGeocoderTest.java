@@ -36,6 +36,7 @@ import static org.mockito.Mockito.anyString;
 /**
  *
  */
+@SuppressWarnings("java:S2925")
 class CacheGeocoderTest {
 
     public static final String TEST_ADDRESS = "test address";
@@ -49,7 +50,7 @@ class CacheGeocoderTest {
     private final CachingGeocoder geocoder;
 
     public CacheGeocoderTest() {
-        geocoder = new CachingGeocoder(new MockGeocoder(mockPlace));
+        geocoder = CachingGeocoder.wrap(new MockGeocoder(mockPlace)).create();
     }
 
     @Test
@@ -93,7 +94,9 @@ class CacheGeocoderTest {
         Mockito.when(delegate.lookup(placeId_2, (Locale) null))
                 .thenReturn(Optional.of(Place.create(placeId_2, null, null)));
 
-        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = CachingGeocoder.wrap(delegate)
+                .setCacheExpiry(2, TimeUnit.SECONDS)
+                .create();
         assertThat(cache.lookup(placeId_1))
                 .as("lookup place 1")
                 .isPresent().get()
@@ -143,7 +146,9 @@ class CacheGeocoderTest {
         Mockito.when(delegate.geocode(placeId_2, (Locale) null))
                 .thenReturn(Collections.singletonList(place_2));
 
-        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = CachingGeocoder.wrap(delegate)
+                .setCacheExpiry(2, TimeUnit.SECONDS)
+                .create();
         assertThat(cache.geocode(placeId_1, (Locale) null))
                 .as("geocode place1")
                 .singleElement()
@@ -192,7 +197,9 @@ class CacheGeocoderTest {
         Mockito.when(delegate.reverseGeocode(loc_1, (Locale) null)).thenReturn(Collections.singletonList(place_1));
         Mockito.when(delegate.reverseGeocode(loc_2, (Locale) null)).thenReturn(Collections.singletonList(place_2));
 
-        final CachingGeocoder cache = new CachingGeocoder(delegate, 2, TimeUnit.SECONDS);
+        final CachingGeocoder cache = CachingGeocoder.wrap(delegate)
+                .setCacheExpiry(2, TimeUnit.SECONDS)
+                .create();
         assertThat(cache.reverseGeocode(loc_1))
                 .as("reverse geocode place1")
                 .singleElement()

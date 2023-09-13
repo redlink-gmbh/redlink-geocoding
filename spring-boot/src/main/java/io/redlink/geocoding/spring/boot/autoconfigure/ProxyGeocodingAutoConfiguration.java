@@ -56,7 +56,7 @@ public class ProxyGeocodingAutoConfiguration extends GeocodingAutoConfiguration 
     public Geocoder nominatim() {
         final GeocodingProperties.ProxyProperties proxyProperties = properties.getProxyService();
 
-        final ProxyBuilder proxyBuilder = ProxyGeocoder.configure()
+        final ProxyBuilder proxyBuilder = ProxyGeocoder.builder()
                     .setBaseUri(proxyProperties.getBaseUrl());
 
         final ProxyGeocoder proxyGeocoder = proxyBuilder

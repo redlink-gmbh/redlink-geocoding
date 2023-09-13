@@ -54,7 +54,7 @@ public class GoogleGeocodingAutoConfiguration extends GeocodingAutoConfiguration
     public Geocoder google() {
         final GeocodingProperties.GoogleMapsProperties google = properties.getGoogle();
 
-        final GoogleMapsBuilder googleMapsBuilder = GoogleMapsGeocoder.configure();
+        final GoogleMapsBuilder googleMapsBuilder = GoogleMapsGeocoder.builder();
         if (StringUtils.isNotBlank(google.getApiKey())) {
             googleMapsBuilder.setApiKey(google.getApiKey());
         }

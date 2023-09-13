@@ -25,13 +25,14 @@ class ProxyBuilderTest {
 
     @Test
     void testCreate() {
-        assertNotNull(new ProxyBuilder("https://example.com/")
+        assertNotNull(ProxyGeocoder.builder()
+                .setBaseUri("https://example.com/")
                 .create(), "Nominatim Builder");
     }
 
     @Test
     void testWithIllegalURI() {
-        final ProxyBuilder builder = new ProxyBuilder();
+        final ProxyBuilder builder = ProxyGeocoder.builder();
         assertThatCode(builder::create)
                 .as("No baseUrl set")
                 .isInstanceOf(IllegalStateException.class);
