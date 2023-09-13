@@ -18,6 +18,7 @@ package io.redlink.geocoding.spring.boot.autoconfigure;
 import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -86,7 +87,14 @@ public class GeocodingProperties {
 
     public static class NominatimProperties {
         private URL baseUrl;
+
+        private NominatimServiceEndpoints endpoints = new NominatimServiceEndpoints();
+
         private String email;
+
+        private Map<String, String> extraQueryParams = Map.of();
+
+        private Map<String, String> extraHeaders = Map.of();
 
         public URL getBaseUrl() {
             return baseUrl;
@@ -94,6 +102,15 @@ public class GeocodingProperties {
 
         public NominatimProperties setBaseUrl(URL baseUrl) {
             this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public NominatimServiceEndpoints getEndpoints() {
+            return endpoints;
+        }
+
+        public NominatimProperties setEndpoints(NominatimServiceEndpoints endpoints) {
+            this.endpoints = endpoints;
             return this;
         }
 
@@ -105,6 +122,58 @@ public class GeocodingProperties {
             this.email = email;
             return this;
         }
+
+        public Map<String, String> getExtraQueryParams() {
+            return extraQueryParams;
+        }
+
+        public NominatimProperties setExtraQueryParams(Map<String, String> extraQueryParams) {
+            this.extraQueryParams = extraQueryParams != null ? Map.copyOf(extraQueryParams): Map.of();
+            return this;
+        }
+
+        public Map<String, String> getExtraHeaders() {
+            return extraHeaders;
+        }
+
+        public NominatimProperties setExtraHeaders(Map<String, String> extraHeaders) {
+            this.extraHeaders = extraHeaders != null ? Map.copyOf(extraHeaders): Map.of();
+            return this;
+        }
+
+        public static class NominatimServiceEndpoints {
+            private String geocoding;
+            private String reverse;
+            private String lookup;
+
+            public String getGeocoding() {
+                return geocoding;
+            }
+
+            public NominatimServiceEndpoints setGeocoding(String geocoding) {
+                this.geocoding = geocoding;
+                return this;
+            }
+
+            public String getReverse() {
+                return reverse;
+            }
+
+            public NominatimServiceEndpoints setReverse(String reverse) {
+                this.reverse = reverse;
+                return this;
+            }
+
+            public String getLookup() {
+                return lookup;
+            }
+
+            public NominatimServiceEndpoints setLookup(String lookup) {
+                this.lookup = lookup;
+                return this;
+            }
+        }
+
     }
 
     public static class ProxyProperties {

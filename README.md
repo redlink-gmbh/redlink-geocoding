@@ -170,6 +170,11 @@ geocoding.google.channel=
 # Nominatim Geocoder
 geocoding.nominatim.base-url=
 geocoding.nominatim.email=
+geocoding.nominatim.endpoints.geocoding=
+geocoding.nominatim.endpoints.reverse=
+geocoding.nominatim.endpoints.lookup=
+geocoding.nominatim.extra-query-params.<key>=
+geocoding.nominatim.extra-headers.<header-name>=
 # Proxy Geocoder
 geocoding.proxy-service.base-url=
 # General Options

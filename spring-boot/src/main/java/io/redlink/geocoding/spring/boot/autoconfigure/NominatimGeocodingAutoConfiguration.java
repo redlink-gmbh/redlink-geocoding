@@ -56,6 +56,23 @@ public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfigurat
             nominatimBuilder.setBaseUrl(nominatim.getBaseUrl());
         }
 
+        if (nominatim.getEndpoints().getGeocoding() != null) {
+            nominatimBuilder.setGeocodeEndpoint(nominatim.getEndpoints().getGeocoding());
+        }
+        if (nominatim.getEndpoints().getReverse() != null) {
+            nominatimBuilder.setReverseEndpoint(nominatim.getEndpoints().getReverse());
+        }
+        if (nominatim.getEndpoints().getLookup() != null) {
+            nominatimBuilder.setLookupEndpoint(nominatim.getEndpoints().getLookup());
+        }
+
+        if (nominatim.getExtraQueryParams() != null) {
+            nominatim.getExtraQueryParams().forEach(nominatimBuilder::setStaticQueryParam);
+        }
+        if (nominatim.getExtraHeaders() != null) {
+            nominatim.getExtraHeaders().forEach(nominatimBuilder::setStaticHeader);
+        }
+
         final NominatimGeocoder nominatimGeocoder = nominatimBuilder
                 .setLocale(properties.getLang())
                 .setProxy(buildProxy())
