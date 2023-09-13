@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CachingGeocoderBuilderTest {
 
     @Test
-    void testCreateWithoutDelegate() throws Exception {
-        final CachingGeocoderBuilder builder = new CachingGeocoderBuilder();
+    void testCreateWithoutDelegate() {
+        final CachingGeocoderBuilder builder = CachingGeocoder.builder();
         assertThatCode(builder::create)
                 .as("Incomplete Builder")
                 .isInstanceOf(IllegalStateException.class);
@@ -39,10 +39,10 @@ class CachingGeocoderBuilderTest {
     @Test
     void testCreate() {
         final Geocoder delegate = Mockito.mock(Geocoder.class);
-        assertNotNull(new CachingGeocoderBuilder()
+        assertNotNull(CachingGeocoder.builder()
                 .setGeocoder(delegate)
                 .create(), "Caching Builder");
-        assertNotNull(new CachingGeocoderBuilder(delegate)
+        assertNotNull(CachingGeocoder.wrap(delegate)
                 .create(), "Caching Builder");
     }
 

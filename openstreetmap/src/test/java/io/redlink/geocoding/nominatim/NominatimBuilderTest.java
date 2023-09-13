@@ -28,13 +28,12 @@ class NominatimBuilderTest {
 
     @Test
     void testCreate() {
-        assertNotNull(new NominatimBuilder()
-                .create(), "Nominatim Builder");
+        assertNotNull(NominatimGeocoder.builder().create(), "Nominatim Builder");
     }
 
     @Test
     void testWithIllegalURI() {
-        final NominatimBuilder builder = new NominatimBuilder()
+        final NominatimBuilder builder = NominatimGeocoder.builder()
                 .setBaseUrl("-- not a valid baseUrl --");
         assertThatCode(builder::create)
                 .isInstanceOf(IllegalArgumentException.class)

@@ -16,7 +16,6 @@
 
 package io.redlink.geocoding.google;
 
-import com.google.maps.GeoApiContext;
 import com.google.maps.internal.ApiConfig;
 import io.redlink.geocoding.AddressComponent;
 import io.redlink.geocoding.AddressComponent.Type;
@@ -30,7 +29,6 @@ import java.net.http.HttpResponse;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,15 +72,11 @@ class GoogleMapsGeocoderIT {
                 .as("Invalid Google API-Key (expected to start with 'AIza'")
                 .startsWith("AIza");
 
-        GeoApiContext.Builder contextBuilder = new GeoApiContext.Builder();
-        contextBuilder.apiKey(apiKey);
-        contextBuilder.channel(getClass().getSimpleName());
-        gmGeocoder = new GoogleMapsGeocoder(
-                contextBuilder.build(),
-                Locale.forLanguageTag("en"),
-                false,
-                true
-        );
+        gmGeocoder = GoogleMapsGeocoder.builder()
+                .setApiKey(apiKey)
+                .setChannel(getClass().getSimpleName())
+                .setLocale("en")
+                .create();
     }
 
     @BeforeEach

@@ -51,7 +51,7 @@ class NominatimGeocoderTest {
     private final NominatimGeocoder geocoder;
 
     public NominatimGeocoderTest() {
-        geocoder = new NominatimGeocoder(wiremock.baseUrl(), Locale.ENGLISH, null, null);
+        geocoder = NominatimGeocoder.builder().setBaseUrl(wiremock.baseUrl()).setLocale(Locale.ENGLISH).create();
     }
 
     @BeforeAll
