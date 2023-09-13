@@ -146,10 +146,12 @@ public class CachingGeocoder implements Geocoder {
         return builder();
     }
 
+    @SuppressWarnings("deprecation")
     public static CachingGeocoderBuilder builder() {
         return new CachingGeocoderBuilder();
     }
 
+    @SuppressWarnings("deprecation")
     public static CachingGeocoderBuilder wrap(Geocoder delegate) {
         return new CachingGeocoderBuilder(delegate);
     }

@@ -122,6 +122,7 @@ public class GoogleMapsGeocoder implements Geocoder {
         return builder();
     }
 
+    @SuppressWarnings("deprecation")
     public static GoogleMapsBuilder builder() {
         return new GoogleMapsBuilder();
     }

@@ -76,6 +76,7 @@ public class GoogleMapsBuilder {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public GoogleMapsGeocoder create() {
         // Check state
         if (cryptoSecretSet || apiKeySet) {

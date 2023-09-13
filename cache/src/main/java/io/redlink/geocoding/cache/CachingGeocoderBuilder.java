@@ -56,6 +56,7 @@ public class CachingGeocoderBuilder {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public CachingGeocoder create() {
         Preconditions.checkState(geocoder != null, "geocoder must be set!");
         return new CachingGeocoder(geocoder, cacheExpireTime, timeUnit);

@@ -40,6 +40,7 @@ public class NominatimBuilder {
         locale = Locale.getDefault(Locale.Category.DISPLAY);
     }
 
+    @SuppressWarnings("deprecation")
     public NominatimGeocoder create() {
         return new NominatimGeocoder(baseUrl, locale, email, proxy, maxQps);
     }

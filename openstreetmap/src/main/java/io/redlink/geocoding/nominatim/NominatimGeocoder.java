@@ -133,6 +133,7 @@ public class NominatimGeocoder implements Geocoder {
         return builder();
     }
 
+    @SuppressWarnings("deprecation")
     public static NominatimBuilder builder() {
         return new NominatimBuilder();
     }

@@ -78,6 +78,7 @@ public class ProxyGeocoder implements Geocoder, Closeable {
         return builder();
     }
 
+    @SuppressWarnings("deprecation")
     public static ProxyBuilder builder() {
         return new ProxyBuilder();
     }
