@@ -61,10 +61,24 @@ public class NominatimGeocoder implements Geocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 
+    /**
+     * Public Nominatim server, hosted by OpenStreetMap
+     * @see <a href="https://nominatim.openstreetmap.org/">OSM Nominatim Server</a>
+     * @see <a href="https://operations.osmfoundation.org/policies/nominatim/">OSM Nominatim Usage Policy</a>
+     */
     public static final String PUBLIC_NOMINATIM_SERVER = "https://nominatim.openstreetmap.org/";
-    protected static final String SERVICE_GEOCODE = "/search";
-    protected static final String SERVICE_REVERSE = "/reverse";
-    protected static final String SERVICE_LOOKUP = "/lookup";
+    /**
+     * Default service-endpoint for geocoding.
+     */
+    public static final String DEFAULT_GEOCODE_ENDPOINT = "/search";
+    /**
+     * Default service-endpoint for reverse geocoding.
+     */
+    public static final String DEFAULT_REVERSE_ENDPOINT = "/reverse";
+    /**
+     * Default service-endpoint for lookup.
+     */
+    public static final String DEFAULT_LOOKUP_ENDPOINT = "/lookup";
 
     protected static final String PARAM_QUERY = "q";
     protected static final String PARAM_PLACE_ID = "osm_ids";

@@ -33,9 +33,9 @@ public class NominatimBuilder {
     private Proxy proxy = null;
     private int maxQps = -1;
 
-    private String geocodeEndpoint = NominatimGeocoder.SERVICE_GEOCODE;
-    private String reverseEndpoint = NominatimGeocoder.SERVICE_REVERSE;
-    private String lookupEndpoint = NominatimGeocoder.SERVICE_LOOKUP;
+    private String geocodeEndpoint = NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT;
+    private String reverseEndpoint = NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT;
+    private String lookupEndpoint = NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT;
 
     private final Map<String, String> customQuery = new LinkedHashMap<>();
     private final Map<String, String> customHeaders = new LinkedHashMap<>();

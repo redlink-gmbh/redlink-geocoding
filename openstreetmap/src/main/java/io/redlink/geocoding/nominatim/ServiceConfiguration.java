@@ -16,7 +16,7 @@ class ServiceConfiguration {
     private final Map<String, String> customHeaders;
 
     ServiceConfiguration() {
-        this(NominatimGeocoder.SERVICE_GEOCODE, NominatimGeocoder.SERVICE_REVERSE, NominatimGeocoder.SERVICE_LOOKUP, Map.of(), Map.of());
+        this(NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT, NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT, NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT, Map.of(), Map.of());
     }
 
     ServiceConfiguration(String geocodeEndpoint, String reverseEndpoint, String lookupEndpoint,
@@ -30,15 +30,15 @@ class ServiceConfiguration {
     }
 
     public String getGeocodeEndpoint() {
-        return Objects.requireNonNullElse(geocodeEndpoint, NominatimGeocoder.SERVICE_GEOCODE);
+        return Objects.requireNonNullElse(geocodeEndpoint, NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT);
     }
 
     public String getReverseEndpoint() {
-        return Objects.requireNonNullElse(reverseEndpoint, NominatimGeocoder.SERVICE_REVERSE);
+        return Objects.requireNonNullElse(reverseEndpoint, NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT);
     }
 
     public String getLookupEndpoint() {
-        return Objects.requireNonNullElse(lookupEndpoint, NominatimGeocoder.SERVICE_LOOKUP);
+        return Objects.requireNonNullElse(lookupEndpoint, NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT);
     }
 
     public Map<String, String> getCustomQueryParams() {

@@ -84,7 +84,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testGeocode() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE)
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT)
                 .willReturn(createXmlResponse("/geocode-response.xml"))
         );
         final NominatimGeocoder geocoder = NominatimGeocoder.builder()
@@ -106,7 +106,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testGeocodeWithCustomSettings() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_GEOCODE).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT).willReturn(WireMock.notFound()));
         wiremock.stubFor(urlEndsWith("/my-geo-coding").willReturn(WireMock.unauthorized()));
         wiremock.stubFor(urlEndsWith("/my-geo-coding")
                 .withQueryParam("custom", WireMock.equalTo("value"))
@@ -150,7 +150,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testReverseGeocode() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE)
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT)
                 .willReturn(createXmlResponse("/reverse-response.xml"))
         );
         final NominatimGeocoder geocoder = NominatimGeocoder.builder()
@@ -171,7 +171,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testReverseGeocodeWithCustomSettings() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_REVERSE).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT).willReturn(WireMock.notFound()));
         wiremock.stubFor(urlEndsWith("/my-reverse-coding").willReturn(WireMock.unauthorized()));
         wiremock.stubFor(urlEndsWith("/my-reverse-coding")
                 .withQueryParam("custom", WireMock.equalTo("value"))
@@ -216,7 +216,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testLookup() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP)
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT)
                 .willReturn(createXmlResponse("/lookup-response.xml"))
         );
         final NominatimGeocoder geocoder = NominatimGeocoder.builder()
@@ -236,7 +236,7 @@ class NominatimGeocoderTest {
 
     @Test
     void testLookupWithCustomSettings() throws Exception {
-        wiremock.stubFor(urlEndsWith(NominatimGeocoder.SERVICE_LOOKUP).willReturn(WireMock.notFound()));
+        wiremock.stubFor(urlEndsWith(NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT).willReturn(WireMock.notFound()));
         wiremock.stubFor(urlEndsWith("/my-lookup").willReturn(WireMock.unauthorized()));
         wiremock.stubFor(urlEndsWith("/my-lookup")
                 .withQueryParam("custom", WireMock.equalTo("value"))
