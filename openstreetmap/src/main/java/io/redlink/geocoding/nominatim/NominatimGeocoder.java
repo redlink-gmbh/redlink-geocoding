@@ -61,10 +61,24 @@ public class NominatimGeocoder implements Geocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 
+    /**
+     * Public Nominatim server, hosted by OpenStreetMap
+     * @see <a href="https://nominatim.openstreetmap.org/">OSM Nominatim Server</a>
+     * @see <a href="https://operations.osmfoundation.org/policies/nominatim/">OSM Nominatim Usage Policy</a>
+     */
     public static final String PUBLIC_NOMINATIM_SERVER = "https://nominatim.openstreetmap.org/";
-    protected static final String SERVICE_GEOCODE = "/search";
-    protected static final String SERVICE_REVERSE = "/reverse";
-    protected static final String SERVICE_LOOKUP = "/lookup";
+    /**
+     * Default service-endpoint for geocoding.
+     */
+    public static final String DEFAULT_GEOCODE_ENDPOINT = "/search";
+    /**
+     * Default service-endpoint for reverse geocoding.
+     */
+    public static final String DEFAULT_REVERSE_ENDPOINT = "/reverse";
+    /**
+     * Default service-endpoint for lookup.
+     */
+    public static final String DEFAULT_LOOKUP_ENDPOINT = "/lookup";
 
     protected static final String PARAM_QUERY = "q";
     protected static final String PARAM_PLACE_ID = "osm_ids";
@@ -79,6 +93,8 @@ public class NominatimGeocoder implements Geocoder {
     private final Locale language;
     private final String email;
     private final Proxy proxy;
+    private final ServiceConfiguration serviceConfiguration;
+    @SuppressWarnings("UnstableApiUsage")
     private final RateLimiter rateLimiter;
 
     /**
@@ -110,10 +126,15 @@ public class NominatimGeocoder implements Geocoder {
      */
     @Deprecated(since = "2.0.2")
     protected NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps) {
+        this(baseUrl, language, email, proxy, maxQps, new ServiceConfiguration());
+    }
+
+    NominatimGeocoder(String baseUrl, Locale language, String email, Proxy proxy, int maxQps, ServiceConfiguration serviceConfiguration) {
         this.baseUrl = URI.create(baseUrl);
         this.language = language;
         this.email = email;
         this.proxy = proxy;
+        this.serviceConfiguration = serviceConfiguration;
         if (maxQps < 0 && StringUtils.equals(baseUrl, PUBLIC_NOMINATIM_SERVER)) {
             // set default qps for public server
             maxQps = 1;
@@ -141,11 +162,11 @@ public class NominatimGeocoder implements Geocoder {
     @Override
     public List<Place> geocode(String address, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_GEOCODE, lang)
+            final URI uri = createUriBuilder(serviceConfiguration.getGeocodeEndpoint(), lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_QUERY, address)
                     .build();
-            final HttpGet request = new HttpGet(uri);
+            final HttpGet request = createRequest(uri);
             final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
@@ -165,11 +186,11 @@ public class NominatimGeocoder implements Geocoder {
     @Override
     public List<Place> reverseGeocode(LatLon coordinates, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_REVERSE, lang)
+            final URI uri = createUriBuilder(serviceConfiguration.getReverseEndpoint(), lang)
                     .setParameter(PARAM_LAT, String.valueOf(coordinates.lat()))
                     .setParameter(PARAM_LON, String.valueOf(coordinates.lon()))
                     .build();
-            final HttpGet request = new HttpGet(uri);
+            final HttpGet request = createRequest(uri);
             final List<Place> places = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected List<Place> parseJsoup(Document doc) {
@@ -193,11 +214,11 @@ public class NominatimGeocoder implements Geocoder {
     @Override
     public Optional<Place> lookup(String placeId, Locale lang) throws IOException {
         try (CloseableHttpClient client = createHttpClient()) {
-            final URI uri = createUriBuilder(SERVICE_LOOKUP, lang)
+            final URI uri = createUriBuilder(serviceConfiguration.getLookupEndpoint(), lang)
                     .setParameter(PARAM_PLACEDETAILS, "1")
                     .setParameter(PARAM_PLACE_ID, placeId)
                     .build();
-            final HttpGet request = new HttpGet(uri);
+            final HttpGet request = createRequest(uri);
             final Optional<Place> place = client.execute(request, new JsoupResponseHandler<>(uri) {
                 @Override
                 protected Optional<Place> parseJsoup(Document doc) {
@@ -290,6 +311,16 @@ public class NominatimGeocoder implements Geocoder {
         return String.format(Locale.ENGLISH, "%S%s", type.charAt(0), osmId);
     }
 
+    protected HttpGet createRequest(URI uri) {
+        final HttpGet httpGet = new HttpGet(uri);
+
+        serviceConfiguration.getCustomHeaders()
+                .forEach(httpGet::setHeader);
+
+        return httpGet;
+    }
+
+
     protected URIBuilder createUriBuilder(String service, Locale lang) throws URISyntaxException {
         final URIBuilder uriBuilder = new URIBuilder(removeEnd(baseUrl.toString(), "/") + prependIfMissing(service, "/"))
                 .setParameter(PARAM_FORMAT, "xml");
@@ -301,6 +332,10 @@ public class NominatimGeocoder implements Geocoder {
         } else if (Objects.nonNull(language)) {
             uriBuilder.setParameter(PARAM_LANG, language.toLanguageTag());
         }
+
+        serviceConfiguration.getCustomQueryParams()
+                .forEach(uriBuilder::addParameter);
+
         return uriBuilder;
     }
 

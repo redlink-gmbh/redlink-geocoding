@@ -162,16 +162,29 @@ For quick and easy use of the `Geocoder` in [spring-boot] projects use the `geoc
 and configure the geocoders with the following `application.properties`:
 
 ```properties
-# GoogleMaps Geocoder, provide either api-key or client-id and crypto-secret
+# GoogleMaps Geocoder
+## provide either api-key OR client-id and crypto-secret
 geocoding.google.api-key=
 geocoding.google.client-id=
 geocoding.google.crypto-secret=
 geocoding.google.channel=
+
 # Nominatim Geocoder
+## optional, defaults to public nominatim server by OSM
 geocoding.nominatim.base-url=
 geocoding.nominatim.email=
+## overriding endpoints is optional
+geocoding.nominatim.endpoints.geocoding=/search
+geocoding.nominatim.endpoints.reverse=/reverse
+geocoding.nominatim.endpoints.lookup=/lookup
+## optional custom query params
+geocoding.nominatim.extra-query-params.<key>=
+## optional custom headers
+geocoding.nominatim.extra-headers.<header-name>=
+
 # Proxy Geocoder
 geocoding.proxy-service.base-url=
+
 # General Options
 geocoding.cache-timeout=
 geocoding.lang=
