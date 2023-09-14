@@ -38,7 +38,7 @@ class GoogleMapsBuilderTest {
 
     @Test
     void testCreate() {
-        assertNotNull(new GoogleMapsBuilder()
+        assertNotNull(GoogleMapsGeocoder.builder()
                 .setApiKey("API key")
                 .setChannel("channel")
                 .setCredentials("client", "cryptoSecret")
@@ -49,7 +49,7 @@ class GoogleMapsBuilderTest {
 
     @Test
     void testWithoutCredentials() {
-        final GoogleMapsBuilder builder = new GoogleMapsBuilder();
+        final GoogleMapsBuilder builder = GoogleMapsGeocoder.builder();
         assertThatCode(builder::create)
                 .as("Incomplete Builder")
                 .isInstanceOf(IllegalStateException.class);

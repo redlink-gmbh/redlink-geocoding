@@ -69,7 +69,7 @@ the specific configuration needed to use the Google Maps Services.
 
 
 ```java
-final Geocoder googleGeocoder = GoogleMapsGeocoder.configure()
+final Geocoder googleGeocoder = GoogleMapsGeocoder.builder()
         .setApiKey("Googel_API_key")
         .setLocale("de")
         .create();
@@ -89,7 +89,7 @@ Maven dependency:
 [Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim) services Geocoder implementation, which provides the means to perform the three described operations using the aforementioned service.
 
 ```java
-final Geocoder nominatimGeocoder = NominatimGeocoder.configure()
+final Geocoder nominatimGeocoder = NominatimGeocoder.builder()
                .setEmail("example@email.org")
                .setLocale("en")
                .create();
@@ -108,7 +108,7 @@ Maven dependency:
 The geocoding-cache artifact implements a `CacheGeocoder` which actually wraps any other Geocoder object and provides a basic cache for the three supported methods to avoid  unnecessary replicated calls to the services and a shorter time response.
 
 ```java
-final Geocoder cachingGeocoder = CacheGeocoder.configure()
+final Geocoder cachingGeocoder = CacheGeocoder.builder()
                .setGeocoder(geocoder)
                .setCacheExpiry(24, TimeUnit.DAYS)
                .create();
@@ -142,7 +142,7 @@ The geocoding providers are autoconfigured using env-variables:
 The geocoding-proxy just needs to be configured with the base-url of the proxy-server:
 
 ```java
-final Geocoder proxyGeocoder = ProxyGeocoder.configure()
+final Geocoder proxyGeocoder = ProxyGeocoder.builder()
                .setBaseUri("http://localhost:8080/")
                .create();
 ```
@@ -162,16 +162,29 @@ For quick and easy use of the `Geocoder` in [spring-boot] projects use the `geoc
 and configure the geocoders with the following `application.properties`:
 
 ```properties
-# GoogleMaps Geocoder, provide either api-key or client-id and crypto-secret
+# GoogleMaps Geocoder
+## provide either api-key OR client-id and crypto-secret
 geocoding.google.api-key=
 geocoding.google.client-id=
 geocoding.google.crypto-secret=
 geocoding.google.channel=
+
 # Nominatim Geocoder
+## optional, defaults to public nominatim server by OSM
 geocoding.nominatim.base-url=
 geocoding.nominatim.email=
+## overriding endpoints is optional
+geocoding.nominatim.endpoints.geocoding=/search
+geocoding.nominatim.endpoints.reverse=/reverse
+geocoding.nominatim.endpoints.lookup=/lookup
+## optional custom query params
+geocoding.nominatim.extra-query-params.<key>=
+## optional custom headers
+geocoding.nominatim.extra-headers.<header-name>=
+
 # Proxy Geocoder
 geocoding.proxy-service.base-url=
+
 # General Options
 geocoding.cache-timeout=
 geocoding.lang=

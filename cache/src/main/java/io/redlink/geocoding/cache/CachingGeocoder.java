@@ -51,10 +51,18 @@ public class CachingGeocoder implements Geocoder {
 
     private final String cacheExpiry;
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected CachingGeocoder(Geocoder geocoder) {
         this(geocoder, DEFAULT_CACHE_EXPIRE_TIME, DEFAULT_TIME_UNIT);
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2")
     protected CachingGeocoder(Geocoder geocoder, long cacheExpireTime, TimeUnit timeUnit) {
         Preconditions.checkArgument(geocoder != null, "Geocoder must not be null");
         Preconditions.checkNotNull(timeUnit);
@@ -130,8 +138,22 @@ public class CachingGeocoder implements Geocoder {
         return "CachingGeocoder [geocoder=" + geocoder + ", expires=" + cacheExpiry + "]";
     }
 
+    /**
+     * @deprecated use {@link #builder()}
+     */
+    @Deprecated(since = "2.0.2", forRemoval = true)
     public static CachingGeocoderBuilder configure() {
+        return builder();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static CachingGeocoderBuilder builder() {
         return new CachingGeocoderBuilder();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static CachingGeocoderBuilder wrap(Geocoder delegate) {
+        return new CachingGeocoderBuilder(delegate);
     }
 
     private static class LangString {

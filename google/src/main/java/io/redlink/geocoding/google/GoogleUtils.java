@@ -15,7 +15,6 @@
  */
 package io.redlink.geocoding.google;
 
-import com.google.common.collect.Lists;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
@@ -43,8 +42,7 @@ final class GoogleUtils {
     }
 
     public static List<Place> google2Places(GeocodingResult[] results) {
-        return Lists.transform(Arrays.asList(results),
-                GoogleUtils::geocodingResult2Place);
+        return Arrays.stream(results).map(GoogleUtils::geocodingResult2Place).collect(Collectors.toList());
     }
 
     private static Place geocodingResult2Place(GeocodingResult google) {

@@ -30,9 +30,17 @@ public class CachingGeocoderBuilder {
     private TimeUnit timeUnit = CachingGeocoder.DEFAULT_TIME_UNIT;
     private Geocoder geocoder = null;
 
+    /**
+     * @deprecated use {@link CachingGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public CachingGeocoderBuilder() {
     }
 
+    /**
+     * @deprecated use {@link CachingGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public CachingGeocoderBuilder(Geocoder geocoder) {
         this.geocoder = geocoder;
     }
@@ -48,6 +56,7 @@ public class CachingGeocoderBuilder {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public CachingGeocoder create() {
         Preconditions.checkState(geocoder != null, "geocoder must be set!");
         return new CachingGeocoder(geocoder, cacheExpireTime, timeUnit);

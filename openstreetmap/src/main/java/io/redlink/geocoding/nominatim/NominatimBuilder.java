@@ -18,7 +18,9 @@ package io.redlink.geocoding.nominatim;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * A Builder for NominatimGeocoder
@@ -31,13 +33,29 @@ public class NominatimBuilder {
     private Proxy proxy = null;
     private int maxQps = -1;
 
+    private String geocodeEndpoint = NominatimGeocoder.DEFAULT_GEOCODE_ENDPOINT;
+    private String reverseEndpoint = NominatimGeocoder.DEFAULT_REVERSE_ENDPOINT;
+    private String lookupEndpoint = NominatimGeocoder.DEFAULT_LOOKUP_ENDPOINT;
+
+    private final Map<String, String> customQuery = new LinkedHashMap<>();
+    private final Map<String, String> customHeaders = new LinkedHashMap<>();
+
+    /**
+     * @deprecated use {@link NominatimGeocoder#builder()}
+     */
+    @Deprecated(since = "2.0.2")
     public NominatimBuilder() {
         baseUrl = NominatimGeocoder.PUBLIC_NOMINATIM_SERVER;
         locale = Locale.getDefault(Locale.Category.DISPLAY);
     }
 
     public NominatimGeocoder create() {
-        return new NominatimGeocoder(baseUrl, locale, email, proxy, maxQps);
+        return new NominatimGeocoder(baseUrl, locale, email, proxy, maxQps,
+                new ServiceConfiguration(
+                    geocodeEndpoint, reverseEndpoint, lookupEndpoint,
+                    customQuery, customHeaders
+                )
+        );
     }
 
     public NominatimBuilder setBaseUrl(URI baseUrl) {
@@ -75,6 +93,31 @@ public class NominatimBuilder {
 
     public NominatimBuilder setEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public NominatimBuilder setGeocodeEndpoint(String geocodeEndpoint) {
+        this.geocodeEndpoint = geocodeEndpoint;
+        return this;
+    }
+
+    public NominatimBuilder setReverseEndpoint(String reverseEndpoint) {
+        this.reverseEndpoint = reverseEndpoint;
+        return this;
+    }
+
+    public NominatimBuilder setLookupEndpoint(String lookupEndpoint) {
+        this.lookupEndpoint = lookupEndpoint;
+        return this;
+    }
+
+    public NominatimBuilder setStaticQueryParam(String key, String value) {
+        this.customQuery.put(key, value);
+        return this;
+    }
+
+    public NominatimBuilder setStaticHeader(String headerName, String headerValue) {
+        this.customHeaders.put(headerName, headerValue);
         return this;
     }
 }
