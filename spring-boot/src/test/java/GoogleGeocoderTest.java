@@ -35,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("google")
 @EnableAutoConfiguration
 class GoogleGeocoderTest {
+    // NOTE: see https://docs.spring.io/spring-boot/docs/2.7.15/reference/htmlsingle/#features.developing-auto-configuration.testing
+    //       on how to properly test autoconfiguration
 
     private final Geocoder geocoder;
 
