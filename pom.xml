@@ -290,7 +290,7 @@
                     <configuration>
                         <release>${java.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
-                        <optimize>true</optimize>
+                        <parameters>true</parameters>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -298,6 +298,7 @@
                     <version>3.5.0</version>
                     <configuration>
                         <release>${java.version}</release>
+                        <doclint>all,-missing</doclint>
                     </configuration>
                 </plugin>
                 <plugin>
