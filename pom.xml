@@ -298,6 +298,7 @@
                     <version>3.5.0</version>
                     <configuration>
                         <release>${java.version}</release>
+                        <doclint>all,-missing</doclint>
                     </configuration>
                 </plugin>
                 <plugin>
