@@ -121,8 +121,8 @@ class ProxyGeocoderTest {
     void testLookup() throws IOException {
         Assertions.assertThat(geocoder.lookup(RandomStringUtils.randomAlphabetic(8)))
                 .as("Lookup Result")
-                .isPresent().get()
-                .isEqualTo(place1);
+                .isPresent()
+                .contains(place1);
 
         Assertions.assertThat(geocoder.lookup("does-not-exist"))
                 .as("Lookup Result")
