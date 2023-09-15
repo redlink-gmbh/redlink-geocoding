@@ -135,9 +135,10 @@ public class NominatimGeocoder implements Geocoder {
         this.email = email;
         this.proxy = proxy;
         this.serviceConfiguration = serviceConfiguration;
-        if (maxQps < 0 && StringUtils.equals(baseUrl, PUBLIC_NOMINATIM_SERVER)) {
+        if (StringUtils.equals(baseUrl, PUBLIC_NOMINATIM_SERVER)) {
             // set default qps for public server
-            maxQps = 1;
+            maxQps = Math.max(maxQps, 1);
+            LOG.info("Initialize NominatimGeocoder using public server at {}; Data from OpenStreetMap (see https://openstreetmap.org/copyright)", baseUrl);
         }
         if (maxQps > 0) {
             rateLimiter = RateLimiter.create(maxQps);
@@ -344,6 +345,7 @@ public class NominatimGeocoder implements Geocoder {
             rateLimiter.acquire();
         }
         final HttpClientBuilder builder = HttpClients.custom();
+        builder.setUserAgent(serviceConfiguration.getUserAgent());
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             LOG.trace("Direct Connection");
         } else if (proxy.type() == Proxy.Type.HTTP) {

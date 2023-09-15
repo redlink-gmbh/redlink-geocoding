@@ -15,20 +15,29 @@
  */
 package io.redlink.geocoding.nominatim;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Builder for NominatimGeocoder
  */
 public class NominatimBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NominatimBuilder.class);
+
     private String baseUrl;
     private String email = null;
+    private String userAgent = null;
     private Locale locale;
     private Proxy proxy = null;
     private int maxQps = -1;
@@ -52,9 +61,9 @@ public class NominatimBuilder {
     public NominatimGeocoder create() {
         return new NominatimGeocoder(baseUrl, locale, email, proxy, maxQps,
                 new ServiceConfiguration(
-                    geocodeEndpoint, reverseEndpoint, lookupEndpoint,
-                    customQuery, customHeaders
-                )
+                        geocodeEndpoint, reverseEndpoint, lookupEndpoint,
+                        customQuery, customHeaders,
+                        Objects.requireNonNullElseGet(userAgent, NominatimBuilder::createUserAgent))
         );
     }
 
@@ -96,6 +105,11 @@ public class NominatimBuilder {
         return this;
     }
 
+    public NominatimBuilder setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+        return this;
+    }
+
     public NominatimBuilder setGeocodeEndpoint(String geocodeEndpoint) {
         this.geocodeEndpoint = geocodeEndpoint;
         return this;
@@ -120,4 +134,32 @@ public class NominatimBuilder {
         this.customHeaders.put(headerName, headerValue);
         return this;
     }
+
+    private static String createUserAgent() {
+        final String userAgent = String.format("redlink-geocoding/%s (%s; +%s)",
+                readLibVersion(),
+                ServiceConfiguration.class.getModule().getName(),
+                "https://github.com/redlink-gmbh/redlink-geocoding"
+        );
+        LOG.debug("No User-Agent provided, using fallback to {}", userAgent);
+        return userAgent;
+    }
+
+    private static String readLibVersion() {
+        final String fallbackVersion = "0.0.0-SNAPSHOT";
+        final Properties p;
+        try (InputStream pomProperties = ServiceConfiguration.class
+                .getModule()
+                .getResourceAsStream("/META-INF/maven/io.redlink.geocoding/geocoding-osm/pom.properties")) {
+            p = new Properties();
+            if (pomProperties != null) {
+                p.load(pomProperties);
+            }
+            return p.getProperty("version", fallbackVersion);
+        } catch (IOException e) {
+            LOG.warn("Could not determine library-version, fallback to {}", fallbackVersion, e);
+            return fallbackVersion;
+        }
+    }
+
 }
