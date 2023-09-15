@@ -51,7 +51,7 @@ class NominatimGeocoderTest {
     }
 
     @Test
-    void testType() throws Exception {
+    void testType() {
         assertThat(geocoder)
                 .as("NominatimGeocoder expected")
                 .isInstanceOf(NominatimGeocoder.class);

@@ -52,7 +52,7 @@ class CachedGeocoderTest {
     }
 
     @Test
-    void testType() throws Exception {
+    void testType() {
         assertThat(geocoder)
                 .as("CachingGeocoder expected")
                 .isInstanceOf(CachingGeocoder.class);
