@@ -51,7 +51,7 @@ public class GoogleGeocodingAutoConfiguration extends GeocodingAutoConfiguration
 
     @Bean(name = "googleGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Geocoder google() {
+    public GoogleMapsGeocoder google() {
         final GeocodingProperties.GoogleMapsProperties google = properties.getGoogle();
 
         final GoogleMapsBuilder googleMapsBuilder = GoogleMapsGeocoder.builder();

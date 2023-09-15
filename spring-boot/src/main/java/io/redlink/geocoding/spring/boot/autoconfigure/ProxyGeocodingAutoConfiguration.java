@@ -38,7 +38,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 @AutoConfiguration(after = {
         GoogleGeocodingAutoConfiguration.class,
-        NominatimGeocodingAutoConfiguration.class,
 })
 @ConditionalOnClass(ProxyGeocoder.class)
 @ConditionalOnMissingBean(Geocoder.class)
@@ -54,7 +53,7 @@ public class ProxyGeocodingAutoConfiguration extends GeocodingAutoConfiguration 
 
     @Bean(name = "proxyGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Geocoder nominatim() {
+    public ProxyGeocoder proxyGeocoder() {
         final GeocodingProperties.ProxyProperties proxyProperties = properties.getProxyService();
 
         final ProxyBuilder proxyBuilder = ProxyGeocoder.builder()

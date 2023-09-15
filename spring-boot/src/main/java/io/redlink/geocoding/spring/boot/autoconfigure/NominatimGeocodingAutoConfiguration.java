@@ -30,7 +30,10 @@ import org.springframework.context.annotation.Scope;
 
 /**
  */
-@AutoConfiguration(after = GoogleGeocodingAutoConfiguration.class)
+@AutoConfiguration(after = {
+        GoogleGeocodingAutoConfiguration.class,
+        ProxyGeocodingAutoConfiguration.class,
+})
 @ConditionalOnClass(NominatimGeocoder.class)
 @ConditionalOnMissingBean(Geocoder.class)
 @EnableConfigurationProperties(GeocodingProperties.class)
@@ -44,7 +47,7 @@ public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfigurat
 
     @Bean(name = "nominatimGeocoder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Geocoder nominatim() {
+    public NominatimGeocoder nominatim() {
         final GeocodingProperties.NominatimProperties nominatim = properties.getNominatim();
 
         final NominatimBuilder nominatimBuilder = NominatimGeocoder.builder()

@@ -15,7 +15,7 @@
  */
 
 import io.redlink.geocoding.Geocoder;
-import io.redlink.geocoding.google.GoogleMapsGeocoder;
+import io.redlink.geocoding.proxy.ProxyGeocoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +32,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
-@ActiveProfiles("google")
+@ActiveProfiles("proxy")
 @EnableAutoConfiguration
-class GoogleGeocoderTest {
+class ProxyGeocoderTest {
     // NOTE: see https://docs.spring.io/spring-boot/docs/2.7.15/reference/htmlsingle/#features.developing-auto-configuration.testing
     //       on how to properly test autoconfiguration
 
     private final Geocoder geocoder;
 
     @Autowired
-    GoogleGeocoderTest(Geocoder geocoder) {
+    ProxyGeocoderTest(Geocoder geocoder) {
         this.geocoder = geocoder;
     }
 
@@ -53,7 +53,7 @@ class GoogleGeocoderTest {
     @Test
     void testType() {
         assertThat(geocoder)
-                .as("GoogleGeocoder expected")
-                .isInstanceOf(GoogleMapsGeocoder.class);
+                .as("ProxyGeocoderTest expected")
+                .isInstanceOf(ProxyGeocoder.class);
     }
 }
