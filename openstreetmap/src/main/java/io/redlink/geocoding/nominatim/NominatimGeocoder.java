@@ -136,9 +136,10 @@ public class NominatimGeocoder implements Geocoder {
         this.proxy = proxy;
         this.serviceConfiguration = serviceConfiguration;
         if (StringUtils.equals(baseUrl, PUBLIC_NOMINATIM_SERVER)) {
+            LOG.info("Initialize NominatimGeocoder using public server at {}; " +
+                     "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright)", baseUrl);
             // set default qps for public server
             maxQps = Math.max(maxQps, 1);
-            LOG.info("Initialize NominatimGeocoder using public server at {}; Data from OpenStreetMap (see https://openstreetmap.org/copyright)", baseUrl);
         }
         if (maxQps > 0) {
             rateLimiter = RateLimiter.create(maxQps);
