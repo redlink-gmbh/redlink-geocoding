@@ -16,27 +16,27 @@
 
 package io.redlink.geocoding;
 
-public final class AddressComponent implements Comparable<AddressComponent>{
+public final class AddressComponent implements Comparable<AddressComponent> {
 
     private final Type type;
     private final String value;
-    
+
     private AddressComponent(Type type, String value) {
         this.type = type;
         this.value = value;
     }
-    
+
     public Type getType() {
         return type;
     }
-    
+
     public String getValue() {
         return value;
     }
 
     @Override
     public int compareTo(AddressComponent o) {
-        return Integer.compare(type.ordinal(),o.type.ordinal());
+        return Integer.compare(type.ordinal(), o.type.ordinal());
     }
 
     @Override
@@ -50,20 +50,14 @@ public final class AddressComponent implements Comparable<AddressComponent>{
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         AddressComponent other = (AddressComponent) obj;
-        if (type != other.type)
-            return false;
+        if (type != other.type) return false;
         if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
+            if (other.value != null) return false;
+        } else if (!value.equals(other.value)) return false;
         return true;
     }
 
@@ -87,5 +81,5 @@ public final class AddressComponent implements Comparable<AddressComponent>{
         countryCode,
         country,
     }
-    
+
 }

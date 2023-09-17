@@ -33,8 +33,12 @@ public abstract class GeocodingAutoConfiguration {
 
         if ("http".equals(url.getProtocol())) {
             int port = url.getPort();
-            if (port < 0) port = url.getDefaultPort();
-            if (port < 0) port = 80;
+            if (port < 0) {
+                port = url.getDefaultPort();
+            }
+            if (port < 0) {
+                port = 80;
+            }
 
             return new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(url.getHost(), port));
         } else {

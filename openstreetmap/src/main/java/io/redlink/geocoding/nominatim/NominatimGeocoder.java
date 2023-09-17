@@ -340,7 +340,9 @@ public class NominatimGeocoder implements Geocoder {
     }
 
     protected CloseableHttpClient createHttpClient() {
-        if (rateLimiter != null) rateLimiter.acquire();
+        if (rateLimiter != null) {
+            rateLimiter.acquire();
+        }
         final HttpClientBuilder builder = HttpClients.custom();
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             LOG.trace("Direct Connection");
@@ -375,8 +377,9 @@ public class NominatimGeocoder implements Geocoder {
             if (statusCode >= 200 && statusCode < 300) {
                 final Document document = Jsoup.parse(response.getEntity().getContent(), "utf-8", requestUri.toString(), Parser.xmlParser());
                 return parseJsoup(document);
-            } else
+            } else {
                 throw new IOException("Got HTTP-" + statusCode + " when requesting " + requestUri.toASCIIString());
+            }
         }
 
         protected abstract T parseJsoup(Document jsoupDocument);
