@@ -92,6 +92,8 @@ public class GeocodingProperties {
 
         private String email;
 
+        private String userAgentString;
+
         private Map<String, String> extraQueryParams = Map.of();
 
         private Map<String, String> extraHeaders = Map.of();
@@ -120,6 +122,15 @@ public class GeocodingProperties {
 
         public NominatimProperties setEmail(String email) {
             this.email = email;
+            return this;
+        }
+
+        public String getUserAgentString() {
+            return userAgentString;
+        }
+
+        public NominatimProperties setUserAgentString(String userAgentString) {
+            this.userAgentString = userAgentString;
             return this;
         }
 

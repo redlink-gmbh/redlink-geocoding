@@ -19,18 +19,22 @@ class ServiceConfiguration {
     private final Map<String, String> customQueryParams;
     private final Map<String, String> customHeaders;
 
+    private final String userAgent;
+
     ServiceConfiguration() {
-        this(DEFAULT_GEOCODE_ENDPOINT, DEFAULT_REVERSE_ENDPOINT, DEFAULT_LOOKUP_ENDPOINT, Map.of(), Map.of());
+        this(DEFAULT_GEOCODE_ENDPOINT, DEFAULT_REVERSE_ENDPOINT, DEFAULT_LOOKUP_ENDPOINT, Map.of(), Map.of(), null);
     }
 
     ServiceConfiguration(String geocodeEndpoint, String reverseEndpoint, String lookupEndpoint,
-                                Map<String, String> customQueryParams,
-                                Map<String, String> customHeaders) {
+                         Map<String, String> customQueryParams,
+                         Map<String, String> customHeaders,
+                         String userAgent) {
         this.geocodeEndpoint = geocodeEndpoint;
         this.reverseEndpoint = reverseEndpoint;
         this.lookupEndpoint = lookupEndpoint;
         this.customQueryParams = Map.copyOf(customQueryParams);
         this.customHeaders = Map.copyOf(customHeaders);
+        this.userAgent = userAgent;
     }
 
     public String getGeocodeEndpoint() {
@@ -52,4 +56,9 @@ class ServiceConfiguration {
     public Map<String, String> getCustomHeaders() {
         return customHeaders;
     }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
 }

@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
 /**
+ *
  */
 @AutoConfiguration(after = {
         GoogleGeocodingAutoConfiguration.class,
@@ -51,7 +52,8 @@ public class NominatimGeocodingAutoConfiguration extends GeocodingAutoConfigurat
         final GeocodingProperties.NominatimProperties nominatim = properties.getNominatim();
 
         final NominatimBuilder nominatimBuilder = NominatimGeocoder.builder()
-                    .setEmail(nominatim.getEmail());
+                .setEmail(nominatim.getEmail())
+                .setUserAgent(nominatim.getUserAgentString());
 
         if (nominatim.getBaseUrl() != null) {
             nominatimBuilder.setBaseUrl(nominatim.getBaseUrl());
