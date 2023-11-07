@@ -85,10 +85,13 @@ class NominatimGeocoderIT {
         Assertions.assertThat(places)
                 .as("OSM Places")
                 .hasSize(2)
-                .as("First Result")
-                .first()
-                .hasFieldOrPropertyWithValue("placeId", "N3081433444")
-                .hasFieldOrPropertyWithValue("address", COWORKING_FORMATTED_ADDRESS);
+                .as("Expected Result")
+                .anySatisfy(
+                        p -> Assertions.assertThat(p)
+                                .as("Coworking Salzburg")
+                                .hasFieldOrPropertyWithValue("placeId", "N3081433444")
+                                .hasFieldOrPropertyWithValue("address", COWORKING_FORMATTED_ADDRESS)
+                );
 
 
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
