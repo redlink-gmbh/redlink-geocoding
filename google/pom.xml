@@ -30,7 +30,7 @@
 
     <properties>
         <!-- Fix for dependency convergence in google-maps-services -->
-        <kotlin-stdlib.version>1.9.20</kotlin-stdlib.version>
+        <kotlin-stdlib.version>1.9.21</kotlin-stdlib.version>
     </properties>
 
     <dependencyManagement>
