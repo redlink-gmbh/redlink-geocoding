@@ -101,7 +101,7 @@
         <gmaps.version>2.2.0</gmaps.version>
         <guava.version>32.1.3-jre</guava.version>
         <jsoup.version>1.16.2</jsoup.version>
-        <jackson.version>2.15.3</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <httpclient.version>5.2.1</httpclient.version>
         <commons-lang3.version>3.13.0</commons-lang3.version>
         <junit.version>5.10.1</junit.version>
