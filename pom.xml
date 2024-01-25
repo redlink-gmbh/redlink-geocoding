@@ -102,7 +102,7 @@
         <guava.version>33.0.0-jre</guava.version>
         <jsoup.version>1.17.2</jsoup.version>
         <jackson.version>2.16.1</jackson.version>
-        <httpclient.version>5.3</httpclient.version>
+        <httpclient.version>5.3.1</httpclient.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <junit.version>5.10.1</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
