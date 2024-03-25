@@ -28,7 +28,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Compile & Test
-        run: mvn -V -B --no-transfer-progress
+        run: ./mvnw -V -B --no-transfer-progress
           clean
           org.jacoco:jacoco-maven-plugin:prepare-agent
           verify
