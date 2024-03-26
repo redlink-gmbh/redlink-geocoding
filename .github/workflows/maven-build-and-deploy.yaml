@@ -91,7 +91,7 @@ jobs:
         run: ./mvnw -V -B --no-transfer-progress clean verify
       - name: Publish Packages
         run: ./mvnw -B --no-transfer-progress
-          package javadoc:aggregate-jar deploy
+          package javadoc:aggregate-jar@aggregate deploy
           -Prelease
           -Dquick
           -Ddocker.local.skip=true
@@ -103,3 +103,11 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      - name: Publish Staging Repo to Central
+        if: github.ref_type == 'tag'
+        run: ./mvnw -B --no-transfer-progress
+          nexus-staging:release -DstagingDescription="$TAG"
+        env:
+          TAG: ${{ github.ref_name }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

@@ -226,7 +226,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadoc</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -238,7 +238,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -395,12 +395,12 @@
                                         <group>
                                             <title>Geocoding</title>
                                             <packages>
-                                                io.redlink.geocoding:io.redlink.geocoding.cache:io.redlink.geocoding.google:io.redlink.geocoding.nominatim
+                                                io.redlink.geocoding.api:io.redlink.geocoding.cache:io.redlink.geocoding.google:io.redlink.geocoding.osm:io.redlink.geocoding.proxy:io.redlink.geocoding.proxy.commons
                                             </packages>
                                         </group>
                                         <group>
                                             <title>Spring Boot Autoconfiguration</title>
-                                            <packages>io.redlink.geocoding.spring.*</packages>
+                                            <packages>io.redlink.geocoding.springboot*</packages>
                                         </group>
                                     </groups>
                                 </configuration>
