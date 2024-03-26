@@ -91,7 +91,7 @@ jobs:
         run: ./mvnw -V -B --no-transfer-progress clean verify
       - name: Publish Packages
         run: ./mvnw -B --no-transfer-progress
-          package javadoc:aggregate-jar deploy
+          package javadoc:aggregate-jar@aggregate deploy
           -Prelease
           -Dquick
           -Ddocker.local.skip=true
