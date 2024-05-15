@@ -106,7 +106,7 @@
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <junit.version>5.10.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <mockito.version>5.11.0</mockito.version>
+        <mockito.version>5.12.0</mockito.version>
         <wiremock.version>2.35.2</wiremock.version>
 
         <argLine />
