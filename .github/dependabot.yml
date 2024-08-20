@@ -5,8 +5,17 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      github-actions:
+        patterns:
+          - "actions/*"
   # Keep maven-dependencies up to date
   - package-ecosystem: "maven"
     directory: /
     schedule:
       interval: "daily"
+    groups:
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.codehaus.mojo:*"
