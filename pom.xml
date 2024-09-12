@@ -358,6 +358,11 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.12</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>4.0.0.4121</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -425,6 +430,10 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

@@ -48,7 +48,7 @@ jobs:
           clean
           org.jacoco:jacoco-maven-plugin:prepare-agent
           verify
-          org.jacoco:jacoco-maven-plugin:report
+          org.jacoco:jacoco-maven-plugin:report-aggregate
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dnominatim.email="${{ secrets.NOMINATIM_USER }}"
           -Dgoogle.apiKey="${{ secrets.GOOGLE_API_KEY }}"
