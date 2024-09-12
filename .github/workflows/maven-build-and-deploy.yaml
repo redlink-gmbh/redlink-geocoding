@@ -45,17 +45,12 @@ jobs:
           cache: maven
       - name: Compile & Test
         run: ./mvnw -V -B --no-transfer-progress
-          clean
-          org.jacoco:jacoco-maven-plugin:prepare-agent
-          verify
-          org.jacoco:jacoco-maven-plugin:report
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          clean package verify
           -Dnominatim.email="${{ secrets.NOMINATIM_USER }}"
           -Dgoogle.apiKey="${{ secrets.GOOGLE_API_KEY }}"
-          -Dsonar.skip=${{ github.actor == 'dependabot[bot]' }}
-          -Dsonar.organization=redlink
-          -Dsonar.host.url=https://sonarcloud.io
+          -Psonarcloud
           -Dsonar.projectKey=redlink-gmbh_redlink-geocoding
+          -Dsonar.skip=${{ github.actor == 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
