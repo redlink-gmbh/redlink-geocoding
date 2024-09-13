@@ -43,48 +43,48 @@ import static java.lang.String.format;
 
 class ProxyGeocoderTest {
 
-    private static final WireMockServer wiremock = new WireMockServer(WireMockConfiguration.options().dynamicPort());
-    private static final ObjectMapper mapper = JsonMapper.builder().build();
+    private static final WireMockServer WIREMOCK = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
-    private static final Place place1 = createPlace("Hauptstrasse 15");
-    private static final Place place2 = createPlace("Am Dorfplatz 1");
+    private static final Place PLACE_1 = createPlace("Hauptstrasse 15");
+    private static final Place PLACE_2 = createPlace("Am Dorfplatz 1");
 
-    private static final String basePath = RandomStringUtils.randomAlphabetic(6);
+    private static final String BASE_PATH = RandomStringUtils.insecure().nextAlphabetic(6);
 
     private final ProxyGeocoder geocoder;
 
     public ProxyGeocoderTest() {
-        geocoder = new ProxyGeocoder(URI.create(wiremock.url(basePath)));
+        geocoder = new ProxyGeocoder(URI.create(WIREMOCK.url(BASE_PATH)));
     }
 
     @BeforeAll
     static void beforeAll() throws JsonProcessingException {
-        wiremock.start();
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", basePath, Endpoints.API_VERSION)))
+        WIREMOCK.start();
+        WIREMOCK.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s", BASE_PATH, Endpoints.API_VERSION)))
                 .willReturn(WireMock.noContent())
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.GEOCODE)))
-                .willReturn(WireMock.okJson(mapper.writeValueAsString(
+        WIREMOCK.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", BASE_PATH, Endpoints.API_VERSION, Endpoints.GEOCODE)))
+                .willReturn(WireMock.okJson(MAPPER.writeValueAsString(
                         List.of(
-                                PlaceDTO.fromPlace(place1),
-                                PlaceDTO.fromPlace(place2)
+                                PlaceDTO.fromPlace(PLACE_1),
+                                PlaceDTO.fromPlace(PLACE_2)
                         )
                 )))
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.REVERSE_GEOCODE)))
-                .willReturn(WireMock.okJson(mapper.writeValueAsString(
+        WIREMOCK.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", BASE_PATH, Endpoints.API_VERSION, Endpoints.REVERSE_GEOCODE)))
+                .willReturn(WireMock.okJson(MAPPER.writeValueAsString(
                         List.of(
-                                PlaceDTO.fromPlace(place2),
-                                PlaceDTO.fromPlace(place1)
+                                PlaceDTO.fromPlace(PLACE_2),
+                                PlaceDTO.fromPlace(PLACE_1)
                         )
                 )))
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.LOOKUP)))
-                .willReturn(WireMock.okJson(mapper.writeValueAsString(
-                        PlaceDTO.fromPlace(place1)
+        WIREMOCK.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", BASE_PATH, Endpoints.API_VERSION, Endpoints.LOOKUP)))
+                .willReturn(WireMock.okJson(MAPPER.writeValueAsString(
+                        PlaceDTO.fromPlace(PLACE_1)
                 )))
         );
-        wiremock.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", basePath, Endpoints.API_VERSION, Endpoints.LOOKUP)))
+        WIREMOCK.stubFor(WireMock.get(WireMock.urlPathEqualTo(format("/%s/%s/%s", BASE_PATH, Endpoints.API_VERSION, Endpoints.LOOKUP)))
                 .withQueryParam(Endpoints.PARAM_PLACE_ID, WireMock.equalTo("does-not-exist"))
                 .willReturn(WireMock.notFound())
         );
@@ -92,7 +92,7 @@ class ProxyGeocoderTest {
 
     @AfterAll
     static void afterAll() {
-        wiremock.stop();
+        WIREMOCK.stop();
     }
 
     @Test
@@ -102,7 +102,7 @@ class ProxyGeocoderTest {
                 .hasSize(2)
                 .first()
                 .as("First Result Matches")
-                .isEqualTo(place1);
+                .isEqualTo(PLACE_1);
 
     }
 
@@ -113,16 +113,16 @@ class ProxyGeocoderTest {
                 .hasSize(2)
                 .first()
                 .as("First Result Matches")
-                .isEqualTo(place2)
+                .isEqualTo(PLACE_2)
         ;
     }
 
     @Test
     void testLookup() throws IOException {
-        Assertions.assertThat(geocoder.lookup(RandomStringUtils.randomAlphabetic(8)))
+        Assertions.assertThat(geocoder.lookup(RandomStringUtils.insecure().nextAlphabetic(8)))
                 .as("Lookup Result")
                 .isPresent()
-                .contains(place1);
+                .contains(PLACE_1);
 
         Assertions.assertThat(geocoder.lookup("does-not-exist"))
                 .as("Lookup Result")
@@ -131,9 +131,12 @@ class ProxyGeocoderTest {
 
     static Place createPlace(String address) {
         return Place.create(
-                RandomStringUtils.randomAlphabetic(8),
+                RandomStringUtils.insecure().nextAlphabetic(8),
                 address,
-                LatLon.create(RandomUtils.nextDouble(0, 90), RandomUtils.nextDouble(0, 180)),
+                LatLon.create(
+                        RandomUtils.insecure().randomDouble(0, 90),
+                        RandomUtils.insecure().randomDouble(0, 180)
+                ),
                 Set.of(
                         AddressComponent.create(AddressComponent.Type.street, address)
                 ),
