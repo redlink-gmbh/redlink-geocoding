@@ -87,6 +87,7 @@ jobs:
       - name: Publish Packages
         run: ./mvnw -B --no-transfer-progress
           package javadoc:aggregate-jar@aggregate deploy
+          org.sonatype.plugins:nexus-staging:deploy
           -Prelease
           -Dquick
           -Ddocker.local.skip=true
