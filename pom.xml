@@ -400,7 +400,7 @@
                                 <id>coverage-report</id>
                                 <phase>verify</phase>
                                 <goals>
-                                    <goal>report-aggregate</goal>
+                                    <goal>report</goal>
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/jacoco</outputDirectory>
