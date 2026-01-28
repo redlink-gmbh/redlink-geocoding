@@ -81,18 +81,16 @@ class GoogleMapsGeocoderIT {
     @BeforeEach
     void pingRemote() {
         assumeThatCode(() -> {
-            try (HttpClient client = HttpClient.newHttpClient()) {
-                final HttpRequest request = HttpRequest.newBuilder()
-                        .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                        .uri(URI.create(new ApiConfig("/").hostName))
-                        .build();
-                final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            final HttpClient client = HttpClient.newHttpClient();
+            final HttpRequest request = HttpRequest.newBuilder()
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(new ApiConfig("/").hostName))
+                    .build();
+            final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
 
-                assumeThat(response.statusCode())
-                        .as("Ping to remote service")
-                        .isBetween(200, 399);
-            }
-
+            assumeThat(response.statusCode())
+                    .as("Ping to remote service")
+                    .isBetween(200, 399);
         })
                 .as("Ping to remote service")
                 .doesNotThrowAnyException();
