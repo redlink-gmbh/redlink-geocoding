@@ -142,7 +142,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.6</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <id>docker-local</id>
@@ -187,7 +187,7 @@
                 </executions>
                 <configuration>
                     <from>
-                        <image>openjdk:11-jre-slim</image>
+                        <image>eclipse-temurin:${java.version}-jre</image>
                     </from>
                     <to>
                         <image>${docker.image.namespace}/${project.artifactId}:${project.version}</image>
