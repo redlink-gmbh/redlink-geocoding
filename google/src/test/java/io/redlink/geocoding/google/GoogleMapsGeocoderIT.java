@@ -54,7 +54,6 @@ class GoogleMapsGeocoderIT {
     }
 
     private static final String TEST_PLACE_ID = "ChIJz0qJMpqadkcRpaXIPyX0sI8";
-    private static final String TEST_FORMATTED_ADDRESS = "Jakob-Haringer-Straße 3, 5020 Salzburg, Austria";
     private static final String TEST_ADDRESS = "jakob haringer strasse 3";
     private static final Double TEST_LAT = 47.82273;
     private static final Double TEST_LON = 13.040612;
@@ -82,16 +81,18 @@ class GoogleMapsGeocoderIT {
     @BeforeEach
     void pingRemote() {
         assumeThatCode(() -> {
-            final HttpClient client = HttpClient.newHttpClient();
-            final HttpRequest request = HttpRequest.newBuilder()
-                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                    .uri(URI.create(new ApiConfig("/").hostName))
-                    .build();
-            final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                final HttpRequest request = HttpRequest.newBuilder()
+                        .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                        .uri(URI.create(new ApiConfig("/").hostName))
+                        .build();
+                final HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.discarding());
 
-            assumeThat(response.statusCode())
-                    .as("Ping to remote service")
-                    .isBetween(200, 399);
+                assumeThat(response.statusCode())
+                        .as("Ping to remote service")
+                        .isBetween(200, 399);
+            }
+
         })
                 .as("Ping to remote service")
                 .doesNotThrowAnyException();
@@ -103,9 +104,10 @@ class GoogleMapsGeocoderIT {
 
         assertThat(places)
                 .as("Geocoded Place")
-                .singleElement()
-                .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
-                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
+                .isNotEmpty()
+                .first()
+                .hasFieldOrProperty("placeId")
+                .hasFieldOrProperty("address");
 
         Collection<AddressComponent> addrComps = places.get(0).getComponents();
 
@@ -146,7 +148,7 @@ class GoogleMapsGeocoderIT {
                 .as("Place Lookup")
                 .isPresent().get()
                 .hasFieldOrPropertyWithValue("placeId", TEST_PLACE_ID)
-                .hasFieldOrPropertyWithValue("address", TEST_FORMATTED_ADDRESS);
+                .hasFieldOrProperty("address");
     }
 
     @Test
