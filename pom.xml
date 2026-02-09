@@ -70,7 +70,6 @@
         <module>proxy</module>
 
         <module>spring-boot</module>
-        <module>spring-boot-it</module>
     </modules>
 
     <scm>

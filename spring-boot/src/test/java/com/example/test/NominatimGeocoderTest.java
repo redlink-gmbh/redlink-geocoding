@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.example.test;
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.nominatim.NominatimGeocoder;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -28,17 +30,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- *
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
+@ActiveProfiles("nominatim")
 @EnableAutoConfiguration
-class NominatimGeocoderIT {
+class NominatimGeocoderTest {
+    // NOTE: see https://docs.spring.io/spring-boot/docs/2.7.15/reference/htmlsingle/#features.developing-auto-configuration.testing
+    //       on how to properly test autoconfiguration
 
     private final Geocoder geocoder;
 
     @Autowired
-    NominatimGeocoderIT(Geocoder geocoder) {
+    NominatimGeocoderTest(Geocoder geocoder) {
         this.geocoder = geocoder;
     }
 
@@ -48,10 +52,9 @@ class NominatimGeocoderIT {
     }
 
     @Test
-    void testType() throws Exception {
+    void testType() {
         assertThat(geocoder)
                 .as("NominatimGeocoder expected")
                 .isInstanceOf(NominatimGeocoder.class);
     }
 }
-
