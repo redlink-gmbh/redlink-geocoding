@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.example.test;
 
 import io.redlink.geocoding.Geocoder;
 import io.redlink.geocoding.proxy.ProxyGeocoder;
