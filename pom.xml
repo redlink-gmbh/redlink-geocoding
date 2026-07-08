@@ -95,7 +95,7 @@
         <junit.version>6.0.3</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>5.23.0</mockito.version>
-        <wiremock.version>2.35.2</wiremock.version>
+        <wiremock.version>3.0.1</wiremock.version>
 
         <argLine />
     </properties>
@@ -202,7 +202,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.8</version>
+                <version>1.18.10</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -392,7 +392,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.14</version>
+                        <version>0.8.15</version>
                         <executions>
                             <execution>
                                 <id>prepare-coverage-agent</id>
@@ -416,7 +416,7 @@
                     <plugin>
                         <groupId>org.sonarsource.scanner.maven</groupId>
                         <artifactId>sonar-maven-plugin</artifactId>
-                        <version>5.6.0.6792</version>
+                        <version>5.7.0.6970</version>
                         <executions>
                             <execution>
                                 <id>sonarcloud</id>
